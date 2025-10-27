@@ -1,0 +1,82 @@
+<form [formGroup]="createPlaceForm" (ngSubmit)="createPlace()" novalidate="">
+    <div>
+        <label>Título: </label>
+        <input type="text" formControlName="title" />
+    </div>
+
+    <div>
+        <label>Descripción: </label>
+        <textarea formControlName="description"></textarea>
+    </div>
+
+    <div>
+        <label>Precio por noche: </label>
+        <input type="number" formControlName="price" />
+    </div>
+
+    <div>
+        <label>Tipo de alojamiento: </label>
+        <select formControlName="accommodationType">
+            <option value="" disabled selected>Seleccione un tipo de alojamiento</option>
+            @for (item of accommodationTypes; track $index) {
+                <option value="{{item}}">{{item}}</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Capacidad de huéspedes: </label>
+        <input type="number" formControlName="capacity" />
+    </div>
+
+    <div>
+        <label>Pais: </label>
+        <input type="text" formControlName="country" />
+    </div>
+
+    <div>
+        <label>Departamento: </label>
+        <input type="text" formControlName="department" />
+    </div>
+
+    <div>
+        <label>Ciudad: </label>
+        <select formControlName="city">
+            <option value="" disabled selected>Seleccione una ciudad</option>
+            @for (item of cities; track $index) {
+                <option value="{{item}}">{{item}}</option>
+            }
+        </select>
+    </div>
+    
+    <div>
+        <label>Barrio: </label>
+        <input type="text" formControlName="neighborhood" />
+    </div>
+
+    <div>
+        <label>Código postal: </label>
+        <input type="text" formControlName="postalCode" />
+    </div>
+
+    <div>
+        <label>Servicios: </label>
+        <input type="text" formControlName="amenities" />
+    </div>
+
+    <div>
+        <label>Latitud: </label>
+        <input type="text" formControlName="latitude" />
+    </div>
+
+    <div>
+        <label>Longitud: </label>
+        <input type="text" formControlName="longitude" />
+    </div>
+
+    <div>
+        <label>Imágenes del alojamiento: </label>
+        <input type="file" multiple (change)="onFileChange($event)" />
+    </div>
+    <button type="submit" [disabled]="createPlaceForm.invalid">Crear alojamiento</button>
+</form>
