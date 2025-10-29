@@ -8,10 +8,19 @@
         <label>Teléfono: </label>
         <input type="text" formControlName="phone" />
     </div>
+    <div>
+        <label>Ciudad: </label>
+        <select formControlName="city">
+            <option value="">Seleccione una ciudad</option>
+            @for (city of cities; track city) {
+            <option [value]="city">{{ city }}</option>
+            }
+        </select>
+    </div>
 
     <div>
         <label>Foto de perfil: </label>
-        <input type="file" />
+        <input type="file" formControlName="photoUrl" (change)="onFileChange($event)" />
     </div>
 
     <div>
