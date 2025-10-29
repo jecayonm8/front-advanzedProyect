@@ -60,8 +60,18 @@
     </div>
 
     <div>
-        <label>Servicios: </label>
-        <input type="text" formControlName="amenities" />
+        <label>Servicios adicionales: </label>
+        <div class="amenities-options">
+            @for (amenity of amenitiesOptions; track amenity.value) {
+                <label>
+                    <input type="checkbox"
+                           [value]="amenity.value"
+                           (change)="onAmenityToggle(amenity.value, $event.target.checked)"
+                           [checked]="createPlaceForm.get('amenities')?.value?.includes(amenity.value)" />
+                    {{ amenity.label }}
+                </label>
+            }
+        </div> 
     </div>
 
     <div>
