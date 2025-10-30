@@ -1,0 +1,67 @@
+<form [formGroup]="reservationForm" (ngSubmit)="createReservation()" novalidate>
+  <div>
+    <label>Fecha de inicio:</label>
+    <input type="date" formControlName="startDate" />
+    @if (reservationForm.get('startDate')?.touched && reservationForm.get('startDate')?.invalid) {
+      <small>La fecha de inicio es obligatoria.</small>
+    }
+  </div>
+
+  <div>
+    <label>Fecha de fin:</label>
+    <input type="date" formControlName="endDate" />
+    @if (reservationForm.get('endDate')?.touched && reservationForm.get('endDate')?.invalid) {
+      <small>La fecha de fin es obligatoria.</small>
+    }
+    @if (reservationForm.errors?.['invalidDateRange']) {
+      <small>La fecha de fin debe ser posterior a la fecha de inicio.</small>
+    }
+  </div>
+
+  <div>
+    <label>Número de huéspedes:</label>
+    <input type="number" formControlName="numberGuests" min="1" />
+    @if (reservationForm.get('numberGuests')?.touched && reservationForm.get('numberGuests')?.invalid) {
+      <small>Debe ingresar al menos un huésped.</small>
+    }
+  </div>
+
+  <div>
+    <label>Código del alojamiento:</label>
+    <input type="text" formControlName="accommodationCode" />
+    @if (reservationForm.get('accommodationCode')?.touched && reservationForm.get('accommodationCode')?.invalid) {
+      <small>El código del alojamiento es obligatorio.</small>
+    }
+  </div>
+
+  <div>
+    <label>Identificador del cliente:</label>
+    <input type="text" formControlName="customerId" />
+    @if (reservationForm.get('customerId')?.touched && reservationForm.get('customerId')?.invalid) {
+      <small>Debe indicar el cliente asociado a la reserva.</small>
+    }
+  </div>
+
+  <div>
+    <label>Método de pago:</label>
+    <input type="text" formControlName="paymentMethod" />
+    @if (reservationForm.get('paymentMethod')?.touched && reservationForm.get('paymentMethod')?.invalid) {
+      <small>Seleccione un método de pago válido.</small>
+    }
+  </div>
+
+  <div>
+    <label>Precio total:</label>
+    <input type="number" step="0.01" min="0" formControlName="totalPrice" />
+    @if (reservationForm.get('totalPrice')?.touched && reservationForm.get('totalPrice')?.invalid) {
+      <small>Ingrese un valor numérico válido.</small>
+    }
+  </div>
+
+  <div>
+    <label>Mensaje para el anfitrión (opcional):</label>
+    <textarea formControlName="message"></textarea>
+  </div>
+
+  <button type="submit" [disabled]="reservationForm.invalid">Crear reserva</button>
+</form>

@@ -12,6 +12,7 @@ export class CreatePlace {
 
   cities: string[];
   accommodationTypes: string[];
+  amenitiesOptions: { label: string; value: string }[];
 
 
   createPlaceForm!: FormGroup;
@@ -20,6 +21,17 @@ export class CreatePlace {
     this.createForm();
     this.cities = ['Bogotá', 'Medellín', 'Cali','Armenia', 'Barranquilla', 'Cartagena'];
     this.accommodationTypes = ['HOUSE', 'APARTMENT', 'FARM'];
+    this.amenitiesOptions = [
+      { label: 'Wifi', value: 'WIFI' },
+      { label: 'Parqueadero', value: 'PARKING_AND_FACILITIES' },
+      { label: 'Aire acondicionado', value: 'SERVICES' },
+      { label: 'Lavanderia', value: 'BEDROOM_AND_LAUNDRY' },
+      { label: 'Apto para mascotas', value: 'SERVICE_ANIMALS_ALLOWED' },
+      { label: 'Congelador', value: 'FREEZER' },
+      { label: 'Agua caliente', value: 'HOT_WATER' },
+      { label: 'Cocina', value: 'KITCHEN' },
+      { label: 'TV', value: 'ENTERTAINMENT' }
+    ];
   }
 
   //(recuerde que los nombres de los campos deben coincidir con los del DTO de crear alojamiento o accommodation)
@@ -34,8 +46,8 @@ export class CreatePlace {
       department: ['', [Validators.required]],
       city: ['', [Validators.required]],
       neighborhood: ['', []],
-      postalCode: ['', [Validators.required, Validators.pattern(/^[0-9]{5}$/)]],
-      amenities: ['', []],
+      postalCode: ['', [Validators.required]],
+      amenities: [[], []],
       latitude: ['', [Validators.required]],
       longitude: ['', [Validators.required]],
       picsUrl: [[], [Validators.required]]
@@ -53,9 +65,32 @@ export class CreatePlace {
 
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files);
-    this.createPlaceForm.patchValue({ images: files });
+    this.createPlaceForm.patchValue({ picsUrl: files });
+    this.createPlaceForm.get('picsUrl')?.updateValueAndValidity();
   }
   }
+
+  // Este metodo mantiene sincronizado el control de formulario de amenidades
+  // según el estado de cada checkbox seleccionado
+  public onAmenityToggle(amenity: string, checked: boolean) {
+    const amenitiesControl = this.createPlaceForm.get('amenities');
+    if (!amenitiesControl) {
+      return;
+    }
+
+    const currentAmenities: string[] = amenitiesControl.value || [];
+    if (checked) {
+      if (!currentAmenities.includes(amenity)) {
+        amenitiesControl.setValue([...currentAmenities, amenity]);
+      }
+    } else {
+      amenitiesControl.setValue(currentAmenities.filter(item => item !== amenity));
+    }
+    amenitiesControl.updateValueAndValidity();
+  }
+
+
 
 
 }
+
