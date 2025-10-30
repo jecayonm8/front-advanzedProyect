@@ -1,0 +1,48 @@
+<form [formGroup]="complaintForm" (ngSubmit)="createComplaint()" novalidate>
+  <div>
+    <label>Motivo:</label>
+    <input type="text" formControlName="reason" />
+    @if (complaintForm.get('reason')?.touched && complaintForm.get('reason')?.invalid) {
+      <small>El motivo es obligatorio y máximo de 120 caracteres.</small>
+    }
+  </div>
+
+  <div>
+    <label>Descripción:</label>
+    <textarea formControlName="description"></textarea>
+    @if (complaintForm.get('description')?.touched && complaintForm.get('description')?.invalid) {
+      <small>Describa el detalle con mínimo 20 caracteres.</small>
+    }
+  </div>
+
+  <div>
+    <label>Código de la reserva:</label>
+    <input type="text" formControlName="reservationCode" />
+    @if (complaintForm.get('reservationCode')?.touched && complaintForm.get('reservationCode')?.invalid) {
+      <small>Debe asociar la PQRS a una reserva.</small>
+    }
+  </div>
+
+  <div>
+    <label>Identificador del cliente:</label>
+    <input type="text" formControlName="customerId" />
+    @if (complaintForm.get('customerId')?.touched && complaintForm.get('customerId')?.invalid) {
+      <small>Indique el usuario que reporta la novedad.</small>
+    }
+  </div>
+
+  <div>
+    <label>Tipo de solicitud:</label>
+    <select formControlName="complaintType">
+      <option value="" disabled selected>Seleccione un tipo</option>
+      @for (item of complaintTypes; track $index) {
+        <option [value]="item">{{ item }}</option>
+      }
+    </select>
+    @if (complaintForm.get('complaintType')?.touched && complaintForm.get('complaintType')?.invalid) {
+      <small>Debe seleccionar un tipo de solicitud.</small>
+    }
+  </div>
+
+  <button type="submit" [disabled]="complaintForm.invalid">Registrar PQRS</button>
+</form>
