@@ -1,0 +1,105 @@
+<main class="page">
+  <header class="page__heading">
+    <h1 class="page__title">Publicar un nuevo alojamiento</h1>
+    <p class="page__subtitle">Completa la información clave para que los viajeros encuentren tu espacio ideal.</p>
+  </header>
+
+  <form class="form-card" [formGroup]="createPlaceForm" (ngSubmit)="createPlace()" novalidate>
+    <div class="form-card__grid form-card__grid--two-columns">
+      <div class="form-group form-group--full">
+        <label for="place-title">Título</label>
+        <input id="place-title" type="text" formControlName="title" placeholder="Apartamento moderno en el centro" />
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="place-description">Descripción</label>
+        <textarea id="place-description" formControlName="description" placeholder="Describe las comodidades, ubicación y servicios destacados"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="place-price">Precio por noche</label>
+        <input id="place-price" type="number" formControlName="price" min="0" placeholder="0" />
+      </div>
+
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Tipo: </label>
+            <select class="form-select" formControlName="accommodationType">
+                <option value="" disabled selected>Seleccione un tipo de alojamiento</option>
+                @for (item of accommodationTypes; track $index) {
+                    <option value="{{item}}">{{item}}</option>
+                }
+            </select>
+        </div>
+        
+      <div class="form-group">
+        <label for="place-capacity">Capacidad de huéspedes</label>
+        <input id="place-capacity" type="number" formControlName="capacity" min="1" placeholder="2" />
+      </div>
+
+      <div class="form-group">
+        <label for="place-country">País</label>
+        <input id="place-country" type="text" formControlName="country" placeholder="Colombia" />
+      </div>
+
+      <div class="form-group">
+        <label for="place-department">Departamento</label>
+        <input id="place-department" type="text" formControlName="department" placeholder="Quindío" />
+      </div>
+
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Ciudad: </label>
+            <select class="form-select" formControlName="city">
+                <option value="" disabled selected>Seleccione una ciudad</option>
+                @for (item of cities; track $index) {
+                    <option value="{{item}}">{{item}}</option>
+                }
+            </select>
+        </div>
+
+      <div class="form-group">
+        <label for="place-neighborhood">Barrio</label>
+        <input id="place-neighborhood" type="text" formControlName="neighborhood" placeholder="La Castellana" />
+      </div>
+
+      <div class="form-group">
+        <label for="place-postal-code">Código postal</label>
+        <input id="place-postal-code" type="text" formControlName="postalCode" placeholder="630004" />
+      </div>
+
+      <div class="form-group form-group--full">
+        <label>Servicios adicionales</label>
+        <div class="tag-list amenities-options">
+          @for (amenity of amenitiesOptions; track amenity.value) {
+            <label>
+              <input
+                type="checkbox"
+                [value]="amenity.value"
+                (change)="onAmenityToggle(amenity.value, $event.target.checked)"
+                [checked]="createPlaceForm.get('amenities')?.value?.includes(amenity.value)"
+              />
+              <span>{{ amenity.label }}</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="place-latitude">Latitud</label>
+        <input id="place-latitude" type="text" formControlName="latitude" placeholder="4.5413" />
+      </div>
+
+      <div class="form-group">
+        <label for="place-longitude">Longitud</label>
+        <input id="place-longitude" type="text" formControlName="longitude" placeholder="-75.6673" />
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="place-images">Imágenes del alojamiento</label>
+        <input id="place-images" type="file" multiple (change)="onFileChange($event)" />
+        <small class="form-helper">Sube entre 3 y 8 fotografías en formato JPG o PNG.</small>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="createPlaceForm.invalid">Crear alojamiento</button>
+  </form>
+</main>

@@ -1,0 +1,81 @@
+<main class="page page--narrow">
+  <header class="page__heading">
+    <h1 class="page__title">Crear nueva reserva</h1>
+    <p class="page__subtitle">Configura las fechas y detalles del viaje antes de confirmar con tus huéspedes.</p>
+  </header>
+
+  <form class="form-card" [formGroup]="bookingForm" (ngSubmit)="createBooking()" novalidate>
+    <div class="form-card__grid form-card__grid--two-columns">
+      <div class="form-group">
+        <label for="booking-check-in">Fecha de inicio</label>
+        <input id="booking-check-in" type="date" formControlName="checkIn" />
+        @if (bookingForm.get('checkIn')?.touched && bookingForm.get('checkIn')?.invalid) {
+          <small class="error-message">La fecha de inicio es obligatoria.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-check-out">Fecha de fin</label>
+        <input id="booking-check-out" type="date" formControlName="checkOut" />
+        @if (bookingForm.get('checkOut')?.touched && bookingForm.get('checkOut')?.invalid) {
+          <small class="error-message">La fecha de fin es obligatoria.</small>
+        }
+        @if (bookingForm.errors?.['invalidDateRange']) {
+          <small class="error-message">La fecha de fin debe ser posterior a la fecha de inicio.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-guests">Número de huéspedes</label>
+        <input id="booking-guests" type="number" formControlName="guest_number" min="1" />
+        @if (bookingForm.get('guest_number')?.touched && bookingForm.get('guest_number')?.invalid) {
+          <small class="error-message">Debe ingresar al menos un huésped.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-state">Estado de reserva</label>
+        <select id="booking-state" formControlName="bookingState">
+          <option value="" disabled selected>Seleccione un estado</option>
+          @for (item of bookingStates; track $index) {
+            <option [value]="item">{{ item }}</option>
+          }
+        </select>
+        @if (bookingForm.get('bookingState')?.touched && bookingForm.get('bookingState')?.invalid) {
+          <small class="error-message">Seleccione un estado de reserva válido.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-user">Identificador del usuario</label>
+        <input id="booking-user" type="text" formControlName="user" placeholder="ID del cliente" />
+        @if (bookingForm.get('user')?.touched && bookingForm.get('user')?.invalid) {
+          <small class="error-message">Debe indicar el usuario asociado a la reserva.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-payment">Método de pago</label>
+        <input id="booking-payment" type="text" formControlName="paymentMethod" placeholder="Tarjeta, efectivo, etc." />
+        @if (bookingForm.get('paymentMethod')?.touched && bookingForm.get('paymentMethod')?.invalid) {
+          <small class="error-message">Seleccione un método de pago válido.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="booking-total">Precio total</label>
+        <input id="booking-total" type="number" step="0.01" min="0" formControlName="totalPrice" placeholder="0.00" />
+        @if (bookingForm.get('totalPrice')?.touched && bookingForm.get('totalPrice')?.invalid) {
+          <small class="error-message">Ingrese un valor numérico válido.</small>
+        }
+      </div>
+
+      <div class="form-group form-group--full">
+        <label for="booking-message">Mensaje para el anfitrión (opcional)</label>
+        <textarea id="booking-message" formControlName="message" placeholder="Comparte detalles del viaje, horarios o solicitudes especiales"></textarea>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="bookingForm.invalid">Crear reserva</button>
+  </form>
+</main>
