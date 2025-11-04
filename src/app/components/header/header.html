@@ -1,25 +1,26 @@
-<header class="p-3 bg-primary text-white">
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-between">
-      
-      <!-- Logo y título -->
-      <a routerLink="" class="d-flex align-items-center text-white text-decoration-none">
-        <span class="material-symbols-rounded fs-2 me-2">globe_location_pin</span>
-        <span class="fs-4">{{ title() }}</span>
-      </a>
-
-      <!-- Navegación -->
-      <ul class="nav mb-2 mb-md-0">
-        <li><a routerLink="/my-places" class="nav-link px-2 text-white">Gestión Alojamientos</a></li>
-        <li><a routerLink="/bookings" class="nav-link px-2 text-white">Mis reservas</a></li>
-      </ul>
-
-      <!-- Botones -->
-      <div>
-        <button routerLink="/login" class="btn btn-outline-light me-2">Login</button>
-        <button routerLink="/register" class="btn btn-light text-primary">Crear cuenta</button>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a routerLink="/home" class="site-header__brand">
+      <span class="icon-badge icon-badge--accent site-header__logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" focusable="false">
+          <path d="M16 3c-5.05 0-9 3.95-9 9 0 6.58 9 17 9 17s9-10.42 9-17c0-5.05-3.95-9-9-9zm0 5.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6z" />
+        </svg>
+      </span>
+      <div class="site-header__brand-copy">
+        <span class="site-header__brand-title">{{ title() }}</span>
+        <span class="site-header__brand-subtitle">Explora, reserva y vive nuevas experiencias</span>
       </div>
+    </a>
 
+    <nav class="site-header__nav" aria-label="Principal">
+      <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+      <a routerLink="/my-places" routerLinkActive="active">Gestión Alojamientos</a>
+      <a routerLink="/bookings" routerLinkActive="active">Mis reservas</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <button routerLink="/login" class="btn-ghost">Iniciar sesión</button>
+      <button routerLink="/register" class="btn-accent">Crear cuenta</button>
     </div>
   </div>
 </header>

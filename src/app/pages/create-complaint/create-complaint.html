@@ -1,48 +1,57 @@
-<form [formGroup]="complaintForm" (ngSubmit)="createComplaint()" novalidate>
-  <div>
-    <label>Motivo:</label>
-    <input type="text" formControlName="reason" />
-    @if (complaintForm.get('reason')?.touched && complaintForm.get('reason')?.invalid) {
-      <small>El motivo es obligatorio y máximo de 120 caracteres.</small>
-    }
-  </div>
+<main class="page page--narrow">
+  <header class="page__heading">
+    <h1 class="page__title">Registrar PQRS</h1>
+    <p class="page__subtitle">Gestiona solicitudes, quejas o reclamos para garantizar experiencias excelentes.</p>
+  </header>
 
-  <div>
-    <label>Descripción:</label>
-    <textarea formControlName="description"></textarea>
-    @if (complaintForm.get('description')?.touched && complaintForm.get('description')?.invalid) {
-      <small>Describa el detalle con mínimo 20 caracteres.</small>
-    }
-  </div>
+  <form class="form-card" [formGroup]="complaintForm" (ngSubmit)="createComplaint()" novalidate>
+    <div class="form-card__grid">
+      <div class="form-group">
+        <label for="complaint-reason">Motivo</label>
+        <input id="complaint-reason" type="text" formControlName="reason" placeholder="Incidente durante el check-in" />
+        @if (complaintForm.get('reason')?.touched && complaintForm.get('reason')?.invalid) {
+          <small class="error-message">El motivo es obligatorio y máximo de 120 caracteres.</small>
+        }
+      </div>
 
-  <div>
-    <label>Código de la reserva:</label>
-    <input type="text" formControlName="reservationCode" />
-    @if (complaintForm.get('reservationCode')?.touched && complaintForm.get('reservationCode')?.invalid) {
-      <small>Debe asociar la PQRS a una reserva.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="complaint-description">Descripción</label>
+        <textarea id="complaint-description" formControlName="description" placeholder="Describe el caso con el mayor detalle posible"></textarea>
+        @if (complaintForm.get('description')?.touched && complaintForm.get('description')?.invalid) {
+          <small class="error-message">Describa el detalle con mínimo 20 caracteres.</small>
+        }
+      </div>
 
-  <div>
-    <label>Identificador del cliente:</label>
-    <input type="text" formControlName="customerId" />
-    @if (complaintForm.get('customerId')?.touched && complaintForm.get('customerId')?.invalid) {
-      <small>Indique el usuario que reporta la novedad.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="complaint-reservation">Código de la reserva</label>
+        <input id="complaint-reservation" type="text" formControlName="reservationCode" placeholder="ID de la reserva" />
+        @if (complaintForm.get('reservationCode')?.touched && complaintForm.get('reservationCode')?.invalid) {
+          <small class="error-message">Debe asociar la PQRS a una reserva.</small>
+        }
+      </div>
 
-  <div>
-    <label>Tipo de solicitud:</label>
-    <select formControlName="complaintType">
-      <option value="" disabled selected>Seleccione un tipo</option>
-      @for (item of complaintTypes; track $index) {
-        <option [value]="item">{{ item }}</option>
-      }
-    </select>
-    @if (complaintForm.get('complaintType')?.touched && complaintForm.get('complaintType')?.invalid) {
-      <small>Debe seleccionar un tipo de solicitud.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="complaint-customer">Identificador del cliente</label>
+        <input id="complaint-customer" type="text" formControlName="customerId" placeholder="ID del cliente" />
+        @if (complaintForm.get('customerId')?.touched && complaintForm.get('customerId')?.invalid) {
+          <small class="error-message">Indique el usuario que reporta la novedad.</small>
+        }
+      </div>
 
-  <button type="submit" [disabled]="complaintForm.invalid">Registrar PQRS</button>
-</form>
+      <div class="form-group">
+        <label for="complaint-type">Tipo de solicitud</label>
+        <select id="complaint-type" formControlName="complaintType">
+          <option value="" disabled selected>Seleccione un tipo</option>
+          @for (item of complaintTypes; track $index) {
+            <option [value]="item">{{ item }}</option>
+          }
+        </select>
+        @if (complaintForm.get('complaintType')?.touched && complaintForm.get('complaintType')?.invalid) {
+          <small class="error-message">Debe seleccionar un tipo de solicitud.</small>
+        }
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="complaintForm.invalid">Registrar PQRS</button>
+  </form>
+</main>
