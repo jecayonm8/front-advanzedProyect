@@ -1,0 +1,151 @@
+.auth-callout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  padding: clamp(1.75rem, 4vw, 2.25rem);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(81, 70, 255, 0.12), rgba(255, 122, 69, 0.1));
+  border: 1px solid rgba(81, 70, 255, 0.15);
+  box-shadow: var(--shadow-xs);
+}
+
+.auth-callout__copy {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1 1 320px;
+}
+
+.auth-callout__copy h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.auth-callout__copy p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.auth-callout__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.section-heading {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.section-heading p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.places-grid {
+  margin-top: clamp(1.5rem, 4vw, 2rem);
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.place-card {
+  display: grid;
+  gap: 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.place-card:hover,
+.place-card:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.place-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.place-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-base);
+}
+
+.place-card:hover .place-card__media img,
+.place-card:focus-within .place-card__media img {
+  transform: scale(1.05);
+}
+
+.place-card__badge {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+}
+
+.place-card__body {
+  padding: 0 1.5rem 1.75rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.place-card__body h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.place-card__location {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.place-card__price {
+  margin: 0;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .auth-callout {
+    padding: clamp(1.25rem, 6vw, 1.75rem);
+  }
+
+  .auth-callout__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .auth-callout__actions .btn,
+  .auth-callout__actions .btn-secondary {
+    width: 100%;
+  }
+}

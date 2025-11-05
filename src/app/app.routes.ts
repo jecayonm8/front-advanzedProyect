@@ -6,6 +6,8 @@ import { CreatePlace } from './pages/create-place/create-place';
 import { CreateBooking } from './pages/create-booking/create-booking';
 import { CreateReview } from './pages/create-review/create-review';
 import { CreateComplaint } from './pages/create-complaint/create-complaint';
+import { MyPlaces } from './pages/my-places/my-places';
+import { Bookings } from './pages/bookings/bookings';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -15,6 +17,8 @@ export const routes: Routes = [
   { path: 'create-booking', component: CreateBooking },
   { path: 'create-review', component: CreateReview },
   { path: 'create-complaint', component: CreateComplaint },
+  { path: 'my-places', component: MyPlaces },
+  { path: 'bookings', component: Bookings },
   { path: "**", pathMatch: "full", redirectTo: "" }
 
 ];

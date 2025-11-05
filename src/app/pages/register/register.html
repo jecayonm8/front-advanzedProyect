@@ -1,7 +1,7 @@
 <main class="page page--narrow">
   <header class="page__heading">
     <h1 class="page__title">Crea tu cuenta</h1>
-    <p class="page__subtitle">Únete a la comunidad de anfitriones y publica tus alojamientos con respaldo Advanzed.</p>
+    <p class="page__subtitle">Únete a la comunidad de anfitriones y publica tus alojamientos.</p>
   </header>
 
   <form class="form-card" [formGroup]="registerForm" (ngSubmit)="createUser()" novalidate>
@@ -53,10 +53,16 @@
       </div>
 
       @if (registerForm.hasError('passwordsMismatch')) {
-        <p class="error-message form-group--full">Las contraseñas no coinciden</p>
-      }
+        <div class="alert alert-danger" role="alert">Las contraseñas no coinciden</div>
+        }  
     </div>
 
-    <button type="submit" [disabled]="registerForm.invalid">Registrarme</button>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-primary d-flex align-items-center justify-content-center gap-1" type="submit"
+            [disabled]="registerForm.invalid">
+            <span class="material-symbols-rounded"></span>
+            Registrarse
+        </button>
+    </div>
   </form>
 </main>

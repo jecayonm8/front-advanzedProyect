@@ -7,6 +7,6 @@ import { Component, signal } from '@angular/core';
   styleUrl: './footer.css',
 })
 export class Footer {
-  protected readonly footer = signal('Uniquindio')
+  protected readonly footer = signal('Universidad del Quindío - 2025')
 
 }
