@@ -1,25 +1,38 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
-  <div>
-    <label>Email:</label>
-    <input type="email" formControlName="email" />
-    @if (loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched) {
-      <p>El email es obligatorio</p>
-    }
-    @else if (loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched) {
-      <p>Ingrese un email válido</p>
-    }
-  </div>
+<main class="page page--narrow">
+  <header class="page__heading">
+    <h1 class="page__title">Inicia sesión</h1>
+    <p class="page__subtitle">Accede a tu panel de anfitrión para gestionar alojamientos, reservas y PQRS.</p>
+  </header>
 
-  <div>
-    <label>Contraseña:</label>
-    <input type="password" formControlName="password" />
-    @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
-      <p>La contraseña es obligatoria</p>
-    }
-    @if ((loginForm.get('password')?.hasError('minlength') || loginForm.get('password')?.hasError('maxlength')) && loginForm.get('password')?.touched) {
-      <p>La contraseña debe tener entre 7 y 10 caracteres</p>
-    }
-  </div>
+  <form class="form-card" [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+    <div class="form-card__grid">
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+        @if (loginForm.get('email')?.touched) {
+          @if (loginForm.get('email')?.hasError('required')) {
+            <small class="error-message">El email es obligatorio.</small>
+          }
+          @else if (loginForm.get('email')?.hasError('email')) {
+            <small class="error-message">Ingrese un email válido.</small>
+          }
+        }
+      </div>
 
-  <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>
-</form>
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" formControlName="password" placeholder="•••••••" />
+        @if (loginForm.get('password')?.touched) {
+          @if (loginForm.get('password')?.hasError('required')) {
+            <small class="error-message">La contraseña es obligatoria.</small>
+          }
+          @if (loginForm.get('password')?.hasError('minlength') || loginForm.get('password')?.hasError('maxlength')) {
+            <small class="error-message">La contraseña debe tener entre 7 y 10 caracteres.</small>
+          }
+        }
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>
+  </form>
+</main>

@@ -1,51 +1,60 @@
-<form [formGroup]="reviewForm" (ngSubmit)="createReview()" novalidate>
-  <div>
-    <label>Título:</label>
-    <input type="text" formControlName="title" />
-    @if (reviewForm.get('title')?.touched && reviewForm.get('title')?.invalid) {
-      <small>El título es obligatorio y máximo de 100 caracteres.</small>
-    }
-  </div>
+<main class="page page--narrow">
+  <header class="page__heading">
+    <h1 class="page__title">Crear reseña</h1>
+    <p class="page__subtitle">Comparte tu experiencia para ayudar a otros viajeros a tomar mejores decisiones.</p>
+  </header>
 
-  <div>
-    <label>Comentario:</label>
-    <textarea formControlName="message"></textarea>
-    @if (reviewForm.get('message')?.touched && reviewForm.get('message')?.invalid) {
-      <small>El comentario debe tener mínimo 20 caracteres.</small>
-    }
-  </div>
+  <form class="form-card" [formGroup]="reviewForm" (ngSubmit)="createReview()" novalidate>
+    <div class="form-card__grid">
+      <div class="form-group">
+        <label for="review-title">Título</label>
+        <input id="review-title" type="text" formControlName="title" placeholder="Una estadía inolvidable" />
+        @if (reviewForm.get('title')?.touched && reviewForm.get('title')?.invalid) {
+          <small class="error-message">El título es obligatorio y máximo de 100 caracteres.</small>
+        }
+      </div>
 
-  <div>
-    <label>Calificación (1 a 5):</label>
-    <input type="number" min="1" max="5" formControlName="rating" />
-    @if (reviewForm.get('rating')?.touched && reviewForm.get('rating')?.invalid) {
-      <small>Ingrese una calificación entre 1 y 5.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="review-message">Comentario</label>
+        <textarea id="review-message" formControlName="message" placeholder="Cuéntanos qué te gustó, qué mejorarías y cómo fue la atención"></textarea>
+        @if (reviewForm.get('message')?.touched && reviewForm.get('message')?.invalid) {
+          <small class="error-message">El comentario debe tener mínimo 20 caracteres.</small>
+        }
+      </div>
 
-  <div>
-    <label>Código del alojamiento:</label>
-    <input type="text" formControlName="accommodationCode" />
-    @if (reviewForm.get('accommodationCode')?.touched && reviewForm.get('accommodationCode')?.invalid) {
-      <small>El código del alojamiento es obligatorio.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="review-rating">Calificación (1 a 5)</label>
+        <input id="review-rating" type="number" min="1" max="5" formControlName="rating" />
+        @if (reviewForm.get('rating')?.touched && reviewForm.get('rating')?.invalid) {
+          <small class="error-message">Ingrese una calificación entre 1 y 5.</small>
+        }
+      </div>
 
-  <div>
-    <label>Código de la reserva:</label>
-    <input type="text" formControlName="reservationCode" />
-    @if (reviewForm.get('reservationCode')?.touched && reviewForm.get('reservationCode')?.invalid) {
-      <small>El código de la reserva es obligatorio.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="review-accommodation">Código del alojamiento</label>
+        <input id="review-accommodation" type="text" formControlName="accommodationCode" placeholder="ID del alojamiento" />
+        @if (reviewForm.get('accommodationCode')?.touched && reviewForm.get('accommodationCode')?.invalid) {
+          <small class="error-message">El código del alojamiento es obligatorio.</small>
+        }
+      </div>
 
-  <div>
-    <label>Identificador del autor:</label>
-    <input type="text" formControlName="authorId" />
-    @if (reviewForm.get('authorId')?.touched && reviewForm.get('authorId')?.invalid) {
-      <small>Debe indicar el usuario que realiza la reseña.</small>
-    }
-  </div>
+      <div class="form-group">
+        <label for="review-reservation">Código de la reserva</label>
+        <input id="review-reservation" type="text" formControlName="reservationCode" placeholder="ID de la reserva" />
+        @if (reviewForm.get('reservationCode')?.touched && reviewForm.get('reservationCode')?.invalid) {
+          <small class="error-message">El código de la reserva es obligatorio.</small>
+        }
+      </div>
 
-  <button type="submit" [disabled]="reviewForm.invalid">Publicar reseña</button>
-</form>
+      <div class="form-group">
+        <label for="review-author">Identificador del autor</label>
+        <input id="review-author" type="text" formControlName="authorId" placeholder="ID del usuario" />
+        @if (reviewForm.get('authorId')?.touched && reviewForm.get('authorId')?.invalid) {
+          <small class="error-message">Debe indicar el usuario que realiza la reseña.</small>
+        }
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="reviewForm.invalid">Publicar reseña</button>
+  </form>
+</main>
