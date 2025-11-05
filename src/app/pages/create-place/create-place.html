@@ -21,16 +21,16 @@
         <input id="place-price" type="number" formControlName="price" min="0" placeholder="0" />
       </div>
 
-      <div class="form-group">
-        <label for="place-type">Tipo de alojamiento</label>
-        <select id="place-type" formControlName="accommodationType">
-          <option value="" disabled selected>Seleccione un tipo de alojamiento</option>
-          @for (item of accommodationTypes; track $index) {
-            <option [value]="item">{{ item }}</option>
-          }
-        </select>
-      </div>
-
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Tipo: </label>
+            <select class="form-select" formControlName="accommodationType">
+                <option value="" disabled selected>Seleccione un tipo de alojamiento</option>
+                @for (item of accommodationTypes; track $index) {
+                    <option value="{{item}}">{{item}}</option>
+                }
+            </select>
+        </div>
+        
       <div class="form-group">
         <label for="place-capacity">Capacidad de huéspedes</label>
         <input id="place-capacity" type="number" formControlName="capacity" min="1" placeholder="2" />
@@ -46,15 +46,15 @@
         <input id="place-department" type="text" formControlName="department" placeholder="Quindío" />
       </div>
 
-      <div class="form-group">
-        <label for="place-city">Ciudad</label>
-        <select id="place-city" formControlName="city">
-          <option value="" disabled selected>Seleccione una ciudad</option>
-          @for (item of cities; track $index) {
-            <option [value]="item">{{ item }}</option>
-          }
-        </select>
-      </div>
+        <div class="col-12 col-sm-6">
+            <label class="form-label">Ciudad: </label>
+            <select class="form-select" formControlName="city">
+                <option value="" disabled selected>Seleccione una ciudad</option>
+                @for (item of cities; track $index) {
+                    <option value="{{item}}">{{item}}</option>
+                }
+            </select>
+        </div>
 
       <div class="form-group">
         <label for="place-neighborhood">Barrio</label>

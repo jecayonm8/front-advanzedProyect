@@ -1,0 +1,67 @@
+<main class="page">
+  <header class="page__heading">
+    <h1 class="page__title">Tus alojamientos</h1>
+    <p class="page__subtitle">
+      Inspírate con algunos espacios destacados y crea tu propio anuncio cuando estés listo.
+    </p>
+  </header>
+
+  <section class="auth-callout">
+    <div class="auth-callout__copy">
+      <span class="icon-badge icon-badge--accent" aria-hidden="true">
+        <svg viewBox="0 0 32 32" focusable="false">
+          <path
+            d="m12 14 4 4 8-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+          <path
+            d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.8"
+          />
+        </svg>
+      </span>
+      <div>
+        <h2>¿Listo para publicar un alojamiento?</h2>
+        <p>
+          Inicia sesión o crea una cuenta para registrar tu propiedad, gestionar reservas y acceder a
+          herramientas exclusivas para anfitriones.
+        </p>
+      </div>
+    </div>
+    <div class="auth-callout__actions">
+      <button routerLink="/login" class="btn btn-outline-dark me-2">Login</button>
+      <button routerLink="/register" class="btn btn-outline-dark">Crear cuenta</button>
+    </div>
+  </section>
+
+  <section class="places-showcase">
+    <div class="section-heading">
+      <h2>Inspírate con alojamientos destacados</h2>
+      <p>Explora estilos y amenities que conquistan a los viajeros.</p>
+    </div>
+
+    <div class="places-grid">
+      @for (place of samplePlaces; track place.title) {
+        <article class="place-card">
+          <div class="place-card__media">
+            <img [src]="place.imageUrl" [alt]="place.title" loading="lazy" />
+            <span class="place-card__badge">{{ place.type }}</span>
+          </div>
+          <div class="place-card__body">
+            <h3>{{ place.title }}</h3>
+            <p class="place-card__location">{{ place.location }}</p>
+            <p class="place-card__price">{{ place.price }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</main>
