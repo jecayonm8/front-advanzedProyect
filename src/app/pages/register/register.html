@@ -1,60 +1,62 @@
-<div class="container pt-5 pb-5">
-    <h5 class="mb-0 d-flex align-items-center">
-        <span class="material-symbols-rounded filled fs-1 me-3">account_circle</span>
-        Crear cuenta
-    </h5>
-    <hr />
-    <div class="card-body">
-        <form class="row g-3" [formGroup]="registerForm" (ngSubmit)="createUser()" novalidate="">
-            <!-- Todo lo demás que va dentro del form -->
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Nombre: </label>
-                <input class="form-control" type="text" formControlName="name" />
-            </div>
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Teléfono: </label>
-                <input class="form-control" type="text" formControlName="phone" />
-            </div>
+<main class="page page--narrow">
+  <header class="page__heading">
+    <h1 class="page__title">Crea tu cuenta</h1>
+    <p class="page__subtitle">Únete a la comunidad de anfitriones y publica tus alojamientos con respaldo Advanzed.</p>
+  </header>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Ciudad: </label>
-                <select class="form-select" formControlName="city">
-                    <option value="">Seleccione una ciudad</option>
-                    @for (city of cities; track city) {
-                    <option [value]="city">{{ city }}</option>
-                    }
-                </select>
-            </div>
+  <form class="form-card" [formGroup]="registerForm" (ngSubmit)="createUser()" novalidate>
+    <div class="form-card__grid form-card__grid--two-columns">
+      <div class="form-group">
+        <label for="register-name">Nombre</label>
+        <input id="register-name" type="text" formControlName="name" placeholder="Tu nombre completo" />
+      </div>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Foto de perfil: </label>
-                <input class="form-control" type="file" formControlName="photoUrl" (change)="onFileChange($event)" />
-            </div>
+      <div class="form-group">
+        <label for="register-phone">Teléfono</label>
+        <input id="register-phone" type="text" formControlName="phone" placeholder="300 000 0000" />
+      </div>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Fecha de nacimiento: </label>
-                <input class="form-control" type="date" formControlName="dateBirth" />
-            </div>
+      <div class="form-group">
+        <label for="register-city">Ciudad</label>
+        <select id="register-city" formControlName="city">
+          <option value="">Seleccione una ciudad</option>
+          @for (city of cities; track city) {
+            <option [value]="city">{{ city }}</option>
+          }
+        </select>
+      </div>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Email: </label>
-                <input class="form-control" type="email" formControlName="email" />
-            </div>
+      <div class="form-group">
+        <label for="register-photo">Foto de perfil</label>
+        <input id="register-photo" type="file" formControlName="photoUrl" (change)="onFileChange($event)" />
+        <small class="form-helper">Formatos permitidos: JPG o PNG (máx. 5MB)</small>
+      </div>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Contraseña: </label>
-                <input class="form-control" type="password" formControlName="password" />
-            </div>
+      <div class="form-group">
+        <label for="register-birth">Fecha de nacimiento</label>
+        <input id="register-birth" type="date" formControlName="dateBirth" />
+      </div>
 
-            <div class="col-12 col-sm-6">
-                <label class="form-label">Repetir contraseña: </label>
-                <input class="form-control" type="password" formControlName="repeatPassword" />
-            </div>
-            @if (registerForm.hasError('passwordsMismatch')) {
-            <p>Las contraseñas no coinciden</p>
-            }
+      <div class="form-group">
+        <label for="register-email">Email</label>
+        <input id="register-email" type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+      </div>
 
-            <button type="submit" [disabled]="registerForm.invalid">Registrarse</button>
-        </form>
+      <div class="form-group">
+        <label for="register-password">Contraseña</label>
+        <input id="register-password" type="password" formControlName="password" placeholder="••••••" />
+      </div>
+
+      <div class="form-group">
+        <label for="register-repeat-password">Repetir contraseña</label>
+        <input id="register-repeat-password" type="password" formControlName="repeatPassword" placeholder="••••••" />
+      </div>
+
+      @if (registerForm.hasError('passwordsMismatch')) {
+        <p class="error-message form-group--full">Las contraseñas no coinciden</p>
+      }
     </div>
-</div>
+
+    <button type="submit" [disabled]="registerForm.invalid">Registrarme</button>
+  </form>
+</main>
