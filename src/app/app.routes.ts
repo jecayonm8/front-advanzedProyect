@@ -9,8 +9,11 @@ import { CreateComplaint } from './pages/create-complaint/create-complaint';
 import { MyPlaces } from './pages/my-places/my-places';
 import { Bookings } from './pages/bookings/bookings';
 import { UpdateProfile } from './pages/update-profile/update-profile';
+<<<<<<< HEAD
 import { UpdatePlace } from './pages/update-place/update-place';
 import { ChangePassword } from './pages/change-password/change-password';
+=======
+>>>>>>> origin/main
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -23,8 +26,11 @@ export const routes: Routes = [
   { path: 'my-places', component: MyPlaces },
   { path: 'bookings', component: Bookings },
   { path: 'update-profile', component: UpdateProfile },
+<<<<<<< HEAD
   { path: 'update-place', component: UpdatePlace},
   { path: 'change-password', component: ChangePassword},
+=======
+>>>>>>> origin/main
   { path: "**", pathMatch: "full", redirectTo: "" }
 
 
