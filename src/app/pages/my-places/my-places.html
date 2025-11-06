@@ -1,31 +1,77 @@
 <main class="page">
-  <header class="page__heading">
+  <header class="page__heading text-center mx-auto">
     <h1 class="page__title">Tus alojamientos</h1>
     <p class="page__subtitle">
       Inspírate con algunos espacios destacados y crea tu propio anuncio cuando estés listo.
     </p>
   </header>
 
+  <!-- Sección de Gestión de Alojamientos -->
+  <div class="container pt-5 pb-5">
+    <h5 class="mb-0 d-flex align-items-center">
+      <span class="material-symbols-rounded fs-2 me-3" aria-hidden="true">apartment</span>
+      Gestión de alojamientos
+    </h5>
+    <hr />
+
+    <div class="card-body">
+      <div class="mb-3">
+        <button type="button" routerLink="/create-place"
+          class="btn btn-success d-flex align-items-center justify-content-center gap-1">
+          <span class="material-symbols-rounded me-1" aria-hidden="true">add</span>
+          Crear nuevo
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle table-striped table-hover mb-0">
+          <thead class="text-center">
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Imagen</th>
+              <th scope="col">Ciudad</th>
+              <th scope="col">Precio por noche</th>
+              <th scope="col">Calificación promedio</th>
+              <th scope="col" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-group-divider">
+            @for (item of places; track $index) {
+            <tr>
+              <td class="fw-semibold">{{ item.title }}</td>
+              <td class="text-center">
+                <img
+                  [src]="item.photo_url"
+                  [alt]="item.title"
+                  class="img-thumbnail rounded"
+                  style="width: 90px; height: 60px; object-fit: cover;"
+                  loading="lazy"
+                />
+              </td>
+              <td>{{ item.city }}</td>
+              <td>{{ item.price | currency:'COP':'symbol':'1.0-0' }}</td>
+              <td>{{ item.average_rating | number:'1.0-1' }}</td>
+              <td class="text-center">
+                <span class="text-muted fst-italic">Próximamente</span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de Auth Callout -->
   <section class="auth-callout">
     <div class="auth-callout__copy">
       <span class="icon-badge icon-badge--accent" aria-hidden="true">
         <svg viewBox="0 0 32 32" focusable="false">
-          <path
-            d="m12 14 4 4 8-8"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-          />
-          <path
-            d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12Z"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.8"
-          />
+          <path d="m12 14 4 4 8-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+            stroke-width="2" />
+          <path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12Z" fill="none"
+            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
         </svg>
       </span>
       <div>
@@ -42,6 +88,7 @@
     </div>
   </section>
 
+  <!-- Sección de Places Showcase -->
   <section class="places-showcase">
     <div class="section-heading">
       <h2>Inspírate con alojamientos destacados</h2>
@@ -50,17 +97,22 @@
 
     <div class="places-grid">
       @for (place of samplePlaces; track place.title) {
-        <article class="place-card">
-          <div class="place-card__media">
-            <img [src]="place.imageUrl" [alt]="place.title" loading="lazy" />
-            <span class="place-card__badge">{{ place.type }}</span>
-          </div>
-          <div class="place-card__body">
-            <h3>{{ place.title }}</h3>
-            <p class="place-card__location">{{ place.location }}</p>
-            <p class="place-card__price">{{ place.price }}</p>
-          </div>
-        </article>
+      <article class="place-card">
+        <div class="place-card__media">
+          <img
+            [src]="place.photo_url"
+            [alt]="place.title"
+            loading="lazy"
+            class="img-fluid"
+          />
+          <span class="place-card__badge">{{ place.type }}</span>
+        </div>
+        <div class="place-card__body">
+          <h3>{{ place.title }}</h3>
+          <p class="place-card__location">{{ place.location }}</p>
+          <p class="place-card__price">{{ place.price | currency:'COP':'symbol':'1.0-0' }}</p>
+        </div>
+      </article>
       }
     </div>
   </section>

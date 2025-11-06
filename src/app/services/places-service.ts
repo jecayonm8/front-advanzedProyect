@@ -6,8 +6,8 @@ import { AccommodationDTO, CreateAccommodationDTO } from '../models/place-dto';
 })
 export class PlacesService {
   private places: AccommodationDTO[];
-  
-  constructor(){
+
+  constructor() {
     this.places = this.createTestPlaces();
   }
 

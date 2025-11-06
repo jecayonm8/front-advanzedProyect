@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AccommodationDTO, AccommodationType } from '../../models/place-dto';
+import { PlacesService } from '../../services/places-service';
 
 type SamplePlace = {
+  id: number;
   title: string;
   location: string;
-  type: string;
-  price: string;
-  imageUrl: string;
+  type: AccommodationType;
+  average_rating: number;
+  price: number;
+  photo_url: string;
 };
 
 @Component({
@@ -17,34 +21,48 @@ type SamplePlace = {
   styleUrl: './my-places.css',
 })
 export class MyPlaces {
+
+  places: AccommodationDTO[];
+
+  constructor(private placesService: PlacesService) {
+    this.places = this.placesService.getAll();
+  }
   protected readonly samplePlaces: SamplePlace[] = [
     {
-      title: 'Loft creativo en Medellín',
+      id: 1,
+      title: 'Apartamento creativo en Medellín',
       location: 'El Poblado · Medellín, Colombia',
-      type: 'Loft urbano',
-      price: 'Desde $280.000 COP / noche',
-      imageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      type: 'APARTMENT',
+      average_rating: 4.8,
+      price: 280000,
+      photo_url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
     },
     {
+      id: 2,
       title: 'Casa campestre familiar',
       location: 'Filandia · Quindío, Colombia',
-      type: 'Casa rural',
-      price: 'Desde $430.000 COP / noche',
-      imageUrl: 'https://images.unsplash.com/photo-1469796466635-455ede028aca?auto=format&fit=crop&w=800&q=80',
+      type: 'HOUSE',
+      average_rating: 4.5,
+      price: 430000,
+      photo_url: 'https://images.unsplash.com/photo-1469796466635-455ede028aca?auto=format&fit=crop&w=800&q=80',
     },
     {
+      id: 3,
       title: 'Apartamento frente al mar',
       location: 'Bocagrande · Cartagena, Colombia',
-      type: 'Apto. premium',
-      price: 'Desde $520.000 COP / noche',
-      imageUrl: 'https://images.unsplash.com/photo-1505692794403-34d4982d721d?auto=format&fit=crop&w=800&q=80',
+      type: 'APARTMENT',
+      average_rating: 4.7,
+      price: 520000,
+      photo_url: 'https://unsplash.com/es/fotos/un-cuerpo-de-agua-con-un-monton-de-edificios-altos-en-el-fondo-cUjomI4gS40',
     },
     {
-      title: 'Cabin retreat',
+      id: 4,
+      title: 'Finca de descanso en Guatavita',
       location: 'Guatavita · Cundinamarca, Colombia',
-      type: 'Cabaña boutique',
-      price: 'Desde $360.000 COP / noche',
-      imageUrl: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
+      type: 'FARM',
+      average_rating: 4.9,
+      price: 360000,
+      photo_url: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
     },
   ];
 }
