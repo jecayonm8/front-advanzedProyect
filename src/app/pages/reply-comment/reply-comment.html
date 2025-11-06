@@ -1,0 +1,22 @@
+<main class="page">
+  <header class="page__heading">
+    <h1 class="page__title">Responder comentario</h1>
+    <p class="page__subtitle">Escribe tu respuesta al comentario.</p>
+  </header>
+
+  <form class="form-card" [formGroup]="replyForm" (ngSubmit)="submitReply()" novalidate>
+    <div class="form-card__grid form-card__grid--two-columns">
+      <div class="form-group form-group--full">
+        <label for="reply-content">Respuesta</label>
+        <textarea id="reply-content" formControlName="content" placeholder="Escribe tu respuesta aquí..." rows="5"></textarea>
+        <div *ngIf="replyForm.get('content')?.invalid && replyForm.get('content')?.touched">
+          <small class="form-error" *ngIf="replyForm.get('content')?.errors?.['required']">La respuesta es requerida.</small>
+          <small class="form-error" *ngIf="replyForm.get('content')?.errors?.['minlength']">La respuesta debe tener al menos 10 caracteres.</small>
+          <small class="form-error" *ngIf="replyForm.get('content')?.errors?.['maxlength']">La respuesta no puede exceder 500 caracteres.</small>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="replyForm.invalid">Enviar respuesta</button>
+  </form>
+</main>
