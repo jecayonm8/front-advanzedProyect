@@ -1,0 +1,69 @@
+<FORM> [FormGroup] = "registerForm" (ngSubmit)="updatePlace()" novalidate="">
+    <div>
+        <label>Titulo</label>
+        <input type="text" formControlName="title" />
+    </div>
+
+    <div>
+        <label>Descripcion </label>
+        <input type="text" formControlName="description"/>
+    </div>
+
+    <div>
+        <label>Capacidad de huespedes</label> 
+        <input type="number" formControlName="capacity"/>
+    </div>
+
+    <div>
+        <label>Precio por noche</label>
+        <input type="number" formControlName="price"/>
+    </div>
+
+    <div>
+        <label>País</label>
+        <input type="text" formControlName="country"/>
+    </div>
+
+    <div>
+        <label>Departamento</label>
+        <input type="text" formControlName="department"/>
+    </div>
+
+    <div>
+        <label>Ciudad</label>
+        <input type="text" formControlName="city"/>
+    </div>
+
+    <div>
+        <label>Barrio</label>
+        <input type="text" formControlName="neighborhood" />
+    </div>
+
+    <div>
+        <label>Código postal</label>
+        <input type="text" formControlName="postalCode"/>
+    </div>
+
+    <div>
+        <label>Imágenes del alojamiento</label>
+        <input type="file" multiple (change)="onFileChange($event)" />
+    </div>
+
+    /* pendiente */
+    <div class="form-group form-group--full">
+        <label>Servicios</label>
+      </div>
+
+      <div>
+        <label>Tipo de alojamiento</label>
+        <select formControlName="accommodationType">
+            <option value="" disabled selected>Seleccione una opción</option>
+            @for (item of types; track $index) {
+                <option value="{{item}}">{{item}}</option>
+        }
+        </select>
+      </div>
+
+      <button type="submit" [disabled]="updatePlaceForm.invalid">Actualizar alojamiento</button>
+
+</FORM>
