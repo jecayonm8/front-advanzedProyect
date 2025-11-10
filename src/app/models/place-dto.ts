@@ -43,15 +43,17 @@ export interface CreateAccommodationDTO {
   longitude: number;
 }
 export interface AccommodationDetailDTO {
-  id: number;  // Agregado
+  id: number;
   title: string;
+  description: string;
   price: number;
-  photoUrl: string;
-  average_rating: number;
-  city: string;
-  latitude: number;  // Agregado
-  longitude: number;  // Agregado
-  images: string[];  // Agregado (array de URLs)
+  capacity: number;
+  averageRating: number;
+  latitude: number;
+  longitude: number;
+  picsUrl: string[];
+  amenities: Amenities[];
+  userDetailDTO: UserDetailDTO;
 }
 
 export interface UpdateAccommodationDTO {
@@ -87,12 +89,17 @@ export interface AddressDTO{
     address: string;
     location: LocationDTO;
 }
-
 export interface LocationDTO{
-    latitude: number;
-    longitude: number;
+     latitude: number;
+     longitude: number;
+ }
+
+export interface UserDetailDTO {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  profileImage?: string;
 }
-
-
 
 

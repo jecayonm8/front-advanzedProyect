@@ -1,1 +1,157 @@
-<p>{{place | json}}</p>
+<main class="page">
+  <div class="container py-5" *ngIf="place">
+    <!-- Botón de navegación -->
+    <div class="mb-4">
+      <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
+        <span class="material-symbols-rounded me-2">arrow_back</span>
+        Volver a mis alojamientos
+      </button>
+    </div>
+
+    <!-- Título y precio -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-start flex-wrap">
+          <div>
+            <h1 class="display-5 fw-bold mb-2">{{ place.title }}</h1>
+            <div class="d-flex align-items-center mb-3">
+              <!-- Rating con estrellas -->
+              <div class="rating-stars me-2">
+                <span *ngFor="let star of getStars(place.averageRating)"
+                      class="material-symbols-rounded star"
+                      [class.filled]="star === 1"
+                      [class.half]="star === 0.5">
+                  {{ star === 0.5 ? 'star_half' : 'star' }}
+                </span>
+              </div>
+              <span class="fw-semibold">{{ place.averageRating }}/5</span>
+            </div>
+          </div>
+          <div class="text-end">
+            <div class="h2 text-primary fw-bold mb-0">
+              {{ place.price | currency:'COP':'symbol':'1.0-0' }}
+            </div>
+            <small class="text-muted">por noche</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Galería de imágenes -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="image-gallery">
+          <div class="main-image-container">
+            <img [src]="place.picsUrl[currentImageIndex]"
+                 [alt]="place.title"
+                 class="main-image img-fluid rounded"
+                 loading="lazy">
+
+            <!-- Controles del carrusel -->
+            <button class="carousel-control prev" (click)="prevImage()" *ngIf="place.picsUrl.length > 1">
+              <span class="material-symbols-rounded">chevron_left</span>
+            </button>
+            <button class="carousel-control next" (click)="nextImage()" *ngIf="place.picsUrl.length > 1">
+              <span class="material-symbols-rounded">chevron_right</span>
+            </button>
+          </div>
+
+          <!-- Miniaturas -->
+          <div class="thumbnails" *ngIf="place.picsUrl.length > 1">
+            <div class="thumbnail-item"
+                 *ngFor="let image of place.picsUrl; let i = index"
+                 [class.active]="i === currentImageIndex"
+                 (click)="goToImage(i)">
+              <img [src]="image" [alt]="'Imagen ' + (i + 1)" class="thumbnail-image">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="row">
+      <!-- Información principal -->
+      <div class="col-lg-8 mb-4">
+        <!-- Descripción -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title mb-3">Descripción</h3>
+            <p class="card-text">{{ place.description }}</p>
+          </div>
+        </div>
+
+        <!-- Comodidades -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h3 class="card-title mb-3">Comodidades</h3>
+            <div class="amenities-grid">
+              <div class="amenity-item" *ngFor="let amenity of place.amenities">
+                <span class="material-symbols-rounded amenity-icon">check_circle</span>
+                <span class="amenity-text">{{ getAmenityLabel(amenity) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalles adicionales -->
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title mb-3">Detalles del alojamiento</h3>
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="material-symbols-rounded detail-icon">group</span>
+                <div>
+                  <div class="fw-semibold">Capacidad</div>
+                  <small class="text-muted">{{ place.capacity }} personas</small>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-symbols-rounded detail-icon">location_on</span>
+                <div>
+                  <div class="fw-semibold">Ubicación</div>
+                  <small class="text-muted">{{ place.latitude }}, {{ place.longitude }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del propietario -->
+      <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+          <div class="card-body">
+            <h4 class="card-title mb-3">Propietario</h4>
+            <div class="host-info">
+              <div class="host-avatar mb-3">
+                <img [src]="place.userDetailDTO.profileImage || '/assets/img/fallback.svg'"
+                     [alt]="place.userDetailDTO.name"
+                     class="host-image rounded-circle">
+              </div>
+              <h5 class="host-name mb-2">{{ place.userDetailDTO.name }}</h5>
+              <div class="host-details">
+                <div class="mb-2">
+                  <span class="material-symbols-rounded me-2">email</span>
+                  <small>{{ place.userDetailDTO.email }}</small>
+                </div>
+                <div *ngIf="place.userDetailDTO.phone" class="mb-2">
+                  <span class="material-symbols-rounded me-2">phone</span>
+                  <small>{{ place.userDetailDTO.phone }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="container py-5 text-center" *ngIf="!place">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3">Cargando detalles del alojamiento...</p>
+  </div>
+</main>
