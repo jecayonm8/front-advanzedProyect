@@ -1,9 +1,12 @@
 export interface AccommodationDTO {
+  id: string;
   title: string;
   price: number;
   photo_url: string;
   average_rating: number;
   city: string;
+  latitude: number;
+  longitude: number;
 }
 
 export type AccommodationType =
@@ -39,3 +42,41 @@ export interface CreateAccommodationDTO {
   latitude: number;
   longitude: number;
 }
+export interface AccommodationDetailDTO {
+  id: number;  // Agregado
+  title: string;
+  price: number;
+  photoUrl: string;  
+  average_rating: number;
+  city: string;
+  latitude: number;  // Agregado
+  longitude: number;  // Agregado
+  images: string[];  // Agregado (array de URLs)
+}
+
+export interface PlaceDTO {
+    id: number;
+    title: string;
+    description: string;
+    images: string[];
+    services: string[];
+    maxGuests: number;
+    pricePerNight: number;
+    hostId: string;
+    address: AddressDTO;
+}
+
+export interface AddressDTO{
+    city: string;
+    address: string;
+    location: LocationDTO;
+}
+
+export interface LocationDTO{
+    latitude: number;
+    longitude: number;
+}
+
+
+
+

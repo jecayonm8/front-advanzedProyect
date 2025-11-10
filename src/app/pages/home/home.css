@@ -10,6 +10,11 @@
   gap: 1.25rem;
 }
 
+#map {
+    width: 100vw;
+    height: 100vh;
+}
+
 .hero__eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
