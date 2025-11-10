@@ -53,18 +53,21 @@
               <td>{{ item.price | currency:'COP':'symbol':'1.0-0' }}</td>
               <td>{{ item.average_rating | number:'1.0-1' }}</td>
               <td class="text-center">
-                <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-sm btn-outline-primary"
-                          (click)="editPlace(item)"
-                          title="Editar alojamiento">
-                    <span class="material-symbols-rounded fs-6">edit</span>
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-danger"
-                          (click)="deletePlace(item)"
-                          title="Eliminar alojamiento">
-                    <span class="material-symbols-rounded fs-6">delete</span>
-                  </button>
-                </div>
+                <!-- Botón Ver -->
+                <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-icon me-1"
+                    title="Ver detalle">
+                    <span class="material-symbols-rounded">visibility</span>
+                </a>
+
+                <!-- Botón Editar -->
+                <button routerLink="/edit-place/{{item.id}}" type="button" class="btn btn-outline-success btn-icon me-1" title="Editar">
+                    <span class="material-symbols-rounded">edit</span>
+                </button>
+
+                <!-- Botón Eliminar -->
+                <button (click)="onDelete(item.id)" type="button" class="btn btn-outline-danger btn-icon" title="Eliminar" >
+                    <span class="material-symbols-rounded">delete</span>
+                </button>
               </td>
             </tr>
             }
