@@ -1,4 +1,5 @@
 export interface AccommodationDTO {
+  id: string;
   title: string;
   price: number;
   photo_url: string;
