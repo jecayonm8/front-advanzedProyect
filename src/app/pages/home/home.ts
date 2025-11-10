@@ -1,42 +1,43 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { MapService } from '../../services/map-service';
-import { RouterModule } from '@angular/router';
 import { PlacesService } from '../../services/places-service';
-import { MarkerDTO } from '../../models/marker-dto';
-import { AccommodationDTO, CreateAccommodationDTO } from '../../models/place-dto';
+import { AccommodationDTO } from '../../models/place-dto';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterModule],
+  imports: [CommonModule],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrls: ['./home.css']
 })
 export class Home implements OnInit {
+  places: AccommodationDTO[] = [];
+  currentIndex = 0;
 
-  // Se inyecta el servicio de mapa en el constructor del componente
-  constructor(private mapService: MapService, private placesService: PlacesService) { }
+  constructor(private placesService: PlacesService) {}
 
   ngOnInit(): void {
-    this.mapService.create();
-    // Obtiene todos los alojamientos del backend
-    this.placesService.getAll().subscribe((places: AccommodationDTO[]) => {
-      // Mapea los alojamientos a marcadores y los dibuja en el mapa
-      const markers = this.mapItemToMarker(places);
-      // Dibuja los marcadores en el mapa
-      this.mapService.drawMarkers(markers);
+    this.placesService.getAll().subscribe(places => {
+      this.places = places;
+      this.currentIndex = this.places.length ? 0 : -1;
     });
   }
 
-  public mapItemToMarker(places: AccommodationDTO[]): MarkerDTO[] {
-    return places.map((item) => ({
-      id: item.id,
-      title: item.title,
-      price: item.price,
-      photoUrl: item.photo_url || '',
-      average_rating: item.average_rating,
-      city: item.city,
-      latitude: item.latitude,
-      longitude: item.longitude,
-    }));
+  trackById(_: number, item: AccommodationDTO) {
+    return item.title; // si tienes id, usa item.id
+  }
+
+  prev() {
+    if (!this.places?.length) return;
+    this.currentIndex = (this.currentIndex - 1 + this.places.length) % this.places.length;
+  }
+
+  next() {
+    if (!this.places?.length) return;
+    this.currentIndex = (this.currentIndex + 1) % this.places.length;
+  }
+
+  goTo(index: number) {
+    if (!this.places?.length) return;
+    this.currentIndex = index;
   }
 }

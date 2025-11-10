@@ -1,5 +1,8 @@
-import { Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PlacesService } from '../../services/places-service';
+import { AccommodationDTO } from '../../models/place-dto';
 
 @Component ({
     selector: 'app-update-place',
@@ -8,14 +11,41 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
     styleUrl: './update-place.css'
 })
 
-export class UpdatePlace{
+export class UpdatePlace implements OnInit {
 
     types: String[];
-    updatePlaceForm!: FormGroup
+    updatePlaceForm!: FormGroup;
+    placeId: string | null = null;
 
-    constructor(private formBuilder: FormBuilder){
+    constructor(
+        private formBuilder: FormBuilder,
+        private placesService: PlacesService,
+        private route: ActivatedRoute,
+        private router: Router
+    ){
         this.createForm();
         this.types = ['HOUSE', 'APARTMENT', 'FARM'];
+    }
+
+    ngOnInit(): void {
+        this.route.queryParams.subscribe(params => {
+            this.placeId = params['id'] || null;
+            if (this.placeId) {
+                this.loadPlaceData(this.placeId);
+            }
+        });
+    }
+
+    private loadPlaceData(id: string): void {
+        const place = this.placesService.getAllSync().find(p => p.id === id);
+        if (place) {
+            this.updatePlaceForm.patchValue({
+                title: place.title,
+                price: place.price,
+                city: place.city
+                // Agregar otros campos según sea necesario
+            });
+        }
     }
 
     private createForm(){
@@ -38,7 +68,23 @@ export class UpdatePlace{
     }
 
     public updatePlace(){
-        console.log(this.updatePlaceForm.value)
+        if (this.updatePlaceForm.valid && this.placeId) {
+            const formValue = this.updatePlaceForm.value;
+            this.placesService.update(this.placeId, {
+                title: formValue.title,
+                price: formValue.price,
+                city: formValue.city
+                // Agregar otros campos según sea necesario
+            }).subscribe({
+                next: () => {
+                    this.router.navigate(['/my-places']);
+                },
+                error: (error) => {
+                    console.error('Error al actualizar alojamiento:', error);
+                    alert('Error al actualizar el alojamiento');
+                }
+            });
+        }
     }
 
     public onFileChange(event: Event) {

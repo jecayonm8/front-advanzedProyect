@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { AccommodationDTO, CreateAccommodationDTO } from '../models/place-dto';
 
@@ -7,22 +7,64 @@ import { AccommodationDTO, CreateAccommodationDTO } from '../models/place-dto';
   providedIn: 'root'
 })
 export class PlacesService {
-  private apiUrl = 'http://localhost:8080/api/accommodations'; // Ajusta la URL de tu backend
+  private apiUrl = 'http://localhost:8080/api/accommodations';
+  private places: AccommodationDTO[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // Inicializar con datos de prueba para desarrollo
+    this.places = this.createTestPlaces();
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
 
   public getAll(): Observable<AccommodationDTO[]> {
-    // Para desarrollo, usa datos de prueba si el backend no está disponible
-    // return this.http.get<AccommodationDTO[]>(this.apiUrl);
-    return of(this.createTestPlaces());
+    // Por ahora devolver datos locales, pero en producción usar:
+    // return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/1`, {
+    //   headers: this.getAuthHeaders(),
+    //   params: { page: '0' }
+    // });
+    return of(this.places);
   }
 
-  public save(newPlace: CreateAccommodationDTO): Observable<any> {
-    return this.http.post(this.apiUrl, newPlace);
+  public getAllSync(): AccommodationDTO[] {
+    return this.places;
   }
 
-  public delete(placeId: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${placeId}`);
+  public save(newPlace: CreateAccommodationDTO): Observable<string> {
+    return this.http.post<string>(this.apiUrl, newPlace, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  public update(id: string, updatedPlace: Partial<AccommodationDTO>): Observable<string> {
+    // Por ahora usar actualización local, después activar HTTP:
+    // return this.http.put<string>(`${this.apiUrl}/${id}`, updatedPlace, {
+    //   headers: this.getAuthHeaders()
+    // });
+
+    // Actualización local para desarrollo
+    const index = this.places.findIndex(place => place.id === id);
+    if (index !== -1) {
+      this.places[index] = { ...this.places[index], ...updatedPlace };
+    }
+    return of('Alojamiento actualizado exitosamente');
+  }
+
+  public delete(id: string): Observable<string> {
+    // Por ahora usar eliminación local, después activar HTTP:
+    // return this.http.delete<string>(`${this.apiUrl}/${id}`, {
+    //   headers: this.getAuthHeaders()
+    // });
+
+    // Eliminación local para desarrollo
+    this.places = this.places.filter(place => place.id !== id);
+    return of('Alojamiento eliminado exitosamente');
   }
 
   private createTestPlaces(): AccommodationDTO[] {
