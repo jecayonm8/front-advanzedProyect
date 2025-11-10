@@ -53,7 +53,18 @@
               <td>{{ item.price | currency:'COP':'symbol':'1.0-0' }}</td>
               <td>{{ item.average_rating | number:'1.0-1' }}</td>
               <td class="text-center">
-                <span class="text-muted fst-italic">Próximamente</span>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                          (click)="editPlace(item)"
+                          title="Editar alojamiento">
+                    <span class="material-symbols-rounded fs-6">edit</span>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                          (click)="deletePlace(item)"
+                          title="Eliminar alojamiento">
+                    <span class="material-symbols-rounded fs-6">delete</span>
+                  </button>
+                </div>
               </td>
             </tr>
             }

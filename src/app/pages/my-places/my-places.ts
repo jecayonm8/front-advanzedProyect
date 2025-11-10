@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AccommodationDTO, AccommodationType } from '../../models/place-dto';
 import { PlacesService } from '../../services/places-service';
 
@@ -22,10 +22,35 @@ type SamplePlace = {
 })
 export class MyPlaces {
 
-  places: AccommodationDTO[];
+  places: AccommodationDTO[] = [];
 
-  constructor(private placesService: PlacesService) {
-    this.places = this.placesService.getAll();
+  constructor(private placesService: PlacesService, private router: Router) {
+    this.placesService.getAll().subscribe(places => {
+      this.places = places;
+    });
+  }
+
+  public editPlace(place: AccommodationDTO): void {
+    this.router.navigate(['/update-place'], {
+      queryParams: { id: place.id }
+    });
+  }
+
+  public deletePlace(place: AccommodationDTO): void {
+    if (confirm(`¿Estás seguro de que deseas eliminar "${place.title}"?`)) {
+      this.placesService.delete(place.id).subscribe({
+        next: () => {
+          // Actualizar la lista después de eliminar
+          this.placesService.getAll().subscribe(places => {
+            this.places = places;
+          });
+        },
+        error: (error) => {
+          console.error('Error al eliminar alojamiento:', error);
+          alert('Error al eliminar el alojamiento');
+        }
+      });
+    }
   }
   protected readonly samplePlaces: SamplePlace[] = [
     {
