@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from '../../services/places-service';
-import { AccommodationDTO } from '../../models/place-dto';
+import { AccommodationDTO, UpdateAccommodationDTO } from '../../models/place-dto';
 
 @Component ({
     selector: 'app-update-place',
@@ -39,11 +39,17 @@ export class UpdatePlace implements OnInit {
     private loadPlaceData(id: string): void {
         const place = this.placesService.getAllSync().find(p => p.id === id);
         if (place) {
+            // Para desarrollo, usamos datos mock ya que no tenemos todos los campos en AccommodationDTO
             this.updatePlaceForm.patchValue({
                 title: place.title,
                 price: place.price,
-                city: place.city
-                // Agregar otros campos según sea necesario
+                city: place.city,
+                description: 'Descripción del alojamiento', // Mock data
+                capacity: 4, // Mock data
+                country: 'Colombia', // Mock data
+                department: 'Cundinamarca', // Mock data
+                postalCode: '110111', // Mock data
+                accommodationType: 'APARTMENT' // Mock data
             });
         }
     }
@@ -70,12 +76,23 @@ export class UpdatePlace implements OnInit {
     public updatePlace(){
         if (this.updatePlaceForm.valid && this.placeId) {
             const formValue = this.updatePlaceForm.value;
-            this.placesService.update(this.placeId, {
+            const updateData: UpdateAccommodationDTO = {
                 title: formValue.title,
+                description: formValue.description,
+                capacity: formValue.capacity,
                 price: formValue.price,
-                city: formValue.city
-                // Agregar otros campos según sea necesario
-            }).subscribe({
+                country: formValue.country,
+                department: formValue.department,
+                city: formValue.city,
+                neighborhood: formValue.neighborhood,
+                street: formValue.street,
+                postalCode: formValue.postalCode,
+                picsUrl: formValue.picsUrl,
+                amenities: formValue.amenities,
+                accommodationType: formValue.accommodationType
+            };
+
+            this.placesService.update(this.placeId, updateData).subscribe({
                 next: () => {
                     this.router.navigate(['/my-places']);
                 },
@@ -88,11 +105,13 @@ export class UpdatePlace implements OnInit {
     }
 
     public onFileChange(event: Event) {
-    const input = event.target as HTMLInputElement;
+        const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files.length > 0) {
-        const files = Array.from(input.files);
-        this.updatePlaceForm.patchValue({ pics_url : files });
+        if (input.files && input.files.length > 0) {
+            const files = Array.from(input.files);
+            // Convertir archivos a URLs para el formulario (en desarrollo)
+            const urls = files.map(file => URL.createObjectURL(file));
+            this.updatePlaceForm.patchValue({ picsUrl: urls });
+        }
     }
-}
 }

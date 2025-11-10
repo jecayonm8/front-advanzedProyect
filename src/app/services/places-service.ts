@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { AccommodationDTO, CreateAccommodationDTO } from '../models/place-dto';
+import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO } from '../models/place-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +65,16 @@ export class PlacesService {
     // Eliminación local para desarrollo
     this.places = this.places.filter(place => place.id !== id);
     return of('Alojamiento eliminado exitosamente');
+  }
+
+  public get(id: number): AccommodationDTO | undefined {
+    // Por ahora buscar en datos locales, después activar HTTP:
+    // return this.http.get<AccommodationDTO>(`${this.apiUrl}/${id}`, {
+    //   headers: this.getAuthHeaders()
+    // });
+
+    // Búsqueda local para desarrollo
+    return this.places.find(place => parseInt(place.id) === id);
   }
 
   private createTestPlaces(): AccommodationDTO[] {

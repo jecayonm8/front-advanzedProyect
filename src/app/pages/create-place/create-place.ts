@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -56,8 +57,14 @@ export class CreatePlace {
 
   }
 
-  public createPlace() { 
-    console.log(this.createPlaceForm.value);
+  public createPlace() {
+    if (this.createPlaceForm.valid) {
+      // Aquí iría la lógica para enviar al backend
+      console.log(this.createPlaceForm.value);
+      Swal.fire("¡Éxito!", "Se ha creado un nuevo alojamiento.", "success");
+    } else {
+      Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
+    }
   }
 
   public onFileChange(event: Event) {

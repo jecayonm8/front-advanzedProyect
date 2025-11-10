@@ -11,6 +11,7 @@ import { Bookings } from './pages/bookings/bookings';
 import { UpdateProfile } from './pages/update-profile/update-profile';
 import { UpdatePlace } from './pages/update-place/update-place';
 import { ChangePassword } from './pages/change-password/change-password';
+import { DetailPlace } from './pages/detail-place/detail-place';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -24,7 +25,9 @@ export const routes: Routes = [
   { path: 'bookings', component: Bookings },
   { path: 'update-profile', component: UpdateProfile },
   { path: 'update-place', component: UpdatePlace},
+  { path: 'edit-place/:id', component: UpdatePlace },
   { path: 'change-password', component: ChangePassword},
+  { path: 'place/:id', component: DetailPlace },
   { path: "**", pathMatch: "full", redirectTo: "" }
 
 
