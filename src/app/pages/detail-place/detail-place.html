@@ -145,6 +145,102 @@
         </div>
       </div>
     </div>
+
+    <!-- Sección de Comentarios -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title mb-4">Comentarios</h3>
+
+            <!-- Formulario para crear comentario -->
+            <div class="comment-form mb-4" *ngIf="canComment">
+              <h5>Deja tu comentario</h5>
+              <form [formGroup]="commentForm" (ngSubmit)="createComment()" class="mt-3">
+                <div class="mb-3">
+                  <label for="rating" class="form-label">Calificación</label>
+                  <select id="rating" class="form-select" formControlName="rating">
+                    <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                    <option value="4">⭐⭐⭐⭐ (4 estrellas)</option>
+                    <option value="3">⭐⭐⭐ (3 estrellas)</option>
+                    <option value="2">⭐⭐ (2 estrellas)</option>
+                    <option value="1">⭐ (1 estrella)</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="comment" class="form-label">Comentario</label>
+                  <textarea id="comment" class="form-control" rows="3" formControlName="comment"
+                           placeholder="Comparte tu experiencia en este alojamiento..."></textarea>
+                  <div class="form-text">{{ commentForm.get('comment')?.value?.length || 0 }}/1000 caracteres</div>
+                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="commentForm.invalid">
+                  Publicar comentario
+                </button>
+              </form>
+            </div>
+
+            <!-- Lista de comentarios -->
+            <div class="comments-list">
+              <div *ngIf="comments.length === 0" class="text-center py-4">
+                <p class="text-muted">Aún no hay comentarios para este alojamiento.</p>
+              </div>
+
+              <div class="row">
+                <div *ngFor="let comment of comments" class="col-12 mb-4">
+                  <div class="comment-card">
+                    <div class="comment-header d-flex align-items-start">
+                      <img [src]="comment.userDetailDTO.photoUrl || '/assets/img/fallback.svg'"
+                           [alt]="comment.userDetailDTO.name"
+                           class="comment-avatar rounded-circle me-3">
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div>
+                            <h6 class="comment-author mb-1">{{ comment.userDetailDTO.name }}</h6>
+                            <div class="rating-stars mb-2">
+                              <span *ngFor="let star of getStars(comment.rating)"
+                                    class="material-symbols-rounded star"
+                                    [class.filled]="star === 1"
+                                    [class.half]="star === 0.5">
+                                {{ star === 0.5 ? 'star_half' : 'star' }}
+                              </span>
+                              <span class="rating-text ms-2">{{ comment.rating }}/5</span>
+                            </div>
+                          </div>
+                          <small class="text-muted comment-date">{{ comment.createdAt | date:'mediumDate' }}</small>
+                        </div>
+                        <div class="comment-content">
+                          <p class="mb-0">{{ comment.comment }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Paginación -->
+              <nav *ngIf="totalPages > 1" class="mt-4">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item" [class.disabled]="currentPage === 0">
+                    <a class="page-link" (click)="changePage(currentPage - 1)" aria-label="Anterior">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item" *ngFor="let page of getVisiblePages(); let i = index"
+                      [class.active]="page === currentPage">
+                    <a class="page-link" (click)="changePage(page)">{{ page + 1 }}</a>
+                  </li>
+                  <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+                    <a class="page-link" (click)="changePage(currentPage + 1)" aria-label="Siguiente">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Loading state -->

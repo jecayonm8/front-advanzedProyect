@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { Router } from '@angular/router';
+import { MapService } from '../../services/map-service';
 import Swal from 'sweetalert2';
 
 
@@ -9,7 +11,7 @@ import Swal from 'sweetalert2';
   templateUrl: './create-place.html',
   styleUrl: './create-place.css'
 })
-export class CreatePlace {
+export class CreatePlace implements OnInit, AfterViewInit {
 
   cities: string[];
   accommodationTypes: string[];
@@ -18,7 +20,7 @@ export class CreatePlace {
 
   createPlaceForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private mapService: MapService, private router: Router) {
     this.createForm();
     this.cities = ['Bogotá', 'Medellín', 'Cali','Armenia', 'Barranquilla', 'Cartagena'];
     this.accommodationTypes = ['HOUSE', 'APARTMENT', 'FARM'];
@@ -35,6 +37,21 @@ export class CreatePlace {
     ];
   }
 
+  ngOnInit(): void {
+    // Inicializa el mapa con la configuración predeterminada
+    this.mapService.create();
+  }
+
+  ngAfterViewInit(): void {
+    // Se suscribe al evento de agregar marcador y actualiza el formulario después de que la vista esté inicializada
+    this.mapService.addMarker().subscribe((marker) => {
+      this.createPlaceForm.get('location')?.setValue({
+        latitude: marker.lat,
+        longitude: marker.lng,
+      });
+    });
+  }
+
   //(recuerde que los nombres de los campos deben coincidir con los del DTO de crear alojamiento o accommodation)
   private createForm() {
     this.createPlaceForm = this.formBuilder.group({
@@ -49,8 +66,7 @@ export class CreatePlace {
       neighborhood: ['', []],
       postalCode: ['', [Validators.required]],
       amenities: [[], []],
-      latitude: ['', [Validators.required]],
-      longitude: ['', [Validators.required]],
+      location: [null, [Validators.required]],
       picsUrl: [[], [Validators.required]]
       
     });
@@ -59,9 +75,31 @@ export class CreatePlace {
 
   public createPlace() {
     if (this.createPlaceForm.valid) {
-      // Aquí iría la lógica para enviar al backend
-      console.log(this.createPlaceForm.value);
-      Swal.fire("¡Éxito!", "Se ha creado un nuevo alojamiento.", "success");
+      try {
+        // Aquí iría la lógica para enviar al backend
+        console.log('Valores del formulario:', this.createPlaceForm.value);
+
+        // Simular creación exitosa (ya que no hay backend aún)
+        const mockPlaceId = Math.floor(Math.random() * 1000) + 1;
+
+        Swal.fire({
+          title: "¡Éxito!",
+          text: "Se ha creado un nuevo alojamiento.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          // Resetear el formulario
+          this.createPlaceForm.reset();
+          // Limpiar marcadores del mapa
+          this.mapService.clearMarkers();
+          // Redirigir al detalle del alojamiento
+          this.router.navigate(['/place-detail', mockPlaceId]);
+        });
+      } catch (error) {
+        console.error('Error al crear el alojamiento:', error);
+        Swal.fire("Error", "Ocurrió un error al crear el alojamiento. Inténtalo de nuevo.", "error");
+      }
     } else {
       Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
     }

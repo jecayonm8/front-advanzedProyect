@@ -39,6 +39,15 @@ export class MapService implements OnDestroy {
         trackUserLocation: true,
       })
     );
+
+    // Cambiar cursor a pointer cuando esté sobre el mapa
+    this.map.on('mouseenter', () => {
+      this.map!.getCanvas().style.cursor = 'pointer';
+    });
+
+    this.map.on('mouseleave', () => {
+      this.map!.getCanvas().style.cursor = '';
+    });
   }
 
   /** Dibuja varios marcadores con popup */
@@ -69,6 +78,12 @@ export class MapService implements OnDestroy {
     return this.map;
   }
 
+  /** Limpia todos los marcadores del mapa */
+  public clearMarkers(): void {
+    this.markers.forEach(marker => marker.remove());
+    this.markers = [];
+  }
+
   /** Limpieza al destruir el servicio */
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -78,5 +93,46 @@ export class MapService implements OnDestroy {
       this.map.remove();
       this.map = undefined;
     }
+  }
+
+  public addMarker(): Observable<mapboxgl.LngLat> {
+    return new Observable((observer) => {
+      if (!this.map) {
+        observer.error('Mapa no inicializado');
+        return;
+      }
+
+      // Limpia los marcadores existentes y agrega uno nuevo en la posición del click
+      const onClick = (e: MapMouseEvent) => {
+        this.clearMarkers();
+        const marker = new mapboxgl.Marker({
+          color: 'red',
+          scale: 1.2,
+          pitchAlignment: 'map',
+          rotationAlignment: 'map'
+        })
+          .setLngLat(e.lngLat)
+          .addTo(this.map!);
+
+        this.markers.push(marker);
+        // Emite las coordenadas del marcador al observador
+        observer.next(marker.getLngLat());
+      };
+
+      const registerClick = () => {
+        this.map!.on('click', onClick);
+      };
+
+      if (this.map.loaded()) {
+        registerClick();
+      } else {
+        this.map.once('load', registerClick);
+      }
+
+      // Limpieza al desuscribirse
+      return () => {
+        this.map?.off('click', onClick);
+      };
+    });
   }
 }

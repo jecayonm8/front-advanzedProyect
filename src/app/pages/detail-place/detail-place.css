@@ -236,6 +236,136 @@
   }
 }
 
+/* Comentarios */
+.comment-form {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 24px;
+  background: #f8f9fa;
+  margin-bottom: 24px;
+}
+
+.comment-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.comment-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.comment-header {
+  margin-bottom: 12px;
+}
+
+.comment-avatar {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.comment-author {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.rating-stars {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  font-size: 16px;
+  color: #ddd;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.half {
+  background: linear-gradient(to right, #ffc107 50%, #ddd 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.rating-text {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.comment-date {
+  font-size: 14px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.comment-content {
+  margin-top: 8px;
+}
+
+.comment-content p {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Paginación */
+.pagination {
+  margin: 0;
+}
+
+.page-link {
+  color: #007bff;
+  border-color: #dee2e6;
+  padding: 8px 12px;
+  margin: 0 2px;
+  border-radius: 4px !important;
+  cursor: pointer;
+}
+
+.page-link:hover {
+  color: #0056b3;
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+@media (max-width: 768px) {
+  .comment-item {
+    padding: 10px;
+  }
+
+  .comment-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 @media (max-width: 576px) {
   .main-image-container {
     height: 250px;
@@ -243,5 +373,14 @@
 
   .display-5 {
     font-size: 2rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .page-link {
+    padding: 6px 8px;
+    font-size: 14px;
   }
 }

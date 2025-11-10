@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlacesService } from '../../services/places-service';
-import { AccommodationDetailDTO } from '../../models/place-dto';
+import { CommentService } from '../../services/comment-service';
+import { AccommodationDetailDTO, CommentDTO, CreateCommentDTO } from '../../models/place-dto';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detail-place',
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './detail-place.html',
   styleUrl: './detail-place.css'
 })
@@ -14,24 +17,61 @@ export class DetailPlace implements OnInit {
 
   placeId: string = "";
   place: AccommodationDetailDTO | undefined;
+  comments: CommentDTO[] = [];
+  commentForm!: FormGroup;
+  currentPage: number = 0;
+  totalPages: number = 0;
   currentImageIndex = 0;
+  canComment: boolean = false; // Para determinar si el usuario puede comentar
 
   constructor(
     private route: ActivatedRoute,
     private placesService: PlacesService,
+    private commentService: CommentService,
+    private formBuilder: FormBuilder,
     private router: Router
-  ) {}
+  ) {
+    this.createCommentForm();
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.placeId = params["id"];
       this.loadPlaceDetail(this.placeId);
+      this.loadComments(this.placeId, this.currentPage);
+    });
+
+    // Para desarrollo: asumir que el usuario puede comentar
+    this.canComment = true;
+  }
+
+  private createCommentForm() {
+    this.commentForm = this.formBuilder.group({
+      comment: ['', [Validators.required, Validators.maxLength(1000)]],
+      rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]]
     });
   }
 
   private loadPlaceDetail(placeId: string): void {
-    // Por ahora usamos datos mock ya que no tenemos el endpoint del backend
-    this.place = this.getMockPlaceDetail(parseInt(placeId));
+    this.placesService.getDetail(placeId).subscribe({
+      next: (place) => {
+        this.place = place;
+      },
+      error: (error) => {
+        console.error('Error al cargar detalle del alojamiento:', error);
+        Swal.fire("Error", "No se pudo cargar el detalle del alojamiento.", "error");
+      }
+    });
+  }
+
+  private loadComments(accommodationId: string, page: number): void {
+    // Para desarrollo: usar datos mock, pero simular que cada página hace una consulta diferente
+    // En producción: this.commentService.listCommentsWithPagination(accommodationId, page).subscribe(...)
+    this.comments = this.commentService.getMockComments(accommodationId, page);
+
+    // En desarrollo simulamos que siempre hay más páginas disponibles
+    // En producción esto vendría en la respuesta del backend junto con los comentarios
+    this.totalPages = Math.max(this.currentPage + 5, 10); // Simular que siempre hay más páginas
   }
 
   private getMockPlaceDetail(id: number): AccommodationDetailDTO {
@@ -96,9 +136,82 @@ export class DetailPlace implements OnInit {
     return stars;
   }
 
+  public createComment(): void {
+    if (this.commentForm.valid && this.placeId) {
+      const formValue = this.commentForm.value;
+      const commentData: CreateCommentDTO = {
+        comment: formValue.comment,
+        rating: formValue.rating,
+        bookingId: 'mock-booking-id', // En desarrollo usar ID mock
+        accommodationId: this.placeId
+      };
+
+      // Para desarrollo: simular creación exitosa
+      const newComment: CommentDTO = {
+        id: Date.now().toString(),
+        comment: formValue.comment,
+        rating: formValue.rating,
+        createdAt: new Date().toISOString(),
+        userDetailDTO: {
+          id: 'current-user',
+          name: 'Usuario Actual',
+          photoUrl: 'https://example.com/profiles/user.jpg',
+          createdAt: new Date().toISOString()
+        }
+      };
+
+      this.comments.unshift(newComment); // Agregar al inicio
+      this.commentForm.reset({ rating: 5 });
+
+      Swal.fire({
+        title: "¡Éxito!",
+        text: "Comentario agregado exitosamente.",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
+    }
+  }
+
+  public changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.loadComments(this.placeId, this.currentPage);
+    }
+  }
+
+  public getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5; // Mostrar máximo 5 números de página
+
+    if (this.totalPages <= maxVisiblePages) {
+      // Si hay pocas páginas, mostrar todas
+      for (let i = 0; i < this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Si hay muchas páginas, mostrar un rango alrededor de la página actual
+      let start = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
+      let end = Math.min(this.totalPages - 1, start + maxVisiblePages - 1);
+
+      // Ajustar el inicio si estamos cerca del final
+      if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(0, end - maxVisiblePages + 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  }
+
   // Método para volver a la lista
   goBack(): void {
-    this.router.navigate(['/my-places']);
+    this.router.navigate(['/']);
   }
 
   // Método para obtener el label de las comodidades

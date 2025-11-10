@@ -70,6 +70,8 @@ export interface UpdateAccommodationDTO {
   picsUrl: string[];
   amenities: Amenities[];
   accommodationType: AccommodationType;
+  latitude: number;
+  longitude: number;
 }
 
 export interface PlaceDTO {
@@ -99,6 +101,21 @@ export interface UserDetailDTO {
   name: string;
   photoUrl: string;
   createdAt: string;
+}
+
+export interface CommentDTO {
+  id: string;
+  comment: string;
+  rating: number;
+  createdAt: string;
+  userDetailDTO: UserDetailDTO;
+}
+
+export interface CreateCommentDTO {
+  comment: string;
+  rating: number;
+  bookingId: string;
+  accommodationId: string;
 }
 
 

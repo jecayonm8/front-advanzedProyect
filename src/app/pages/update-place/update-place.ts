@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, AfterViewInit } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from '../../services/places-service';
-import { AccommodationDTO, UpdateAccommodationDTO } from '../../models/place-dto';
+import { MapService } from '../../services/map-service';
+import { AccommodationDTO, UpdateAccommodationDTO, Amenities } from '../../models/place-dto';
+import Swal from 'sweetalert2';
 
 @Component ({
     selector: 'app-update-place',
@@ -11,20 +13,35 @@ import { AccommodationDTO, UpdateAccommodationDTO } from '../../models/place-dto
     styleUrl: './update-place.css'
 })
 
-export class UpdatePlace implements OnInit {
+export class UpdatePlace implements OnInit, AfterViewInit {
 
-    types: String[];
+    cities: string[];
+    accommodationTypes: string[];
+    amenitiesOptions: { label: string; value: string }[];
     updatePlaceForm!: FormGroup;
     placeId: string | null = null;
 
     constructor(
         private formBuilder: FormBuilder,
         private placesService: PlacesService,
+        private mapService: MapService,
         private route: ActivatedRoute,
         private router: Router
     ){
         this.createForm();
-        this.types = ['HOUSE', 'APARTMENT', 'FARM'];
+        this.cities = ['Bogotá', 'Medellín', 'Cali','Armenia', 'Barranquilla', 'Cartagena'];
+        this.accommodationTypes = ['HOUSE', 'APARTMENT', 'FARM'];
+        this.amenitiesOptions = [
+          { label: 'Wifi', value: 'WIFI' },
+          { label: 'Parqueadero', value: 'PARKING_AND_FACILITIES' },
+          { label: 'Aire acondicionado', value: 'SERVICES' },
+          { label: 'Lavanderia', value: 'BEDROOM_AND_LAUNDRY' },
+          { label: 'Apto para mascotas', value: 'SERVICE_ANIMALS_ALLOWED' },
+          { label: 'Congelador', value: 'FREEZER' },
+          { label: 'Agua caliente', value: 'HOT_WATER' },
+          { label: 'Cocina', value: 'KITCHEN' },
+          { label: 'TV', value: 'ENTERTAINMENT' }
+        ];
     }
 
     ngOnInit(): void {
@@ -33,6 +50,18 @@ export class UpdatePlace implements OnInit {
             if (this.placeId) {
                 this.loadPlaceData(this.placeId);
             }
+        });
+        // Inicializa el mapa con la configuración predeterminada
+        this.mapService.create();
+    }
+
+    ngAfterViewInit(): void {
+        // Se suscribe al evento de agregar marcador y actualiza el formulario después de que la vista esté inicializada
+        this.mapService.addMarker().subscribe((marker) => {
+            this.updatePlaceForm.get('location')?.setValue({
+                latitude: marker.lat,
+                longitude: marker.lng,
+            });
         });
     }
 
@@ -49,28 +78,32 @@ export class UpdatePlace implements OnInit {
                 country: 'Colombia', // Mock data
                 department: 'Cundinamarca', // Mock data
                 postalCode: '110111', // Mock data
-                accommodationType: 'APARTMENT' // Mock data
+                accommodationType: 'APARTMENT', // Mock data
+                location: {
+                    latitude: place.latitude,
+                    longitude: place.longitude
+                }
             });
         }
     }
 
     private createForm(){
         this.updatePlaceForm = this.formBuilder.group({
-
             title: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
             description: ['', [Validators.required, Validators.maxLength(500), Validators.minLength(20)]],
-            capacity: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.min(1)]],
+            capacity: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.min(1), Validators.max(60)]],
             price: ['', [Validators.required, Validators.pattern(/^[0-9]+$/),Validators.min(1)]],
             country: ['', [Validators.required]],
             department: ['', [Validators.required]],
             city: ['', [Validators.required]],
             neighborhood: [''],
-            postalCode: ['', [Validators.required]],
+            street: [''],
+            postalCode: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]{4,10}$/)]],
             picsUrl: [[], [Validators.required]],
-            amenities: [[], []],
-            accommodationType: ["", Validators.required]
-        })
-
+            amenities: [[], [Validators.required]],
+            accommodationType: ["", Validators.required],
+            location: [null, [Validators.required]]
+        });
     }
 
     public updatePlace(){
@@ -89,18 +122,30 @@ export class UpdatePlace implements OnInit {
                 postalCode: formValue.postalCode,
                 picsUrl: formValue.picsUrl,
                 amenities: formValue.amenities,
-                accommodationType: formValue.accommodationType
+                accommodationType: formValue.accommodationType,
+                latitude: formValue.location.latitude,
+                longitude: formValue.location.longitude
             };
 
             this.placesService.update(this.placeId, updateData).subscribe({
                 next: () => {
-                    this.router.navigate(['/my-places']);
+                    Swal.fire({
+                        title: "¡Éxito!",
+                        text: "Se ha actualizado el alojamiento.",
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        this.router.navigate(['/my-places']);
+                    });
                 },
                 error: (error) => {
                     console.error('Error al actualizar alojamiento:', error);
-                    alert('Error al actualizar el alojamiento');
+                    Swal.fire("Error", "Ocurrió un error al actualizar el alojamiento. Inténtalo de nuevo.", "error");
                 }
             });
+        } else {
+            Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
         }
     }
 
@@ -109,9 +154,27 @@ export class UpdatePlace implements OnInit {
 
         if (input.files && input.files.length > 0) {
             const files = Array.from(input.files);
-            // Convertir archivos a URLs para el formulario (en desarrollo)
-            const urls = files.map(file => URL.createObjectURL(file));
-            this.updatePlaceForm.patchValue({ picsUrl: urls });
+            this.updatePlaceForm.patchValue({ picsUrl: files });
+            this.updatePlaceForm.get('picsUrl')?.updateValueAndValidity();
         }
+    }
+
+    // Este metodo mantiene sincronizado el control de formulario de amenidades
+    // según el estado de cada checkbox seleccionado
+    public onAmenityToggle(amenity: string, checked: boolean) {
+        const amenitiesControl = this.updatePlaceForm.get('amenities');
+        if (!amenitiesControl) {
+            return;
+        }
+
+        const currentAmenities: string[] = amenitiesControl.value || [];
+        if (checked) {
+            if (!currentAmenities.includes(amenity)) {
+                amenitiesControl.setValue([...currentAmenities, amenity]);
+            }
+        } else {
+            amenitiesControl.setValue(currentAmenities.filter(item => item !== amenity));
+        }
+        amenitiesControl.updateValueAndValidity();
     }
 }

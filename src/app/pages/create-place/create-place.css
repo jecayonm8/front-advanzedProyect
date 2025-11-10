@@ -11,3 +11,8 @@ label {
 small {
   color: #b91c1c;
 }
+
+#map {
+    width: 100%;
+    height: 400px;
+}
