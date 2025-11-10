@@ -125,19 +125,19 @@
             <h4 class="card-title mb-3">Propietario</h4>
             <div class="host-info">
               <div class="host-avatar mb-3">
-                <img [src]="place.userDetailDTO.profileImage || '/assets/img/fallback.svg'"
+                <img [src]="place.userDetailDTO.photoUrl || '/assets/img/fallback.svg'"
                      [alt]="place.userDetailDTO.name"
                      class="host-image rounded-circle">
               </div>
               <h5 class="host-name mb-2">{{ place.userDetailDTO.name }}</h5>
               <div class="host-details">
                 <div class="mb-2">
-                  <span class="material-symbols-rounded me-2">email</span>
-                  <small>{{ place.userDetailDTO.email }}</small>
+                  <span class="material-symbols-rounded me-2">person</span>
+                  <small>ID: {{ place.userDetailDTO.id }}</small>
                 </div>
-                <div *ngIf="place.userDetailDTO.phone" class="mb-2">
-                  <span class="material-symbols-rounded me-2">phone</span>
-                  <small>{{ place.userDetailDTO.phone }}</small>
+                <div class="mb-2">
+                  <span class="material-symbols-rounded me-2">calendar_today</span>
+                  <small>Miembro desde: {{ place.userDetailDTO.createdAt | date:'mediumDate' }}</small>
                 </div>
               </div>
             </div>

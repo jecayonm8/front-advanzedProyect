@@ -52,11 +52,10 @@ export class DetailPlace implements OnInit {
       ],
       amenities: ['WIFI', 'PARKING_AND_FACILITIES', 'KITCHEN', 'HOT_WATER'],
       userDetailDTO: {
-        id: 1,
+        id: '1',
         name: 'María González',
-        email: 'maria.gonzalez@email.com',
-        phone: '+57 300 123 4567',
-        profileImage: 'https://example.com/profiles/maria.jpg'
+        photoUrl: 'https://example.com/profiles/maria.jpg',
+        createdAt: '2024-01-15T10:30:00'
       }
     };
   }

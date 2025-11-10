@@ -95,11 +95,10 @@ export interface LocationDTO{
  }
 
 export interface UserDetailDTO {
-  id: number;
+  id: string;
   name: string;
-  email: string;
-  phone?: string;
-  profileImage?: string;
+  photoUrl: string;
+  createdAt: string;
 }
 
 
