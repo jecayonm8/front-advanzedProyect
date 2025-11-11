@@ -88,11 +88,10 @@
         <div id="map"></div>
       </div>
 
-      <div class="form-group form-group--full">
+      <div>
         <label for="place-images">Imágenes del alojamiento</label>
-        <input id="place-images" type="file" multiple (change)="onFileChange($event)" />
-        <small class="form-helper">Sube entre 3 y 8 fotografías en formato JPG o PNG.</small>
-      </div>
+        <input type="file" multiple (change)="onFileChange($event)" />
+       </div>
     </div>
 
     <button type="submit" [disabled]="createPlaceForm.invalid">Crear alojamiento</button>

@@ -90,7 +90,7 @@ export class DetailPlace implements OnInit {
         'https://example.com/images/campo3.jpg',
         'https://example.com/images/campo4.jpg'
       ],
-      amenities: ['WIFI', 'PARKING_AND_FACILITIES', 'KITCHEN', 'HOT_WATER'],
+      amenities: ['wifi', 'estacionamiento_gratuito', 'cocina', 'aire_acondicionado'],
       userDetailDTO: {
         id: '1',
         name: 'María González',

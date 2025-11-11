@@ -15,15 +15,16 @@ export type AccommodationType =
   | 'FARM';
 
 export type Amenities =
-  | 'WIFI'
-  | 'PARKING_AND_FACILITIES'
-  | 'SERVICES'
-  | 'BEDROOM_AND_LAUNDRY'
-  | 'SERVICE_ANIMALS_ALLOWED'
-  | 'FREEZER'
-  | 'HOT_WATER'
-  | 'KITCHEN'
-  | 'ENTERTAINMENT';
+  | 'wifi'
+  | 'cocina'
+  | 'estacionamiento_gratuito'
+  | 'aire_acondicionado'
+  | 'calefacción'
+  | 'lavadora'
+  | 'secadora'
+  | 'televisión'
+  | 'se_aceptan_mascotas'
+  | 'llegada_autónoma';
 
 export interface CreateAccommodationDTO {
   title: string;

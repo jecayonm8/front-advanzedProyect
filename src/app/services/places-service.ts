@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, map } from 'rxjs';
 import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO } from '../models/place-dto';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class PlacesService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
+    const token = sessionStorage.getItem('AuthToken');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''
@@ -77,6 +77,18 @@ export class PlacesService {
     return this.places.find(place => parseInt(place.id) === id);
   }
 
+  public getAmenities(): Observable<string[]> {
+    return this.http.get<any>(`${this.apiUrl}/amenities`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...]}
+        // Extraemos el array del campo 'message'
+        return response.message || [];
+      })
+    );
+  }
+
   public getDetail(id: string): Observable<AccommodationDetailDTO> {
     // Por ahora devolver datos mock, después activar HTTP:
     // return this.http.get<AccommodationDetailDTO>(`${this.apiUrl}/${id}/detail`, {
@@ -99,7 +111,7 @@ export class PlacesService {
         'https://example.com/images/campo3.jpg',
         'https://example.com/images/campo4.jpg'
       ],
-      amenities: ['WIFI', 'PARKING_AND_FACILITIES', 'KITCHEN', 'HOT_WATER'],
+      amenities: ['wifi', 'estacionamiento_gratuito', 'cocina', 'aire_acondicionado'],
       userDetailDTO: {
         id: '1',
         name: 'María González',
