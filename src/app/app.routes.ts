@@ -19,6 +19,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'create-place', component: CreatePlace },
   { path: 'create-booking', component: CreateBooking },
+  { path: 'create-booking/:id', component: CreateBooking },
   { path: 'create-review', component: CreateReview },
   { path: 'create-complaint', component: CreateComplaint },
   { path: 'my-places', component: MyPlaces },

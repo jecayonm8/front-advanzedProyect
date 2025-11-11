@@ -1,1 +1,53 @@
-<p>bookings works!</p>
+<main class="page">
+  <header class="page__heading text-center mx-auto">
+    <h1 class="page__title">Mis reservas</h1>
+    <p class="page__subtitle">
+      Gestiona tus reservas de alojamientos.
+    </p>
+  </header>
+
+  <!-- Sección de Gestión de Reservas -->
+  <div class="container pt-5 pb-5">
+    <h5 class="mb-0 d-flex align-items-center">
+      <span class="material-symbols-rounded fs-2 me-3" aria-hidden="true">event_available</span>
+      Mis reservas
+    </h5>
+    <hr />
+
+    <div class="card-body">
+      <div class="mb-3">
+        <button type="button" routerLink="/create-booking"
+          class="btn btn-success d-flex align-items-center justify-content-center gap-1">
+          <span class="material-symbols-rounded me-1" aria-hidden="true">add</span>
+          Crear nueva reserva
+        </button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle table-striped table-hover mb-0">
+          <thead class="text-center">
+            <tr>
+              <th scope="col">Alojamiento</th>
+              <th scope="col">Check-in</th>
+              <th scope="col">Check-out</th>
+              <th scope="col">Huéspedes</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-group-divider">
+            @for (booking of bookings; track booking.id) {
+            <tr>
+              <td class="fw-semibold">{{ booking.accommodationTitle || booking.accommodationCode }}</td>
+              <td>{{ booking.checkIn }}</td>
+              <td>{{ booking.checkOut }}</td>
+              <td>{{ booking.guest_number }}</td>
+              <td>{{ booking.status }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>

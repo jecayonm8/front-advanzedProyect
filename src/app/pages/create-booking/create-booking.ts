@@ -1,6 +1,10 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { BookingService } from '../../services/booking-service';
+import { TokenService } from '../../services/token-service';
 
 @Component({
   selector: 'app-create-booking',
@@ -8,15 +12,28 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
   templateUrl: './create-booking.html',
   styleUrl: './create-booking.css'
 })
-export class CreateBooking {
-
-    bookingStates: string[];
+export class CreateBooking implements OnInit {
 
     bookingForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private bookingService: BookingService,
+    private tokenService: TokenService,
+    private route: ActivatedRoute
+  ) {
     this.createForm();
-    this.bookingStates = ['PENDING', 'CANCELLED', 'COMPLETED'];
+  }
+
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      const accommodationId = params['id'];
+      if (accommodationId) {
+        this.bookingForm.patchValue({
+          accommodationCode: accommodationId
+        });
+      }
+    });
   }
 
   private createForm() {
@@ -24,12 +41,7 @@ export class CreateBooking {
       checkIn: ['', [Validators.required]],
       checkOut: ['', [Validators.required]],
       guest_number: [1, [Validators.required, Validators.min(1)]],
-      bookingState: ['', [Validators.required]],
-      accommodationCode: ['', [Validators.required]],
-      user: ['', [Validators.required]],
-      paymentMethod: ['', [Validators.required]],
-      totalPrice: ['', [Validators.required, Validators.pattern(/^[0-9]+(\.[0-9]{1,2})?$/)]],
-      message: ['', []]
+      accommodationCode: ['', [Validators.required]]
     }, { validators: this.validateDateRange });
   }
 
@@ -44,15 +56,24 @@ export class CreateBooking {
     const checkIn = new Date(start);
     const checkOut = new Date(end);
 
-    return checkIn > checkOut ? null : { invalidDateRange: true };
+    return checkIn < checkOut ? null : { invalidDateRange: true };
   }
 
   public createBooking() {
     if (this.bookingForm.invalid) {
       this.bookingForm.markAllAsTouched();
+      Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
       return;
     }
 
-    console.log(this.bookingForm.value);
+    this.bookingService.create(this.bookingForm.value).subscribe({
+      next: (response) => {
+        Swal.fire("¡Éxito!", response, "success");
+        this.bookingForm.reset();
+      },
+      error: (error) => {
+        Swal.fire("Error", "No se pudo crear la reserva.", "error");
+      }
+    });
   }
 }
