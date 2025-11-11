@@ -32,6 +32,10 @@
               {{ place.price | currency:'COP':'symbol':'1.0-0' }}
             </div>
             <small class="text-muted">por noche</small>
+            <button type="button" class="btn btn-primary mt-3" (click)="navigateToBooking()">
+              <span class="material-symbols-rounded me-2">event_available</span>
+              Reserva
+            </button>
           </div>
         </div>
       </div>
