@@ -58,21 +58,21 @@ export interface AccommodationDetailDTO {
 }
 
 export interface UpdateAccommodationDTO {
-  title: string;
-  description: string;
-  capacity: number;
-  price: number;
-  country: string;
-  department: string;
-  city: string;
-  neighborhood?: string;
-  street?: string;
-  postalCode: string;
-  picsUrl: string[];
-  amenities: Amenities[];
-  accommodationType: AccommodationType;
-  latitude: number;
-  longitude: number;
+   title: string;
+   description: string;
+   capacity: number;
+   price: number;
+   country: string;
+   department: string;
+   city: string;
+   neighborhood?: string;
+   street?: string;
+   postalCode: string;
+   picsUrl?: string[];
+   amenities: Amenities[];
+   accommodationType: AccommodationType;
+   latitude: number;
+   longitude: number;
 }
 
 export interface GetForUpdateDTO {
@@ -146,6 +146,20 @@ export interface CreateCommentDTO {
   rating: number;
   bookingId: string;
   accommodationId: string;
+}
+
+export interface StatsDTO {
+  averageRating: number;
+  totalComments: number;
+  totalReservations: number;
+  occupancyRate: number;
+  cancellations: number;
+  totalRevenue: number;
+}
+
+export interface StatsDateDTO {
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 

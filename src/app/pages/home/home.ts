@@ -18,8 +18,8 @@ export class Home implements OnInit {
   places: AccommodationDTO[] = [];
   amenitiesOptions: { label: string; value: string }[] = [];
   currentPage = 0;
+  totalPages = 0;
   isLoading = false;
-  hasMoreResults = true;
   noResults = false;
 
   constructor(
@@ -33,7 +33,7 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.loadAmenities();
-    this.performSearch();
+    this.performSearch(0);
   }
 
   private createSearchForm(): void {
@@ -79,26 +79,22 @@ export class Home implements OnInit {
     });
   }
 
-  public performSearch(): void {
+  public performSearch(page: number = 0): void {
     if (this.isLoading) return;
 
     this.isLoading = true;
+    this.currentPage = page;
     const filters = this.buildSearchFilters();
 
-    // Usar searchWithBody para todas las búsquedas (endpoint público)
-    const searchObservable = this.placesService.searchWithBody(filters, this.currentPage);
-
-    searchObservable.subscribe({
+    this.placesService.searchWithBody(filters, page).subscribe({
       next: (results) => {
-        if (this.currentPage === 0) {
-          this.places = results;
-        } else {
-          this.places = [...this.places, ...results];
-        }
-
-        this.hasMoreResults = results.length > 0;
-        this.noResults = this.places.length === 0;
+        this.places = results;
+        this.noResults = results.length === 0;
         this.isLoading = false;
+
+        // Para paginación, asumimos que si hay resultados, hay más páginas
+        // En una implementación real, el backend debería devolver totalPages
+        this.totalPages = results.length > 0 ? Math.max(this.currentPage + 5, 10) : 1;
 
         // Actualizar mapa con resultados
         this.updateMap();
@@ -152,16 +148,47 @@ export class Home implements OnInit {
     };
   }
 
-  public loadMore(): void {
-    if (!this.hasMoreResults || this.isLoading) return;
-    this.currentPage++;
-    this.performSearch();
+  public changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.performSearch(page);
+    }
+  }
+
+  public getVisiblePages(): number[] {
+    const pages: number[] = [];
+    const maxVisiblePages = 5; // Mostrar máximo 5 números de página
+
+    if (this.totalPages <= maxVisiblePages) {
+      // Si hay pocas páginas, mostrar todas
+      for (let i = 0; i < this.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Si hay muchas páginas, mostrar un rango alrededor de la página actual
+      let start = Math.max(0, this.currentPage - Math.floor(maxVisiblePages / 2));
+      let end = Math.min(this.totalPages - 1, start + maxVisiblePages - 1);
+
+      // Ajustar el inicio si estamos cerca del final
+      if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(0, end - maxVisiblePages + 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+    }
+
+    return pages;
+  }
+
+  public trackByPage(index: number, item: number): number {
+    return item;
   }
 
   public resetSearch(): void {
     this.searchForm.reset();
     this.currentPage = 0;
-    this.performSearch();
+    this.performSearch(0);
   }
 
   public onAmenityToggle(amenity: string, checked: boolean): void {

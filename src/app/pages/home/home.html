@@ -64,7 +64,7 @@
 
           <!-- Botón de búsqueda -->
           <div class="search-field search-actions">
-            <button type="submit" class="btn btn-primary search-btn" [disabled]="isLoading">
+            <button type="submit" class="btn btn-primary search-btn" [disabled]="isLoading" (click)="currentPage = 0">
               <span class="material-symbols-rounded" *ngIf="!isLoading">search</span>
               <span class="spinner-border spinner-border-sm" *ngIf="isLoading"></span>
               <span class="d-none d-sm-inline">Buscar</span>
@@ -184,12 +184,40 @@
         </div>
       </div>
 
-      <!-- Botón cargar más -->
-      <div class="load-more" *ngIf="hasMoreResults && !isLoading">
-        <button type="button" class="btn btn-outline-primary" (click)="loadMore()">
-          Cargar más resultados
-        </button>
-      </div>
+      <!-- Paginación -->
+      <nav aria-label="Navegación de páginas" *ngIf="totalPages > 1" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0">
+              <span aria-hidden="true">&laquo;</span>
+            </button>
+          </li>
+
+          <!-- Números de página -->
+          <li
+            *ngFor="let page of getVisiblePages(); let i = index; trackBy: trackByPage"
+            class="page-item"
+            [class.active]="page === currentPage"
+          >
+            <button class="page-link" (click)="changePage(page)">
+              {{ page + 1 }}
+            </button>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+            <button class="page-link" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">
+              <span aria-hidden="true">&raquo;</span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- Información de página -->
+        <p class="text-center text-muted mt-2 mb-0">
+          Página {{ currentPage + 1 }} de {{ totalPages }}
+        </p>
+      </nav>
 
       <!-- Loading -->
       <div class="loading" *ngIf="isLoading">

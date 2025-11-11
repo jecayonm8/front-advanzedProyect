@@ -5,16 +5,6 @@ import { AccommodationDTO, AccommodationType, SearchFiltersDTO } from '../../mod
 import { PlacesService } from '../../services/places-service';
 import Swal from 'sweetalert2';
 
-type SamplePlace = {
-  id: string;
-  title: string;
-  price: number;
-  photo_url: string;
-  average_rating: number;
-  city: string;
-  type: string;
-  location: string;
-};
 
 @Component({
   selector: 'app-my-places',
@@ -25,23 +15,41 @@ type SamplePlace = {
 export class MyPlaces {
 
   places: AccommodationDTO[] = [];
+  currentPage: number = 0;
+  totalPages: number = 0;
 
   constructor(private placesService: PlacesService, private router: Router) {
-    // Usar searchWithBody con filtros vacíos para obtener todos los alojamientos
-    const emptyFilters: SearchFiltersDTO = {
-      city: null,
-      checkIn: null,
-      checkOut: null,
-      guest_number: null,
-      minimum: null,
-      maximum: null,
-      list: null
-    };
+    this.loadPlaces();
+  }
 
-    this.placesService.searchWithBody(emptyFilters).subscribe({
-      next: (data: AccommodationDTO[]) => this.places = data,
-      error: (err: any) => console.error('Error loading places:', err)
+  private loadPlaces(page: number = 0): void {
+    this.placesService.getHostAccommodations(page).subscribe({
+      next: (response) => {
+        this.places = response.places;
+        this.totalPages = 10; // Simular 10 páginas para mostrar paginación completa
+        this.currentPage = page;
+      },
+      error: (err: any) => {
+        console.error('Error loading host accommodations:', err);
+        // Fallback a datos locales si falla
+        this.places = this.placesService.getAllSync();
+        this.totalPages = 10;
+      }
     });
+  }
+
+  public changePage(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.loadPlaces(page);
+    }
+  }
+
+  public getVisiblePages(): number[] {
+    return [0, 1, 2, 3, 4]; // Mostrar siempre 5 números de página
+  }
+
+  public trackByPage(index: number, item: number): number {
+    return item;
   }
 
   onDelete(placeId: string): void {
@@ -54,13 +62,14 @@ export class MyPlaces {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-        this.placesService.delete(placeId).subscribe({
+        this.placesService.deleteAccommodation(placeId).subscribe({
           next: () => {
-            this.places = this.places.filter(p => p.id !== placeId);
             Swal.fire("Eliminado!", "El alojamiento ha sido eliminado correctamente.", "success");
+            // Recargar la página actual después de eliminar
+            this.loadPlaces(this.currentPage);
           },
-          error: (err) => {
-            console.error('Error deleting place:', err);
+          error: (err: any) => {
+            console.error('Error deleting accommodation:', err);
             Swal.fire("Error", "No se pudo eliminar el alojamiento.", "error");
           }
         });
@@ -68,46 +77,4 @@ export class MyPlaces {
     });
   }
 
-  protected readonly samplePlaces: SamplePlace[] = [
-    {
-      "id": "prop_001",
-      "title": "Apartamento Luminoso en el Centro",
-      "price": 120.50,
-      "photo_url": "https://example.com/photos/apt_luz.jpg",
-      "average_rating": 4.7,
-      "city": "Madrid",
-      "type": "Apartamento",
-      "location": "Centro de Madrid"
-    },
-    {
-      "id": "prop_002",
-      "title": "Cabaña Rústica con Vista a la Montaña",
-      "price": 75.00,
-      "photo_url": "https://example.com/photos/cab_mont.jpg",
-      "average_rating": 4.1,
-      "city": "Bariloche",
-      "type": "Cabaña",
-      "location": "Montañas de Bariloche"
-    },
-    {
-      "id": "prop_003",
-      "title": "Loft Moderno cerca de la Playa",
-      "price": 250.99,
-      "photo_url": "https://example.com/photos/loft_playa.jpg",
-      "average_rating": 4.9,
-      "city": "Miami",
-      "type": "Loft",
-      "location": "Playa de Miami"
-    },
-    {
-      "id": "prop_004",
-      "title": "Estudio Económico para Viajeros",
-      "price": 45.00,
-      "photo_url": "https://example.com/photos/est_eco.jpg",
-      "average_rating": 3.5,
-      "city": "Ciudad de México",
-      "type": "Estudio",
-      "location": "Centro de Ciudad de México"
-    },
-  ];
 }

@@ -84,6 +84,30 @@ export class MapService implements OnDestroy {
     this.markers = [];
   }
 
+  /** Centra el mapa en una ubicación específica y coloca un marcador */
+  public setMarkerAtLocation(latitude: number, longitude: number): void {
+    if (!this.map) return;
+
+    // Centrar el mapa en las coordenadas
+    this.map.setCenter([longitude, latitude]);
+    this.map.setZoom(17);
+
+    // Limpiar marcadores existentes
+    this.clearMarkers();
+
+    // Agregar marcador en la ubicación
+    const marker = new mapboxgl.Marker({
+      color: 'red',
+      scale: 1.2,
+      pitchAlignment: 'map',
+      rotationAlignment: 'map'
+    })
+      .setLngLat([longitude, latitude])
+      .addTo(this.map);
+
+    this.markers.push(marker);
+  }
+
   /** Limpieza al destruir el servicio */
   ngOnDestroy(): void {
     this.destroy$.next();

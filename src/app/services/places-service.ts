@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpResponse, HttpParams } from '@angular/common/http';
 import { Observable, of, map, filter } from 'rxjs';
-import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO, GetForUpdateDTO, UpdateAccommodationDTO, SearchFiltersDTO, CommentDTO } from '../models/place-dto';
+import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO, GetForUpdateDTO, UpdateAccommodationDTO, SearchFiltersDTO, CommentDTO, StatsDTO, StatsDateDTO } from '../models/place-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -40,15 +40,10 @@ export class PlacesService {
     });
   }
 
-  public delete(id: string): Observable<string> {
-    // Por ahora usar eliminación local, después activar HTTP:
-    // return this.http.delete<string>(`${this.apiUrl}/${id}`, {
-    //   headers: this.getAuthHeaders()
-    // });
-
-    // Eliminación local para desarrollo
-    this.places = this.places.filter(place => place.id !== id);
-    return of('Alojamiento eliminado exitosamente');
+  public deleteAccommodation(id: string): Observable<string> {
+    return this.http.delete<string>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   public get(id: number): AccommodationDTO | undefined {
@@ -110,7 +105,12 @@ export class PlacesService {
   public getForUpdate(id: string): Observable<GetForUpdateDTO> {
     return this.http.get<GetForUpdateDTO>(`${this.apiUrl}/update/${id}`, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: {...}}
+        return response.message || response;
+      })
+    );
   }
 
   public search(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
@@ -135,6 +135,64 @@ export class PlacesService {
       map((response: any) => {
         // El backend devuelve {error: false, message: [...]}
         return response?.message || [];
+      })
+    );
+  }
+
+  /**
+    * Lista lugares con paginación
+    * @param page Número de página (0-based)
+    * @returns Observable con lista de lugares y total de páginas
+    */
+  public getPlacesWithPagination(page: number = 0): Observable<{places: AccommodationDTO[], totalPages: number}> {
+    const params = new HttpParams().set('page', page.toString());
+
+    return this.http.get<any>(`${this.apiUrl}/list`, {
+      headers: this.getAuthHeaders(),
+      params
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...], totalPages: number}
+        return {
+          places: response.message || [],
+          totalPages: response.totalPages || 1
+        };
+      })
+    );
+  }
+
+  /**
+    * Lista alojamientos del host autenticado con paginación
+    * @param page Número de página (0-based)
+    * @returns Observable con lista de alojamientos del host y total de páginas
+    */
+  public getHostAccommodations(page: number = 0): Observable<{places: AccommodationDTO[], totalPages: number}> {
+    return this.http.get<any>(`http://localhost:8080/api/users/me/accommodations/host/${page}`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...], totalPages: number}
+        return {
+          places: response.message || [],
+          totalPages: response.totalPages || 1
+        };
+      })
+    );
+  }
+
+  /**
+    * Obtiene estadísticas de un alojamiento
+    * @param id ID del alojamiento
+    * @param dateFilter Filtros de fecha opcionales
+    * @returns Observable con estadísticas
+    */
+  public getAccommodationStats(id: string, dateFilter: StatsDateDTO): Observable<StatsDTO> {
+    return this.http.post<StatsDTO>(`${this.apiUrl}/${id}/stats`, dateFilter, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: {...}}
+        return response.message || response;
       })
     );
   }

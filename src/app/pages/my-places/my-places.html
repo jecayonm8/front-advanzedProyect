@@ -2,7 +2,7 @@
   <header class="page__heading text-center mx-auto">
     <h1 class="page__title">Tus alojamientos</h1>
     <p class="page__subtitle">
-      Inspírate con algunos espacios destacados y crea tu propio anuncio cuando estés listo.
+      Gestiona tus alojamientos publicados y crea nuevos anuncios.
     </p>
   </header>
 
@@ -23,111 +23,104 @@
         </button>
       </div>
 
-      <div class="table-responsive">
-        <table class="table align-middle table-striped table-hover mb-0">
-          <thead class="text-center">
-            <tr>
-              <th scope="col">Título</th>
-              <th scope="col">Imagen</th>
-              <th scope="col">Ciudad</th>
-              <th scope="col">Precio por noche</th>
-              <th scope="col">Calificación promedio</th>
-              <th scope="col" class="text-center">Acciones</th>
-            </tr>
-          </thead>
+      <div class="places-grid">
+        @for (item of places; track item.id) {
+        <article class="place-card">
+          <div class="place-card__media">
+            <img
+              [src]="item.photo_url"
+              [alt]="item.title"
+              loading="lazy"
+            />
+            <div class="place-card__actions">
+              <!-- Botón Ver -->
+              <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-sm me-1"
+                  title="Ver detalle">
+                  <span class="material-symbols-rounded">visibility</span>
+              </a>
 
-          <tbody class="table-group-divider">
-            @for (item of places; track $index) {
-            <tr>
-              <td class="fw-semibold">{{ item.title }}</td>
-              <td class="text-center">
-                <img
-                  [src]="item.photo_url"
-                  [alt]="item.title"
-                  class="img-thumbnail rounded"
-                  style="width: 90px; height: 60px; object-fit: cover;"
-                  loading="lazy"
-                />
-              </td>
-              <td>{{ item.city }}</td>
-              <td>{{ item.price | currency:'COP':'symbol':'1.0-0' }}</td>
-              <td>{{ item.average_rating | number:'1.0-1' }}</td>
-              <td class="text-center">
-                <!-- Botón Ver -->
-                <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-icon me-1"
-                    title="Ver detalle">
-                    <span class="material-symbols-rounded">visibility</span>
-                </a>
+              <!-- Botón Estadísticas -->
+              <a routerLink="/place-stats/{{item.id}}" class="btn btn-outline-info btn-sm me-1"
+                  title="Ver estadísticas">
+                  <span class="material-symbols-rounded">analytics</span>
+              </a>
 
-                <!-- Botón Editar -->
-                <button routerLink="/edit-place/{{item.id}}" type="button" class="btn btn-outline-success btn-icon me-1" title="Editar">
-                    <span class="material-symbols-rounded">edit</span>
-                </button>
+              <!-- Botón Editar -->
+              <button routerLink="/edit-place/{{item.id}}" type="button" class="btn btn-outline-success btn-sm me-1" title="Editar">
+                  <span class="material-symbols-rounded">edit</span>
+              </button>
 
-                <!-- Botón Eliminar -->
-                <button (click)="onDelete(item.id)" type="button" class="btn btn-outline-danger btn-icon" title="Eliminar" >
-                    <span class="material-symbols-rounded">delete</span>
-                </button>
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
+              <!-- Botón Eliminar -->
+              <button (click)="onDelete(item.id)" type="button" class="btn btn-outline-danger btn-sm" title="Eliminar" >
+                  <span class="material-symbols-rounded">delete</span>
+              </button>
+            </div>
+          </div>
+          <div class="place-card__body">
+            <h3>{{ item.title }}</h3>
+            <p class="place-card__location">{{ item.city }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="place-card__price mb-0">{{ item.price | currency:'COP':'symbol':'1.0-0' }}</p>
+              <p class="place-card__rating mb-0">
+                <span class="material-symbols-rounded" style="font-size: 1rem;">star</span>
+                {{ item.average_rating | number:'1.0-1' }}
+              </p>
+            </div>
+          </div>
+        </article>
+        }
       </div>
-    </div>
-  </div>
 
-  <!-- Sección de Auth Callout -->
-  <section class="auth-callout">
-    <div class="auth-callout__copy">
-      <span class="icon-badge icon-badge--accent" aria-hidden="true">
-        <svg viewBox="0 0 32 32" focusable="false">
-          <path d="m12 14 4 4 8-8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-            stroke-width="2" />
-          <path d="M16 28c6.627 0 12-5.373 12-12S22.627 4 16 4 4 9.373 4 16s5.373 12 12 12Z" fill="none"
-            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
-        </svg>
-      </span>
-      <div>
-        <h2>¿Listo para publicar un alojamiento?</h2>
-        <p>
-          Inicia sesión o crea una cuenta para registrar tu propiedad, gestionar reservas y acceder a
-          herramientas exclusivas para anfitriones.
+      <!-- Paginación -->
+      <nav aria-label="Navegación de páginas" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0">
+              <span aria-hidden="true">&laquo;</span>
+            </button>
+          </li>
+
+          <!-- Números de página -->
+          <li
+            *ngFor="let page of getVisiblePages(); let i = index; trackBy: trackByPage"
+            class="page-item"
+            [class.active]="page === currentPage"
+          >
+            <button class="page-link" (click)="changePage(page)">
+              {{ page + 1 }}
+            </button>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+            <button class="page-link" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">
+              <span aria-hidden="true">&raquo;</span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- Información de página -->
+        <p class="text-center text-muted mt-2 mb-0">
+          Página {{ currentPage + 1 }} de {{ totalPages }}
         </p>
+      </nav>
+    </div>
+
+    <!-- Mensaje si no hay alojamientos -->
+    @if (places.length === 0) {
+      <div class="text-center mt-5">
+        <div class="mb-3">
+          <span class="material-symbols-rounded fs-1 text-muted" aria-hidden="true">apartment</span>
+        </div>
+        <h4 class="text-muted">No tienes alojamientos publicados</h4>
+        <p class="text-muted">¡Crea tu primer anuncio para empezar a recibir reservas!</p>
+        <button type="button" routerLink="/create-place"
+          class="btn btn-success d-flex align-items-center justify-content-center gap-1 mx-auto">
+          <span class="material-symbols-rounded me-1" aria-hidden="true">add</span>
+          Crear alojamiento
+        </button>
       </div>
-    </div>
-    <div class="auth-callout__actions">
-      <button routerLink="/login" class="btn btn-outline-dark me-2">Login</button>
-      <button routerLink="/register" class="btn btn-outline-dark">Crear cuenta</button>
-    </div>
-  </section>
-
-  <!-- Sección de Places Showcase -->
-  <section class="places-showcase">
-    <div class="section-heading">
-      <h2>Inspírate con alojamientos destacados</h2>
-      <p>Explora estilos y amenities que conquistan a los viajeros.</p>
-    </div>
-
-    <div class="places-grid">
-      @for (place of samplePlaces; track place.title) {
-      <article class="place-card">
-        <div class="place-card__media">
-          <img
-            [src]="place.photo_url"
-            [alt]="place.title"
-            loading="lazy"
-            class="img-fluid"
-          />
-          <span class="place-card__badge">{{ place.type }}</span>
-        </div>
-        <div class="place-card__body">
-          <h3>{{ place.title }}</h3>
-          <p class="place-card__location">{{ place.location }}</p>
-          <p class="place-card__price">{{ place.price | currency:'COP':'symbol':'1.0-0' }}</p>
-        </div>
-      </article>
-      }
-    </div>
-  </section>
+    }
+  </div>
 </main>

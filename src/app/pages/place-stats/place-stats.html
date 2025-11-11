@@ -1,0 +1,134 @@
+<main class="page">
+  <header class="page__heading">
+    <h1 class="page__title">Estadísticas del alojamiento</h1>
+    <p class="page__subtitle">Analiza el rendimiento y métricas de tu propiedad</p>
+  </header>
+
+  <!-- Botón volver -->
+  <div class="container mb-4">
+    <button type="button" class="btn btn-outline-primary" routerLink="/my-places">
+      <span class="material-symbols-rounded me-2">arrow_back</span>
+      Volver a mis alojamientos
+    </button>
+  </div>
+
+  <!-- Filtros de fecha -->
+  <section class="stats-filters">
+    <div class="container">
+      <form [formGroup]="statsForm" (ngSubmit)="loadStats()" class="filters-form">
+        <div class="filters-form__grid">
+          <div class="filter-group">
+            <label for="startDate" class="filter-label">Fecha inicio</label>
+            <input
+              type="date"
+              id="startDate"
+              formControlName="startDate"
+              class="filter-input"
+            />
+          </div>
+
+          <div class="filter-group">
+            <label for="endDate" class="filter-label">Fecha fin</label>
+            <input
+              type="date"
+              id="endDate"
+              formControlName="endDate"
+              class="filter-input"
+            />
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+              <span *ngIf="!isLoading">Aplicar filtros</span>
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Estadísticas -->
+  <section class="stats-section" *ngIf="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <!-- Calificación promedio -->
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">star</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.averageRating | number:'1.0-1' }}</h3>
+            <p class="stat-card__label">Calificación promedio</p>
+          </div>
+        </div>
+
+        <!-- Total de comentarios -->
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">comment</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.totalComments }}</h3>
+            <p class="stat-card__label">Total comentarios</p>
+          </div>
+        </div>
+
+        <!-- Total de reservas -->
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">event_available</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.totalReservations }}</h3>
+            <p class="stat-card__label">Total reservas</p>
+          </div>
+        </div>
+
+        <!-- Tasa de ocupación -->
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">schedule</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.occupancyRate | percent:'1.0-1' }}</h3>
+            <p class="stat-card__label">Tasa de ocupación</p>
+          </div>
+        </div>
+
+        <!-- Cancelaciones -->
+        <div class="stat-card">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">cancel</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.cancellations }}</h3>
+            <p class="stat-card__label">Cancelaciones</p>
+          </div>
+        </div>
+
+        <!-- Ingresos totales -->
+        <div class="stat-card stat-card--highlight">
+          <div class="stat-card__icon">
+            <span class="material-symbols-rounded">attach_money</span>
+          </div>
+          <div class="stat-card__content">
+            <h3 class="stat-card__value">{{ stats.totalRevenue | currency:'COP':'symbol':'1.0-0' }}</h3>
+            <p class="stat-card__label">Ingresos totales</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="isLoading && !stats">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando estadísticas...</p>
+  </div>
+</main>

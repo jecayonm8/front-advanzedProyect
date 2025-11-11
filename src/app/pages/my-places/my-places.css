@@ -110,6 +110,14 @@
   backdrop-filter: blur(6px);
 }
 
+.place-card__actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
 .place-card__body {
   padding: 0 1.5rem 1.75rem;
   display: grid;
@@ -132,6 +140,14 @@
   margin: 0;
   color: var(--color-primary);
   font-weight: 600;
+}
+
+.place-card__rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 600px) {

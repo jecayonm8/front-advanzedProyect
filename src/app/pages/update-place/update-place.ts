@@ -32,20 +32,21 @@ export class UpdatePlace implements OnInit, AfterViewInit {
         this.cities = ['Bogotá', 'Medellín', 'Cali','Armenia', 'Barranquilla', 'Cartagena'];
         this.accommodationTypes = ['HOUSE', 'APARTMENT', 'FARM'];
         this.amenitiesOptions = [
-          { label: 'Wifi', value: 'WIFI' },
-          { label: 'Parqueadero', value: 'PARKING_AND_FACILITIES' },
-          { label: 'Aire acondicionado', value: 'SERVICES' },
-          { label: 'Lavanderia', value: 'BEDROOM_AND_LAUNDRY' },
-          { label: 'Apto para mascotas', value: 'SERVICE_ANIMALS_ALLOWED' },
-          { label: 'Congelador', value: 'FREEZER' },
-          { label: 'Agua caliente', value: 'HOT_WATER' },
-          { label: 'Cocina', value: 'KITCHEN' },
-          { label: 'TV', value: 'ENTERTAINMENT' }
+          { label: 'Wifi', value: 'wifi' },
+          { label: 'Cocina', value: 'cocina' },
+          { label: 'Estacionamiento gratuito', value: 'estacionamiento_gratuito' },
+          { label: 'Aire acondicionado', value: 'aire_acondicionado' },
+          { label: 'Calefacción', value: 'calefacción' },
+          { label: 'Lavadora', value: 'lavadora' },
+          { label: 'Secadora', value: 'secadora' },
+          { label: 'Televisión', value: 'televisión' },
+          { label: 'Se aceptan mascotas', value: 'se_aceptan_mascotas' },
+          { label: 'Llegada autónoma', value: 'llegada_autónoma' }
         ];
     }
 
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
+        this.route.params.subscribe(params => {
             this.placeId = params['id'] || null;
             if (this.placeId) {
                 this.loadPlaceData(this.placeId);
@@ -87,6 +88,9 @@ export class UpdatePlace implements OnInit, AfterViewInit {
                         longitude: data.longitude
                     }
                 });
+
+                // Centrar el mapa en la ubicación del alojamiento y colocar marcador
+                this.mapService.setMarkerAtLocation(data.latitude, data.longitude);
             },
             error: (error) => {
                 console.error('Error al cargar datos del alojamiento:', error);
@@ -114,7 +118,7 @@ export class UpdatePlace implements OnInit, AfterViewInit {
             neighborhood: [''],
             street: [''],
             postalCode: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]{4,10}$/)]],
-            picsUrl: [[], [Validators.required]],
+            picsUrl: [[]],
             amenities: [[], [Validators.required]],
             accommodationType: ["", Validators.required],
             location: [null, [Validators.required]]
@@ -135,12 +139,16 @@ export class UpdatePlace implements OnInit, AfterViewInit {
                 neighborhood: formValue.neighborhood,
                 street: formValue.street,
                 postalCode: formValue.postalCode,
-                picsUrl: formValue.picsUrl,
                 amenities: formValue.amenities,
                 accommodationType: formValue.accommodationType,
                 latitude: formValue.location.latitude,
                 longitude: formValue.location.longitude
             };
+
+            // Solo incluir picsUrl si son strings (URLs existentes), no Files
+            if (formValue.picsUrl && Array.isArray(formValue.picsUrl) && formValue.picsUrl.length > 0 && typeof formValue.picsUrl[0] === 'string') {
+                updateData.picsUrl = formValue.picsUrl as string[];
+            }
 
             this.placesService.update(this.placeId, updateData).subscribe({
                 next: () => {
