@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CommentDTO, CreateCommentDTO } from '../models/place-dto';
 
 @Injectable({
@@ -10,6 +11,14 @@ export class CommentService {
   private readonly API_URL = 'http://localhost:8080/api/comments';
 
   constructor(private http: HttpClient) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = sessionStorage.getItem('AuthToken');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
 
   /**
    * Lista los comentarios de un alojamiento con paginación
@@ -36,7 +45,15 @@ export class CommentService {
       .set('accommodationId', accommodationId)
       .set('page', page.toString());
 
-    return this.http.get<{comments: CommentDTO[], totalPages: number}>(`${this.API_URL}/list`, { params });
+    return this.http.get<any>(`${this.API_URL}/list`, { params }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...], totalPages: number}
+        return {
+          comments: response.message || [],
+          totalPages: response.totalPages || 1
+        };
+      })
+    );
   }
 
   /**
@@ -45,7 +62,9 @@ export class CommentService {
    * @returns Observable con el comentario creado
    */
   createComment(commentData: CreateCommentDTO): Observable<CommentDTO> {
-    return this.http.post<CommentDTO>(`${this.API_URL}/create`, commentData);
+    return this.http.post<CommentDTO>(`${this.API_URL}/create`, commentData, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   // Método mock para desarrollo (sin backend)

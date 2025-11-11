@@ -65,13 +65,18 @@ export class DetailPlace implements OnInit {
   }
 
   private loadComments(accommodationId: string, page: number): void {
-    // Para desarrollo: usar datos mock, pero simular que cada página hace una consulta diferente
-    // En producción: this.commentService.listCommentsWithPagination(accommodationId, page).subscribe(...)
-    this.comments = this.commentService.getMockComments(accommodationId, page);
-
-    // En desarrollo simulamos que siempre hay más páginas disponibles
-    // En producción esto vendría en la respuesta del backend junto con los comentarios
-    this.totalPages = Math.max(this.currentPage + 5, 10); // Simular que siempre hay más páginas
+    this.placesService.getComments(accommodationId, page).subscribe({
+      next: (response) => {
+        this.comments = response.comments;
+        this.totalPages = response.totalPages;
+      },
+      error: (error) => {
+        console.error('Error al cargar comentarios:', error);
+        // Fallback a datos mock si falla la carga
+        this.comments = this.commentService.getMockComments(accommodationId, page);
+        this.totalPages = Math.max(this.currentPage + 5, 10);
+      }
+    });
   }
 
   private getMockPlaceDetail(id: number): AccommodationDetailDTO {
@@ -146,29 +151,23 @@ export class DetailPlace implements OnInit {
         accommodationId: this.placeId
       };
 
-      // Para desarrollo: simular creación exitosa
-      const newComment: CommentDTO = {
-        id: Date.now().toString(),
-        comment: formValue.comment,
-        rating: formValue.rating,
-        createdAt: new Date().toISOString(),
-        userDetailDTO: {
-          id: 'current-user',
-          name: 'Usuario Actual',
-          photoUrl: 'https://example.com/profiles/user.jpg',
-          createdAt: new Date().toISOString()
+      this.commentService.createComment(commentData).subscribe({
+        next: (newComment) => {
+          this.comments.unshift(newComment); // Agregar al inicio
+          this.commentForm.reset({ rating: 5 });
+
+          Swal.fire({
+            title: "¡Éxito!",
+            text: "Comentario agregado exitosamente.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          });
+        },
+        error: (error) => {
+          console.error('Error al crear comentario:', error);
+          Swal.fire("Error", "No se pudo agregar el comentario. Inténtalo de nuevo.", "error");
         }
-      };
-
-      this.comments.unshift(newComment); // Agregar al inicio
-      this.commentForm.reset({ rating: 5 });
-
-      Swal.fire({
-        title: "¡Éxito!",
-        text: "Comentario agregado exitosamente.",
-        icon: "success",
-        timer: 2000,
-        showConfirmButton: false
       });
     } else {
       Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");

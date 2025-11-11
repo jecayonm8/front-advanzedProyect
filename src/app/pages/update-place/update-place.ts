@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from '../../services/places-service';
 import { MapService } from '../../services/map-service';
-import { AccommodationDTO, UpdateAccommodationDTO, Amenities } from '../../models/place-dto';
+import { AccommodationDTO, UpdateAccommodationDTO, Amenities, GetForUpdateDTO } from '../../models/place-dto';
 import Swal from 'sweetalert2';
 
 @Component ({
@@ -66,25 +66,40 @@ export class UpdatePlace implements OnInit, AfterViewInit {
     }
 
     private loadPlaceData(id: string): void {
-        const place = this.placesService.getAllSync().find(p => p.id === id);
-        if (place) {
-            // Para desarrollo, usamos datos mock ya que no tenemos todos los campos en AccommodationDTO
-            this.updatePlaceForm.patchValue({
-                title: place.title,
-                price: place.price,
-                city: place.city,
-                description: 'Descripción del alojamiento', // Mock data
-                capacity: 4, // Mock data
-                country: 'Colombia', // Mock data
-                department: 'Cundinamarca', // Mock data
-                postalCode: '110111', // Mock data
-                accommodationType: 'APARTMENT', // Mock data
-                location: {
-                    latitude: place.latitude,
-                    longitude: place.longitude
-                }
-            });
-        }
+        this.placesService.getForUpdate(id).subscribe({
+            next: (data: GetForUpdateDTO) => {
+                this.updatePlaceForm.patchValue({
+                    title: data.title,
+                    description: data.description,
+                    capacity: data.capacity,
+                    price: data.price,
+                    country: data.country,
+                    department: data.department,
+                    city: data.city,
+                    neighborhood: data.neighborhood,
+                    street: data.street,
+                    postalCode: data.postalCode,
+                    picsUrl: data.pics_url,
+                    amenities: data.amenities,
+                    accommodationType: data.accommodationType,
+                    location: {
+                        latitude: data.latitude,
+                        longitude: data.longitude
+                    }
+                });
+            },
+            error: (error) => {
+                console.error('Error al cargar datos del alojamiento:', error);
+                Swal.fire({
+                    title: "Error",
+                    text: "No se pudo cargar la información del alojamiento. Verifica que el alojamiento exista.",
+                    icon: "error",
+                    confirmButtonText: "Aceptar"
+                }).then(() => {
+                    this.router.navigate(['/my-places']);
+                });
+            }
+        });
     }
 
     private createForm(){

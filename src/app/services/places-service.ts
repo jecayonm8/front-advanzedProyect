@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, map } from 'rxjs';
-import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO } from '../models/place-dto';
+import { HttpClient, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import { Observable, of, map, filter } from 'rxjs';
+import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO, GetForUpdateDTO, UpdateAccommodationDTO, SearchFiltersDTO, CommentDTO } from '../models/place-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +23,6 @@ export class PlacesService {
     });
   }
 
-  public getAll(): Observable<AccommodationDTO[]> {
-    // Por ahora devolver datos locales, pero en producción usar:
-    // return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/1`, {
-    //   headers: this.getAuthHeaders(),
-    //   params: { page: '0' }
-    // });
-    return of(this.places);
-  }
 
   public getAllSync(): AccommodationDTO[] {
     return this.places;
@@ -42,18 +34,10 @@ export class PlacesService {
     });
   }
 
-  public update(id: string, updatedPlace: Partial<AccommodationDTO>): Observable<string> {
-    // Por ahora usar actualización local, después activar HTTP:
-    // return this.http.put<string>(`${this.apiUrl}/${id}`, updatedPlace, {
-    //   headers: this.getAuthHeaders()
-    // });
-
-    // Actualización local para desarrollo
-    const index = this.places.findIndex(place => place.id === id);
-    if (index !== -1) {
-      this.places[index] = { ...this.places[index], ...updatedPlace };
-    }
-    return of('Alojamiento actualizado exitosamente');
+  public update(id: string, updatedPlace: UpdateAccommodationDTO): Observable<string> {
+    return this.http.put<string>(`${this.apiUrl}/${id}`, updatedPlace, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   public delete(id: string): Observable<string> {
@@ -78,9 +62,7 @@ export class PlacesService {
   }
 
   public getAmenities(): Observable<string[]> {
-    return this.http.get<any>(`${this.apiUrl}/amenities`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/amenities`).pipe(
       map((response: any) => {
         // El backend devuelve {error: false, message: [...]}
         // Extraemos el array del campo 'message'
@@ -90,37 +72,71 @@ export class PlacesService {
   }
 
   public getDetail(id: string): Observable<AccommodationDetailDTO> {
-    // Por ahora devolver datos mock, después activar HTTP:
-    // return this.http.get<AccommodationDetailDTO>(`${this.apiUrl}/${id}/detail`, {
-    //   headers: this.getAuthHeaders()
-    // });
+    return this.http.get<AccommodationDetailDTO>(`${this.apiUrl}/${id}/detail`).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: {...}}
+        const data = response.message || response;
 
-    // Datos mock para desarrollo
-    const mockDetail: AccommodationDetailDTO = {
-      id: parseInt(id),
-      title: 'Casa de Campo El Roble',
-      description: 'Hermosa casa de campo rodeada de naturaleza, perfecta para descansar y disfrutar de la tranquilidad. Cuenta con todas las comodidades necesarias para una estadía inolvidable.',
-      price: 250000,
-      capacity: 6,
-      averageRating: 4.8,
-      latitude: 5.0703,
-      longitude: -75.5138,
-      picsUrl: [
-        'https://example.com/images/campo1.jpg',
-        'https://example.com/images/campo2.jpg',
-        'https://example.com/images/campo3.jpg',
-        'https://example.com/images/campo4.jpg'
-      ],
-      amenities: ['wifi', 'estacionamiento_gratuito', 'cocina', 'aire_acondicionado'],
-      userDetailDTO: {
-        id: '1',
-        name: 'María González',
-        photoUrl: 'https://example.com/profiles/maria.jpg',
-        createdAt: '2024-01-15T10:30:00'
-      }
-    };
+        // Mapear campos del backend al DTO
+        return {
+          id: data.id,
+          title: data.title,
+          description: data.description,
+          price: data.price,
+          capacity: data.capacity,
+          averageRating: data.averageRatings || data.averageRating || 0, // Backend usa "averageRatings"
+          latitude: data.latitude,
+          longitude: data.longitude,
+          picsUrl: data.pics_url || data.picsUrl || [], // Backend usa "pics_url"
+          amenities: data.amenities || [],
+          userDetailDTO: data.userDetailDTO
+        };
+      })
+    );
+  }
 
-    return of(mockDetail);
+  public getComments(accommodationId: string, page: number = 0): Observable<{comments: CommentDTO[], totalPages: number}> {
+    return this.http.get<any>(`${this.apiUrl}/${accommodationId}/comments/${page}`).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...], totalPages: number}
+        return {
+          comments: response.message || [],
+          totalPages: response.totalPages || 1
+        };
+      })
+    );
+  }
+
+  public getForUpdate(id: string): Observable<GetForUpdateDTO> {
+    return this.http.get<GetForUpdateDTO>(`${this.apiUrl}/update/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  public search(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
+    return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/${page}`, {
+      headers: this.getAuthHeaders(),
+      params: filters as any // Convertir nulls a undefined para query params, pero como es body, usar body
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...]}
+        return response.message || [];
+      })
+    );
+  }
+
+  public searchWithBody(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
+    // Endpoint público - no requiere autenticación
+    return this.http.post<AccommodationDTO[]>(`${this.apiUrl}/${page}`, filters, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    }).pipe(
+      map((response: any) => {
+        // El backend devuelve {error: false, message: [...]}
+        return response?.message || [];
+      })
+    );
   }
 
   private createTestPlaces(): AccommodationDTO[] {

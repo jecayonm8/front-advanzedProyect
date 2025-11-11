@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
-import { AccommodationDTO, AccommodationType } from '../../models/place-dto';
+import { AccommodationDTO, AccommodationType, SearchFiltersDTO } from '../../models/place-dto';
 import { PlacesService } from '../../services/places-service';
 import Swal from 'sweetalert2';
 
@@ -27,9 +27,20 @@ export class MyPlaces {
   places: AccommodationDTO[] = [];
 
   constructor(private placesService: PlacesService, private router: Router) {
-    this.placesService.getAll().subscribe({
-      next: (data) => this.places = data,
-      error: (err) => console.error('Error loading places:', err)
+    // Usar searchWithBody con filtros vacíos para obtener todos los alojamientos
+    const emptyFilters: SearchFiltersDTO = {
+      city: null,
+      checkIn: null,
+      checkOut: null,
+      guest_number: null,
+      minimum: null,
+      maximum: null,
+      list: null
+    };
+
+    this.placesService.searchWithBody(emptyFilters).subscribe({
+      next: (data: AccommodationDTO[]) => this.places = data,
+      error: (err: any) => console.error('Error loading places:', err)
     });
   }
 

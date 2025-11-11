@@ -1,90 +1,206 @@
-<!-- ...existing code... -->
 <main class="page">
+  <!-- Hero Section -->
   <section class="hero">
     <div class="hero__content">
-      <span class="hero__eyebrow">Reservas inteligentes</span>
-      <h1 class="hero__title">Gestiona tus alojamientos y reservas con una plataforma moderna</h1>
+      <span class="hero__eyebrow">Encuentra tu lugar perfecto</span>
+      <h1 class="hero__title">Alojamientos en Colombia</h1>
       <p class="hero__subtitle">
-        Crea anuncios, administra disponibilidad y confirma reservas. Todo en una interfaz ágil, accesible y pensada para tu equipo.
+        Miles de opciones para tu próxima aventura
       </p>
-      <div class="hero__actions">
-        <a class="btn btn-primary" routerLink="/create-place">Publicar un alojamiento</a>
-        <a class="btn btn-outline-secondary" routerLink="/bookings">Revisar mis reservas</a>
-      </div>
     </div>
+  </section>
 
-    <div class="hero__card mt-4 ">
-      <div class="hero__card-header d-flex align-items-center justify-content-between">
-        <div>
-          <h5 class="mb-0">Alojamientos destacados</h5>
-          
-        </div>
-      </div>
+  <!-- Formulario de Búsqueda -->
+  <section class="search-section">
+    <div class="container">
+      <form [formGroup]="searchForm" (ngSubmit)="performSearch()" class="search-form">
+        <div class="search-form__main">
+          <!-- Ciudad -->
+          <div class="search-field">
+            <label for="city" class="search-label">Destino</label>
+            <input
+              type="text"
+              id="city"
+              formControlName="city"
+              class="search-input"
+              placeholder="¿Dónde quieres ir?"
+            />
+          </div>
 
-      <!-- Carousel simple: muestra 1 alojamiento y flechas -->
-      <div class="p-3">
-        <div class="d-flex align-items-center justify-content-center position-relative">
+          <!-- Check-in -->
+          <div class="search-field">
+            <label for="checkIn" class="search-label">Llegada</label>
+            <input
+              type="date"
+              id="checkIn"
+              formControlName="checkIn"
+              class="search-input"
+            />
+          </div>
 
-          <!-- Flecha izquierda -->
-          <button class="btn btn-sm btn-light position-absolute start-0" (click)="prev()" aria-label="Anterior"
-                  style="z-index:10; left:0.5rem;">
-            ‹
-          </button>
+          <!-- Check-out -->
+          <div class="search-field">
+            <label for="checkOut" class="search-label">Salida</label>
+            <input
+              type="date"
+              id="checkOut"
+              formControlName="checkOut"
+              class="search-input"
+            />
+          </div>
 
-          <!-- Slide -->
-          <ng-container *ngIf="places?.length; else noPlaces">
-            <div class="card" style="width: 420px;">
-              <div class="ratio ratio-4x3">
-                <img
-                  [src]="places[currentIndex]?.photo_url"
-                  [alt]="places[currentIndex]?.title"
-                  class="card-img-top"
-                  style="object-fit: cover;"
-                  loading="lazy"
-                />
-              </div>
-              <div class="card-body">
-                <h5 class="card-title mb-1 text-truncate">{{ places[currentIndex]?.title }}</h5>
-                <p class="card-text small mb-1 text-muted">{{ places[currentIndex]?.city }}</p>
-                <p class="mb-0 fw-semibold">{{ places[currentIndex]?.price | currency:'COP':'symbol':'1.0-0' }}</p>
-                <p class="mb-0 small text-muted">Calificación: {{ places[currentIndex]?.average_rating | number:'1.0-1' }}/5</p>
-              </div>
-            </div>
-          </ng-container>
+          <!-- Huéspedes -->
+          <div class="search-field">
+            <label for="guestNumber" class="search-label">Huéspedes</label>
+            <input
+              type="number"
+              id="guestNumber"
+              formControlName="guestNumber"
+              class="search-input"
+              placeholder="1"
+              min="1"
+            />
+          </div>
 
-          <!-- Template alternativo cuando no hay alojamientos -->
-          <ng-template #noPlaces>
-            <div class="card text-center p-4" style="width:420px;">
-              <p class="mb-0 text-muted">No hay alojamientos para mostrar.</p>
-            </div>
-          </ng-template>
-
-          <!-- Flecha derecha -->
-          <button class="btn btn-sm btn-light position-absolute end-0" (click)="next()" aria-label="Siguiente"
-                  style="z-index:10; right:0.5rem;">
-            ›
-          </button>
-        </div>
-
-        <!-- Indicadores -->
-        <div class="d-flex justify-content-center gap-2 mt-3">
-          <ng-container *ngIf="places?.length">
-            <button *ngFor="let _p of places; let i = index; trackBy: trackById"
-                    (click)="goTo(i)"
-                    [ngClass]="{'btn-primary': i === currentIndex, 'btn-outline-secondary': i !== currentIndex}"
-                    class="btn btn-sm"
-                    style="width:10px; height:10px; padding:0; border-radius:50%;">
+          <!-- Botón de búsqueda -->
+          <div class="search-field search-actions">
+            <button type="submit" class="btn btn-primary search-btn" [disabled]="isLoading">
+              <span class="material-symbols-rounded" *ngIf="!isLoading">search</span>
+              <span class="spinner-border spinner-border-sm" *ngIf="isLoading"></span>
+              <span class="d-none d-sm-inline">Buscar</span>
             </button>
-          </ng-container>
+          </div>
         </div>
+
+        <!-- Filtros adicionales -->
+        <div class="search-form__advanced" *ngIf="amenitiesOptions.length > 0">
+          <details class="filters-toggle">
+            <summary class="filters-toggle__summary">
+              <span class="material-symbols-rounded">tune</span>
+              Filtros avanzados
+            </summary>
+            <div class="filters-content">
+              <!-- Precios -->
+              <div class="filter-group">
+                <label class="filter-label">Precio por noche</label>
+                <div class="price-inputs">
+                  <input
+                    type="number"
+                    formControlName="minPrice"
+                    class="form-control form-control-sm"
+                    placeholder="Mín"
+                    min="0"
+                  />
+                  <input
+                    type="number"
+                    formControlName="maxPrice"
+                    class="form-control form-control-sm"
+                    placeholder="Máx"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <!-- Amenities -->
+              <div class="filter-group">
+                <label class="filter-label">Servicios</label>
+                <div class="amenities-grid">
+                  <div *ngFor="let amenity of amenitiesOptions" class="amenity-item">
+                    <input
+                      type="checkbox"
+                      [id]="'amenity-' + amenity.value"
+                      [checked]="(searchForm.get('amenities')?.value || []).includes(amenity.value)"
+                      (change)="onAmenityToggle(amenity.value, $event.target.checked)"
+                      class="amenity-checkbox"
+                    />
+                    <label [for]="'amenity-' + amenity.value" class="amenity-label">
+                      {{ amenity.label }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Resultados de Búsqueda -->
+  <section class="search-results">
+    <div class="container">
+      <div class="results-header" *ngIf="places.length > 0 || noResults">
+        <h2 class="results-title">
+          {{ places.length > 0 ? places.length + ' alojamientos encontrados' : 'No se encontraron resultados' }}
+        </h2>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetSearch()">
+          Limpiar filtros
+        </button>
+      </div>
+
+      <!-- Grid de Resultados -->
+      <div class="places-grid" *ngIf="places.length > 0">
+        <article *ngFor="let place of places; trackBy: trackById" class="place-card">
+          <div class="place-card__media">
+            <img
+              [src]="place.photo_url || '/assets/img/fallback.svg'"
+              [alt]="place.title"
+              loading="lazy"
+              class="img-fluid"
+            />
+            <div class="place-card__overlay">
+              <span class="place-card__rating">
+                <span class="material-symbols-rounded">star</span>
+                {{ place.average_rating | number:'1.0-1' }}
+              </span>
+            </div>
+          </div>
+          <div class="place-card__body">
+            <h3 class="place-card__title">{{ place.title }}</h3>
+            <p class="place-card__location">
+              <span class="material-symbols-rounded">location_on</span>
+              {{ place.city }}
+            </p>
+            <p class="place-card__price">
+              <strong>{{ place.price | currency:'COP':'symbol':'1.0-0' }}</strong>
+              <span class="text-muted">/noche</span>
+            </p>
+            <a routerLink="/place/{{place.id}}" class="btn btn-primary btn-sm w-100">
+              Ver detalles
+            </a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Mensaje cuando no hay resultados -->
+      <div class="no-results" *ngIf="noResults && !isLoading">
+        <div class="no-results__content">
+          <span class="material-symbols-rounded no-results__icon">search_off</span>
+          <h3>No encontramos alojamientos</h3>
+          <p>Intenta ajustar tus filtros de búsqueda para encontrar más opciones.</p>
+          <button type="button" class="btn btn-primary" (click)="resetSearch()">
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón cargar más -->
+      <div class="load-more" *ngIf="hasMoreResults && !isLoading">
+        <button type="button" class="btn btn-outline-primary" (click)="loadMore()">
+          Cargar más resultados
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" *ngIf="isLoading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2">Buscando alojamientos...</p>
       </div>
     </div>
   </section>
 
-  <section class="feature-grid mt-5">
-    <!-- ...existing feature cards (sin cambios) ... -->
-  </section>
-  <div id="map"></div>
-
+  <!-- Mapa -->
+  <div id="map" class="map-container" [class.map-hidden]="places.length === 0"></div>
 </main>
-<!-- ...existing code... -->
