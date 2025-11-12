@@ -79,10 +79,8 @@ export class CreatePlace implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     // Se suscribe al evento de agregar marcador y actualiza el formulario después de que la vista esté inicializada
     this.mapService.addMarker().subscribe((marker) => {
-      this.createPlaceForm.get('location')?.setValue({
-        latitude: marker.lat,
-        longitude: marker.lng,
-      });
+      this.createPlaceForm.get('latitude')?.setValue(marker.lat);
+      this.createPlaceForm.get('longitude')?.setValue(marker.lng);
     });
   }
 
@@ -99,10 +97,11 @@ export class CreatePlace implements OnInit, AfterViewInit {
       city: ['', [Validators.required]],
       neighborhood: ['', []],
       postalCode: ['', [Validators.required]],
+      latitude: ['', [Validators.required]],
+      longitude: ['', [Validators.required]],
       amenities: [[], []],
-      location: [null, [Validators.required]],
       picsUrl: [[], []]
-      
+
     });
 
   }
@@ -151,8 +150,8 @@ export class CreatePlace implements OnInit, AfterViewInit {
             street: formValue.street || undefined,
             postalCode: formValue.postalCode,
             amenities: formValue.amenities || [],
-            latitude: formValue.location.latitude,
-            longitude: formValue.location.longitude
+            latitude: parseFloat(formValue.latitude),
+            longitude: parseFloat(formValue.longitude)
           };
 
           // Cerrar loading de imágenes y mostrar loading de creación
