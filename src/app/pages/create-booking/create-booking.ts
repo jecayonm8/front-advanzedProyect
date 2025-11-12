@@ -66,7 +66,14 @@ export class CreateBooking implements OnInit {
       return;
     }
 
-    this.bookingService.create(this.bookingForm.value).subscribe({
+    const formValue = this.bookingForm.value;
+    const bookingData = {
+      checkIn: new Date(formValue.checkIn).toISOString(),
+      checkOut: new Date(formValue.checkOut).toISOString(),
+      guest_number: formValue.guest_number
+    };
+
+    this.bookingService.create(formValue.accommodationCode, bookingData).subscribe({
       next: (response) => {
         Swal.fire("¡Éxito!", response, "success");
         this.bookingForm.reset();

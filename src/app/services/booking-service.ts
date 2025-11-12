@@ -16,29 +16,32 @@ export class BookingService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
-    });
+    const token = sessionStorage.getItem('AuthToken');
+    console.log('Token from sessionStorage:', token);
+
+    const headers = {
+      'Content-Type': 'application/json'
+    } as any;
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('Authorization header:', `Bearer ${token}`);
+    } else {
+      console.log('No token found in sessionStorage');
+    }
+
+    return new HttpHeaders(headers);
   }
 
-  public create(booking: CreateBookingDTO): Observable<string> {
-    // Por ahora usar creación local, después activar HTTP:
-    // return this.http.post<string>(this.apiUrl, booking, {
-    //   headers: this.getAuthHeaders()
-    // });
+  public create(idAccommodation: string, booking: { checkIn: string; checkOut: string; guest_number: number }): Observable<string> {
+    const headers = this.getAuthHeaders();
+    console.log('Booking request headers:', headers);
+    console.log('Booking request body:', booking);
+    console.log('Booking URL:', `${this.apiUrl}/${idAccommodation}`);
 
-    // Creación local para desarrollo
-    const newBooking: BookingDTO = {
-      id: (this.bookings.length + 1).toString(),
-      ...booking,
-      status: 'PENDING',
-      userId: '1', // Simular userId
-      accommodationTitle: 'Test Accommodation'
-    };
-    this.bookings.push(newBooking);
-    return of('Reserva creada exitosamente');
+    return this.http.post<string>(`${this.apiUrl}/${idAccommodation}`, booking, {
+      headers: headers
+    });
   }
 
   public getUserBookings(userId: string): Observable<BookingDTO[]> {

@@ -122,9 +122,10 @@
         </div>
       </div>
 
-      <!-- Información del propietario -->
+      <!-- Información del propietario y Reserva -->
       <div class="col-lg-4">
-        <div class="card sticky-top" style="top: 20px;">
+        <!-- Información del propietario -->
+        <div class="card">
           <div class="card-body">
             <h4 class="card-title mb-3">Propietario</h4>
             <div class="host-info">
@@ -146,6 +147,11 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Formulario de Reserva -->
+        <div class="mt-4" *ngIf="place">
+          <app-booking-form [accommodationId]="placeId"></app-booking-form>
         </div>
       </div>
     </div>

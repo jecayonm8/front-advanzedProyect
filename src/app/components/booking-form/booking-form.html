@@ -1,0 +1,81 @@
+<div class="booking-form card">
+  <div class="card-header">
+    <h5 class="card-title mb-0">Reservar este alojamiento</h5>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()">
+      <!-- Fechas -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="checkIn" class="form-label">Fecha de llegada</label>
+          <input
+            type="date"
+            id="checkIn"
+            formControlName="checkIn"
+            class="form-control"
+            [class.is-invalid]="bookingForm.get('checkIn')?.invalid && bookingForm.get('checkIn')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="bookingForm.get('checkIn')?.invalid && bookingForm.get('checkIn')?.touched">
+            Fecha de llegada requerida
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label for="checkOut" class="form-label">Fecha de salida</label>
+          <input
+            type="date"
+            id="checkOut"
+            formControlName="checkOut"
+            class="form-control"
+            [min]="getMinCheckOut()"
+            [class.is-invalid]="(bookingForm.get('checkOut')?.invalid && bookingForm.get('checkOut')?.touched) || bookingForm.errors?.['dateRangeInvalid']"
+          />
+          <div class="invalid-feedback" *ngIf="bookingForm.get('checkOut')?.invalid && bookingForm.get('checkOut')?.touched">
+            Fecha de salida requerida
+          </div>
+          <div class="invalid-feedback" *ngIf="bookingForm.errors?.['dateRangeInvalid']">
+            La fecha de salida debe ser posterior a la de llegada
+          </div>
+        </div>
+      </div>
+      <small class="form-text text-muted mb-3">Check-in: 1:00 PM, Check-out: 12:00 PM</small>
+
+      <!-- Huéspedes -->
+      <div class="mb-3">
+        <label for="guestNumber" class="form-label">Número de huéspedes</label>
+        <select
+          id="guestNumber"
+          formControlName="guestNumber"
+          class="form-select"
+          [class.is-invalid]="bookingForm.get('guestNumber')?.invalid && bookingForm.get('guestNumber')?.touched"
+        >
+          <option *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [value]="num">{{ num }} huésped{{ num > 1 ? 'es' : '' }}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="bookingForm.get('guestNumber')?.invalid && bookingForm.get('guestNumber')?.touched">
+          Seleccione al menos 1 huésped
+        </div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
+      <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <!-- Botón -->
+      <button
+        type="submit"
+        class="btn btn-primary w-100"
+        [disabled]="isLoading || bookingForm.invalid"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Reservando...' : 'Confirmar reserva' }}
+      </button>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="text-center mt-3">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Reservando...</span>
+        </div>
+        <p class="mt-2">Procesando reserva...</p>
+      </div>
+    </form>
+  </div>
+</div>

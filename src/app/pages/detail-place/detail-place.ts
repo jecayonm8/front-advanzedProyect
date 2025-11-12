@@ -5,11 +5,12 @@ import { PlacesService } from '../../services/places-service';
 import { CommentService } from '../../services/comment-service';
 import { AccommodationDetailDTO, CommentDTO, CreateCommentDTO } from '../../models/place-dto';
 import { CommonModule } from '@angular/common';
+import { BookingForm } from '../../components/booking-form/booking-form';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detail-place',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, BookingForm],
   templateUrl: './detail-place.html',
   styleUrl: './detail-place.css'
 })

@@ -1,0 +1,16 @@
+.booking-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.booking-preview {
+  border: 1px solid #dee2e6;
+}
+
+.form-label {
+  font-weight: 500;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+}
