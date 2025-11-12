@@ -31,6 +31,10 @@
             <div class="h2 text-primary fw-bold mb-0">
               {{ place.price | currency:'COP':'symbol':'1.0-0' }}
             </div>
+            <button type="button" class="btn btn-outline-primary mt-3" (click)="navigateToAccommodationBookings()">
+              <span class="material-symbols-rounded me-2">event_available</span>
+              Ver reservas
+            </button>
             <button type="button" class="btn btn-outline-danger mt-3 ms-2" (click)="addToFavorites()">
               <span class="material-symbols-rounded me-2">favorite_border</span>
               Agregar a favoritos

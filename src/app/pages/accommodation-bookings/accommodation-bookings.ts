@@ -1,19 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BookingDTO, SearchBookingDTO } from '../../models/booking-dto';
 import { BookingService } from '../../services/booking-service';
-import { TokenService } from '../../services/token-service';
 
 @Component({
-  selector: 'app-bookings',
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
-  templateUrl: './bookings.html',
-  styleUrl: './bookings.css',
+  selector: 'app-accommodation-bookings',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './accommodation-bookings.html',
+  styleUrl: './accommodation-bookings.css',
 })
-export class Bookings {
+export class AccommodationBookings implements OnInit {
 
+  accommodationId: string = '';
   bookings: BookingDTO[] = [];
   filterForm!: FormGroup;
   currentPage = 0;
@@ -22,11 +22,17 @@ export class Bookings {
 
   constructor(
     private bookingService: BookingService,
-    private tokenService: TokenService,
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder
   ) {
     this.createFilterForm();
-    this.loadBookings();
+  }
+
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      this.accommodationId = params['id'];
+      this.loadBookings();
+    });
   }
 
   private createFilterForm() {
@@ -110,7 +116,7 @@ export class Bookings {
 
   private loadBookings() {
     const filters: SearchBookingDTO = this.filterForm.value;
-    this.bookingService.getUserBookingsWithFilters(this.currentPage, filters).subscribe({
+    this.bookingService.getAccommodationBookingsWithFilters(this.accommodationId, this.currentPage, filters).subscribe({
       next: (data) => {
         console.log('Raw data from backend:', data);
         console.log('Type of data:', typeof data);
@@ -130,21 +136,6 @@ export class Bookings {
 
   trackByFn(index: number, item: any): any {
     return index;
-  }
-
-  public cancelBooking(booking: BookingDTO) {
-    if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
-      this.bookingService.deleteBooking(booking.id).subscribe({
-        next: () => {
-          alert('Reserva cancelada exitosamente.');
-          this.loadBookings(); // Reload the list
-        },
-        error: (err) => {
-          console.error('Error canceling booking:', err);
-          alert('Error al cancelar la reserva. Inténtalo de nuevo.');
-        }
-      });
-    }
   }
 
 }

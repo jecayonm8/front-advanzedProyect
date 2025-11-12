@@ -69,9 +69,31 @@ export class BookingService {
     );
   }
 
+  public getAccommodationBookingsWithFilters(accommodationId: string, page: number, filters: SearchBookingDTO): Observable<BookingDTO[]> {
+    const headers = this.getAuthHeaders();
+    const body = {
+      state: filters.state || null,
+      checkIn: filters.checkIn || null,
+      checkOut: filters.checkOut || null,
+      guest_number: filters.guest_number || null
+    };
+
+    return this.http.post<{error: boolean, message: BookingDTO[]}>(`http://localhost:8080/api/accommodations/${accommodationId}/bookings/${page}`, body, {
+      headers: headers
+    }).pipe(
+      map(response => response.message || [])
+    );
+  }
+
+  public deleteBooking(bookingId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(`${this.apiUrl}/${bookingId}`, { headers });
+  }
+
   private createTestBookings(): BookingDTO[] {
     return [
       {
+        id: '1',
         bookingState: 'PENDING',
         checkIn: '2025-12-01',
         checkOut: '2025-12-05',
@@ -79,6 +101,7 @@ export class BookingService {
         user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
       },
       {
+        id: '2',
         bookingState: 'COMPLETED',
         checkIn: '2025-11-15',
         checkOut: '2025-11-18',

@@ -1,8 +1,8 @@
 <main class="page">
   <header class="page__heading text-center mx-auto">
-    <h1 class="page__title">Mis reservas</h1>
+    <h1 class="page__title">Reservas del alojamiento</h1>
     <p class="page__subtitle">
-      Gestiona tus reservas de alojamientos.
+      Gestiona las reservas de este alojamiento.
     </p>
   </header>
 
@@ -10,12 +10,12 @@
   <div class="container pt-2 pb-5">
     <h5 class="mb-0 d-flex align-items-center">
       <span class="material-symbols-rounded fs-2 me-3" aria-hidden="true">event_available</span>
-      Mis reservas
+      Reservas del alojamiento
     </h5>
     <hr />
 
     <div class="card-body">
-      
+
 
       <!-- Filtros -->
       <div class="card mb-4">
@@ -70,7 +70,6 @@
               <th scope="col">Check-out</th>
               <th scope="col">Huéspedes</th>
               <th scope="col">Estado</th>
-              <th scope="col">Acciones</th>
             </tr>
           </thead>
 
@@ -81,15 +80,6 @@
               <td>{{ booking.checkOut | date:'short' }}</td>
               <td>{{ booking.guest_number }}</td>
               <td>{{ booking.bookingState }}</td>
-              <td>
-                <button
-                  *ngIf="booking.bookingState === 'PENDING'"
-                  class="btn btn-danger btn-sm"
-                  (click)="cancelBooking(booking)"
-                  title="Cancelar reserva">
-                  Cancelar
-                </button>
-              </td>
             </tr>
           </tbody>
         </table>
