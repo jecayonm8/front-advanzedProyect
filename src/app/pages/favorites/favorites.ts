@@ -24,13 +24,16 @@ export class Favorites {
   private loadFavorites(page: number = 0): void {
     this.favoriteService.getFavorites(page).subscribe({
       next: (response) => {
-        this.places = response.places;
-        this.totalPages = response.totalPages;
+        this.places = response.places || [];
+        // Calcular totalPages dinámicamente como en bookings
+        this.totalPages = this.places.length > 0 ? Math.max(page + 5, 10) : 1;
         this.currentPage = page;
       },
       error: (err: any) => {
         console.error('Error loading favorites:', err);
-        Swal.fire("Error", "No se pudieron cargar los favoritos.", "error");
+        this.places = [];
+        this.totalPages = 1;
+        this.currentPage = 0;
       }
     });
   }
@@ -42,7 +45,7 @@ export class Favorites {
   }
 
   public getVisiblePages(): number[] {
-    return [0, 1, 2, 3, 4]; // Mostrar siempre 5 números de página
+    return Array.from({ length: Math.min(5, this.totalPages) }, (_, i) => i);
   }
 
   public trackByPage(index: number, item: number): number {
@@ -52,4 +55,31 @@ export class Favorites {
   public trackById(index: number, item: AccommodationDTO): string {
     return item.id;
   }
+
+  onDelete(placeId: string): void {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el alojamiento de tus favoritos.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Confirmar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.favoriteService.removeFromFavorites(placeId).subscribe({
+          next: () => {
+            Swal.fire("Eliminado!", "El alojamiento ha sido eliminado de tus favoritos.", "success");
+            // Recargar la página actual después de eliminar
+            this.loadFavorites(this.currentPage);
+          },
+          error: (err: any) => {
+            console.error('Error removing from favorites:', err);
+            Swal.fire("Error", "No se pudo eliminar de favoritos.", "error");
+          }
+        });
+      }
+    });
+  }
+
+
 }

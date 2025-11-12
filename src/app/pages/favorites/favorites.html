@@ -26,10 +26,15 @@
             />
             <div class="place-card__actions">
               <!-- Botón Ver -->
-              <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-sm"
+              <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-sm me-1"
                   title="Ver detalle">
                   <span class="material-symbols-rounded">visibility</span>
               </a>
+
+              <!-- Botón Eliminar -->
+              <button (click)="onDelete(item.id)" type="button" class="btn btn-outline-danger btn-sm" title="Eliminar de favoritos" >
+                  <span class="material-symbols-rounded">delete</span>
+              </button>
             </div>
           </div>
           <div class="place-card__body">

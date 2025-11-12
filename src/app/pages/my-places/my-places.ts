@@ -45,7 +45,7 @@ export class MyPlaces {
   }
 
   public getVisiblePages(): number[] {
-    return [0, 1, 2, 3, 4]; // Mostrar siempre 5 números de página
+    return Array.from({ length: Math.min(5, this.totalPages) }, (_, i) => i);
   }
 
   public trackByPage(index: number, item: number): number {

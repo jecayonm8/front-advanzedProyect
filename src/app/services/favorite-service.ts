@@ -33,6 +33,19 @@ export class FavoriteService {
   }
 
   /**
+   * Elimina un alojamiento de favoritos
+   * @param id ID del alojamiento
+   * @returns Observable con respuesta del servidor
+   */
+  public removeFromFavorites(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map((response: any) => response.message || response)
+    );
+  }
+
+  /**
    * Obtiene la lista de alojamientos favoritos con paginación
    * @param page Número de página (0-based)
    * @returns Observable con lista de favoritos y total de páginas

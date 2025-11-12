@@ -31,11 +31,6 @@
             <div class="h2 text-primary fw-bold mb-0">
               {{ place.price | currency:'COP':'symbol':'1.0-0' }}
             </div>
-            <small class="text-muted">por noche</small>
-            <button type="button" class="btn btn-primary mt-3" (click)="navigateToBooking()">
-              <span class="material-symbols-rounded me-2">event_available</span>
-              Reserva
-            </button>
             <button type="button" class="btn btn-outline-danger mt-3 ms-2" (click)="addToFavorites()">
               <span class="material-symbols-rounded me-2">favorite_border</span>
               Agregar a favoritos
