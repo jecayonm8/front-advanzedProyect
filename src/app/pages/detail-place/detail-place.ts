@@ -70,14 +70,16 @@ export class DetailPlace implements OnInit {
   private loadComments(accommodationId: string, page: number): void {
     this.placesService.getComments(accommodationId, page).subscribe({
       next: (response) => {
+        console.log('Comentarios cargados del backend:', response);
+        console.log('Primer comentario (si existe):', response.comments?.[0]);
         this.comments = response.comments;
         this.totalPages = response.totalPages;
       },
       error: (error) => {
         console.error('Error al cargar comentarios:', error);
-        // Fallback a datos mock si falla la carga
-        this.comments = this.commentService.getMockComments(accommodationId, page);
-        this.totalPages = Math.max(this.currentPage + 5, 10);
+        // Sin datos mock - mostrar array vacío
+        this.comments = [];
+        this.totalPages = 1;
       }
     });
   }

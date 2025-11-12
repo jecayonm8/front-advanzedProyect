@@ -22,7 +22,9 @@ export class ImageService {
     formData.append('file', file);
 
     // No incluir Content-Type header para que el navegador lo setee automáticamente con boundary
-    const headers = this.getAuthHeaders();
+    // Solo incluir Authorization si hay token (para registro no hay token)
+    const token = sessionStorage.getItem('AuthToken');
+    const headers = token ? this.getAuthHeaders() : new HttpHeaders();
 
     return this.http.post<any>(this.apiUrl, formData, {
       headers

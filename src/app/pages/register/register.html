@@ -1,40 +1,19 @@
 <main class="page page--narrow">
   <header class="page__heading">
     <h1 class="page__title">Crea tu cuenta</h1>
-    <p class="page__subtitle">Únete a la comunidad de anfitriones y publica tus alojamientos.</p>
+    <p class="page__subtitle">Únete a nuestra comunidad como usuario o anfitrión. Los anfitriones pueden publicar y gestionar alojamientos.</p>
   </header>
 
   <form class="form-card" [formGroup]="registerForm" (ngSubmit)="createUser()" novalidate>
     <div class="form-card__grid form-card__grid--two-columns">
       <div class="form-group">
         <label for="register-name">Nombre</label>
-        <input id="register-name" type="text" formControlName="name" placeholder="Tu nombre completo" />
+        <input id="register-name" type="text" formControlName="name" placeholder="Tu nombre" />
       </div>
 
       <div class="form-group">
-        <label for="register-phone">Teléfono</label>
-        <input id="register-phone" type="text" formControlName="phone" placeholder="300 000 0000" />
-      </div>
-
-      <div class="form-group">
-        <label for="register-city">Ciudad</label>
-        <select id="register-city" formControlName="city">
-          <option value="">Seleccione una ciudad</option>
-          @for (city of cities; track city) {
-            <option [value]="city">{{ city }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="register-photo">Foto de perfil</label>
-        <input id="register-photo" type="file" formControlName="photoUrl" (change)="onFileChange($event)" />
-        <small class="form-helper">Formatos permitidos: JPG o PNG (máx. 5MB)</small>
-      </div>
-
-      <div class="form-group">
-        <label for="register-birth">Fecha de nacimiento</label>
-        <input id="register-birth" type="date" formControlName="dateBirth" />
+        <label for="register-surname">Apellido</label>
+        <input id="register-surname" type="text" formControlName="surname" placeholder="Tu apellido" />
       </div>
 
       <div class="form-group">
@@ -43,8 +22,25 @@
       </div>
 
       <div class="form-group">
+        <label for="register-phone">Teléfono</label>
+        <input id="register-phone" type="text" formControlName="phone" placeholder="300 000 0000" />
+      </div>
+
+      <div class="form-group">
+        <label for="register-birth">Fecha de nacimiento</label>
+        <input id="register-birth" type="date" formControlName="birthDate" />
+      </div>
+
+      <div class="form-group">
+        <label for="register-country">País</label>
+        <input id="register-country" type="text" formControlName="country" placeholder="Colombia" readonly />
+        <small class="form-helper">Por ahora solo disponible en Colombia</small>
+      </div>
+
+      <div class="form-group">
         <label for="register-password">Contraseña</label>
         <input id="register-password" type="password" formControlName="password" placeholder="••••••" />
+        <small class="form-helper">Mínimo 6 caracteres</small>
       </div>
 
       <div class="form-group">
@@ -52,9 +48,25 @@
         <input id="register-repeat-password" type="password" formControlName="repeatPassword" placeholder="••••••" />
       </div>
 
+      <div class="form-group">
+        <label for="register-photo">Foto de perfil (opcional)</label>
+        <input id="register-photo" type="file" (change)="onFileChange($event)" />
+        <small class="form-helper">Formatos permitidos: JPG o PNG (máx. 5MB)</small>
+      </div>
+
+      <div class="form-group">
+        <label for="register-role">Tipo de cuenta</label>
+        <select id="register-role" formControlName="role">
+          <option value="">Selecciona el tipo de cuenta</option>
+          @for (roleOption of userRoles; track roleOption.value) {
+            <option [value]="roleOption.value">{{ roleOption.label }}</option>
+          }
+        </select>
+      </div>
+
       @if (registerForm.hasError('passwordsMismatch')) {
         <div class="alert alert-danger" role="alert">Las contraseñas no coinciden</div>
-        }  
+        }
     </div>
 
     <div class="d-flex justify-content-center">

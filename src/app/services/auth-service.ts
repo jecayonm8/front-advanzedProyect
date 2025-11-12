@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoginDTO } from '../models/login-dto';
+import { CreateUserDTO } from '../models/register-dto';
 import { ResponseDTO } from '../models/response-dto';
 
 @Injectable({
@@ -16,6 +17,10 @@ export class AuthService {
 
   public login(loginDTO: LoginDTO): Observable<ResponseDTO> {
   return this.http.post<ResponseDTO>(`${this.authURL}/login`, loginDTO);
+  }
+
+  public register(createUserDTO: CreateUserDTO): Observable<ResponseDTO> {
+    return this.http.post<ResponseDTO>(this.authURL, createUserDTO);
   }
 }
   

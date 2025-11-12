@@ -94,8 +94,21 @@ export class PlacesService {
     return this.http.get<any>(`${this.apiUrl}/${accommodationId}/comments/${page}`).pipe(
       map((response: any) => {
         // El backend devuelve {error: false, message: [...], totalPages: number}
+        const comments = (response.message || []).map((comment: any) => ({
+          id: comment.id,
+          comment: comment.comment || comment.text || '',
+          rating: comment.rating || 0,
+          createdAt: comment.createdAt || comment.created_at || new Date().toISOString(),
+          userDetailDTO: {
+            id: comment.user?.id || comment.userDetailDTO?.id || '',
+            name: comment.user?.name || comment.userDetailDTO?.name || 'Usuario',
+            photoUrl: comment.user?.photoUrl || comment.user?.photo_url || comment.userDetailDTO?.photoUrl || '/assets/img/fallback.svg',
+            createdAt: comment.user?.createdAt || comment.user?.created_at || comment.userDetailDTO?.createdAt || new Date().toISOString()
+          }
+        }));
+
         return {
-          comments: response.message || [],
+          comments: comments,
           totalPages: response.totalPages || 1
         };
       })
