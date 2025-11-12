@@ -69,6 +69,22 @@ export class BookingService {
     );
   }
 
+  public getAccommodationBookingsWithFilters(accommodationId: string, page: number, filters: SearchBookingDTO): Observable<BookingDTO[]> {
+    const headers = this.getAuthHeaders();
+    const body = {
+      state: filters.state || null,
+      checkIn: filters.checkIn || null,
+      checkOut: filters.checkOut || null,
+      guest_number: filters.guest_number || null
+    };
+
+    return this.http.post<{error: boolean, message: BookingDTO[]}>(`http://localhost:8080/api/accommodations/${accommodationId}/bookings/${page}`, body, {
+      headers: headers
+    }).pipe(
+      map(response => response.message || [])
+    );
+  }
+
   private createTestBookings(): BookingDTO[] {
     return [
       {
