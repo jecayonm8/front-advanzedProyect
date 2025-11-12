@@ -27,6 +27,7 @@ export class BookingForm implements OnInit {
 
   ngOnInit(): void {
     this.createForm();
+    this.setDefaultTimes();
   }
 
   private createForm(): void {
@@ -44,6 +45,30 @@ export class BookingForm implements OnInit {
       return { dateRangeInvalid: true };
     }
     return null;
+  }
+
+  private setDefaultTimes(): void {
+    // Establecer horas por defecto: check-in 1 PM, check-out 12 PM
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    // Check-in: hoy a la 1 PM
+    const checkInDateTime = new Date(today);
+    checkInDateTime.setHours(13, 0, 0, 0); // 13:00 = 1 PM
+
+    // Check-out: mañana a las 12 PM
+    const checkOutDateTime = new Date(tomorrow);
+    checkOutDateTime.setHours(12, 0, 0, 0); // 12:00 = 12 PM
+
+    // Formatear como YYYY-MM-DDTHH:mm (formato datetime-local)
+    const checkInFormatted = checkInDateTime.toISOString().slice(0, 16);
+    const checkOutFormatted = checkOutDateTime.toISOString().slice(0, 16);
+
+    this.bookingForm.patchValue({
+      checkIn: checkInFormatted,
+      checkOut: checkOutFormatted
+    });
   }
 
   onSubmit(): void {

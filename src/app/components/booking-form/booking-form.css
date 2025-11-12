@@ -3,6 +3,16 @@
   margin: 0 auto;
 }
 
+.booking-form .card-header {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.booking-form .card-body {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 .booking-preview {
   border: 1px solid #dee2e6;
 }

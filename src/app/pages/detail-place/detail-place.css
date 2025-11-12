@@ -252,6 +252,9 @@
   padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.3s ease;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
 }
 
 .comment-card:hover {
@@ -313,6 +316,7 @@
 
 .comment-content {
   margin-top: 8px;
+  flex-grow: 1;
 }
 
 .comment-content p {

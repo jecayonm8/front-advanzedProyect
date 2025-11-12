@@ -150,7 +150,7 @@
         </div>
 
         <!-- Formulario de Reserva -->
-        <div class="mt-4" *ngIf="place">
+        <div class="mt-2" *ngIf="place">
           <app-booking-form [accommodationId]="placeId"></app-booking-form>
         </div>
       </div>
@@ -196,7 +196,7 @@
               </div>
 
               <div class="row">
-                <div *ngFor="let comment of comments" class="col-12 mb-4">
+                <div *ngFor="let comment of comments" class="col-lg-6 col-md-12 mb-4">
                   <div class="comment-card">
                     <div class="comment-header d-flex align-items-start">
                       <img [src]="comment.userDetailDTO.photoUrl || '/assets/img/fallback.svg'"

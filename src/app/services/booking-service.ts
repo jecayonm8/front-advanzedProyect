@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BookingDTO, CreateBookingDTO, SearchBookingDTO } from '../models/booking-dto';
 
 @Injectable({
@@ -61,9 +62,11 @@ export class BookingService {
       guest_number: filters.guest_number || null
     };
 
-    return this.http.post<BookingDTO[]>(`http://localhost:8080/api/users/me/bookings/${page}`, body, {
+    return this.http.post<{error: boolean, message: BookingDTO[]}>(`http://localhost:8080/api/users/me/bookings/${page}`, body, {
       headers: headers
-    });
+    }).pipe(
+      map(response => response.message || [])
+    );
   }
 
   private createTestBookings(): BookingDTO[] {

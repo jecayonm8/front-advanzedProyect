@@ -9,7 +9,7 @@
         <div class="col-md-6">
           <label for="checkIn" class="form-label">Fecha de llegada</label>
           <input
-            type="date"
+            type="datetime-local"
             id="checkIn"
             formControlName="checkIn"
             class="form-control"
@@ -22,11 +22,10 @@
         <div class="col-md-6">
           <label for="checkOut" class="form-label">Fecha de salida</label>
           <input
-            type="date"
+            type="datetime-local"
             id="checkOut"
             formControlName="checkOut"
             class="form-control"
-            [min]="getMinCheckOut()"
             [class.is-invalid]="(bookingForm.get('checkOut')?.invalid && bookingForm.get('checkOut')?.touched) || bookingForm.errors?.['dateRangeInvalid']"
           />
           <div class="invalid-feedback" *ngIf="bookingForm.get('checkOut')?.invalid && bookingForm.get('checkOut')?.touched">
