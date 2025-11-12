@@ -17,7 +17,7 @@ export class UpdatePlace implements OnInit, AfterViewInit {
 
     cities: string[];
     accommodationTypes: string[];
-    amenitiesOptions: { label: string; value: string }[];
+    amenitiesOptions: { label: string; value: string }[] = [];
     updatePlaceForm!: FormGroup;
     placeId: string | null = null;
 
@@ -31,19 +31,46 @@ export class UpdatePlace implements OnInit, AfterViewInit {
         this.createForm();
         this.cities = ['Bogotá', 'Medellín', 'Cali','Armenia', 'Barranquilla', 'Cartagena'];
         this.accommodationTypes = ['HOUSE', 'APARTMENT', 'FARM'];
-        this.amenitiesOptions = [
-          { label: 'Wifi', value: 'wifi' },
-          { label: 'Cocina', value: 'cocina' },
-          { label: 'Estacionamiento gratuito', value: 'estacionamiento_gratuito' },
-          { label: 'Aire acondicionado', value: 'aire_acondicionado' },
-          { label: 'Calefacción', value: 'calefacción' },
-          { label: 'Lavadora', value: 'lavadora' },
-          { label: 'Secadora', value: 'secadora' },
-          { label: 'Televisión', value: 'televisión' },
-          { label: 'Se aceptan mascotas', value: 'se_aceptan_mascotas' },
-          { label: 'Llegada autónoma', value: 'llegada_autónoma' }
-        ];
+        this.loadAmenities();
     }
+
+    private loadAmenities() {
+        console.log('Intentando cargar amenities desde backend...');
+        this.placesService.getAmenities().subscribe({
+          next: (amenities: string[]) => {
+            console.log('Amenities cargados desde backend:', amenities);
+            this.amenitiesOptions = amenities.map(amenity => ({
+              label: this.formatAmenityLabel(amenity),
+              value: amenity
+            }));
+            console.log('Amenities procesados:', this.amenitiesOptions);
+          },
+          error: (error: any) => {
+            console.error('Error loading amenities:', error);
+            console.log('Usando amenities por defecto...');
+            // Fallback to hardcoded amenities if backend fails
+            this.amenitiesOptions = [
+              { label: 'Wifi', value: 'wifi' },
+              { label: 'Cocina', value: 'cocina' },
+              { label: 'Estacionamiento gratuito', value: 'estacionamiento_gratuito' },
+              { label: 'Aire acondicionado', value: 'aire_acondicionado' },
+              { label: 'Calefacción', value: 'calefacción' },
+              { label: 'Lavadora', value: 'lavadora' },
+              { label: 'Secadora', value: 'secadora' },
+              { label: 'Televisión', value: 'televisión' },
+              { label: 'Se aceptan mascotas', value: 'se_aceptan_mascotas' },
+              { label: 'Llegada autónoma', value: 'llegada_autónoma' }
+            ];
+            console.log('Amenities por defecto cargados:', this.amenitiesOptions);
+          }
+        });
+      }
+
+      private formatAmenityLabel(amenity: string): string {
+        return amenity
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+      }
 
     ngOnInit(): void {
         this.route.params.subscribe(params => {
@@ -59,10 +86,8 @@ export class UpdatePlace implements OnInit, AfterViewInit {
     ngAfterViewInit(): void {
         // Se suscribe al evento de agregar marcador y actualiza el formulario después de que la vista esté inicializada
         this.mapService.addMarker().subscribe((marker) => {
-            this.updatePlaceForm.get('location')?.setValue({
-                latitude: marker.lat,
-                longitude: marker.lng,
-            });
+            this.updatePlaceForm.get('latitude')?.setValue(marker.lat);
+            this.updatePlaceForm.get('longitude')?.setValue(marker.lng);
         });
     }
 
@@ -83,10 +108,8 @@ export class UpdatePlace implements OnInit, AfterViewInit {
                     picsUrl: data.pics_url,
                     amenities: data.amenities,
                     accommodationType: data.accommodationType,
-                    location: {
-                        latitude: data.latitude,
-                        longitude: data.longitude
-                    }
+                    latitude: data.latitude,
+                    longitude: data.longitude
                 });
 
                 // Centrar el mapa en la ubicación del alojamiento y colocar marcador
@@ -112,16 +135,17 @@ export class UpdatePlace implements OnInit, AfterViewInit {
             description: ['', [Validators.required, Validators.maxLength(500), Validators.minLength(20)]],
             capacity: ['', [Validators.required, Validators.pattern(/^[0-9]+$/), Validators.min(1), Validators.max(60)]],
             price: ['', [Validators.required, Validators.pattern(/^[0-9]+$/),Validators.min(1)]],
-            country: ['', [Validators.required]],
+            accommodationType: ['', [Validators.required]],
+            country: ['Colombia', [Validators.required]],
             department: ['', [Validators.required]],
             city: ['', [Validators.required]],
             neighborhood: [''],
             street: [''],
             postalCode: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]{4,10}$/)]],
-            picsUrl: [[]],
+            latitude: ['', [Validators.required]],
+            longitude: ['', [Validators.required]],
             amenities: [[], [Validators.required]],
-            accommodationType: ["", Validators.required],
-            location: [null, [Validators.required]]
+            picsUrl: [[]]
         });
     }
 
@@ -141,8 +165,8 @@ export class UpdatePlace implements OnInit, AfterViewInit {
                 postalCode: formValue.postalCode,
                 amenities: formValue.amenities,
                 accommodationType: formValue.accommodationType,
-                latitude: formValue.location.latitude,
-                longitude: formValue.location.longitude
+                latitude: parseFloat(formValue.latitude),
+                longitude: parseFloat(formValue.longitude)
             };
 
             // Solo incluir picsUrl si son strings (URLs existentes), no Files

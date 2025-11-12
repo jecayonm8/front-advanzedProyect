@@ -39,6 +39,12 @@
                   <span class="material-symbols-rounded">visibility</span>
               </a>
 
+              <!-- Botón Reservas -->
+              <a routerLink="/place/{{item.id}}/bookings" class="btn btn-outline-warning btn-sm me-1"
+                  title="Ver reservas">
+                  <span class="material-symbols-rounded">event_available</span>
+              </a>
+
               <!-- Botón Estadísticas -->
               <a routerLink="/place-stats/{{item.id}}" class="btn btn-outline-info btn-sm me-1"
                   title="Ver estadísticas">
@@ -115,11 +121,6 @@
         </div>
         <h4 class="text-muted">No tienes alojamientos publicados</h4>
         <p class="text-muted">¡Crea tu primer anuncio para empezar a recibir reservas!</p>
-        <button type="button" routerLink="/create-place"
-          class="btn btn-success d-flex align-items-center justify-content-center gap-1 mx-auto">
-          <span class="material-symbols-rounded me-1" aria-hidden="true">add</span>
-          Crear alojamiento
-        </button>
       </div>
     }
   </div>
