@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import Swal from 'sweetalert2';
 import { BookingService } from '../../services/booking-service';
 import { TokenService } from '../../services/token-service';
+import { CreateBookingDTO } from '../../models/booking-dto';
 
 @Component({
   selector: 'app-create-booking',
@@ -67,13 +68,14 @@ export class CreateBooking implements OnInit {
     }
 
     const formValue = this.bookingForm.value;
-    const bookingData = {
+    const bookingData: CreateBookingDTO = {
       checkIn: new Date(formValue.checkIn).toISOString(),
       checkOut: new Date(formValue.checkOut).toISOString(),
-      guest_number: formValue.guest_number
+      guest_number: formValue.guest_number,
+      accommodationCode: formValue.accommodationCode
     };
 
-    this.bookingService.create(formValue.accommodationCode, bookingData).subscribe({
+    this.bookingService.create(bookingData).subscribe({
       next: (response) => {
         Swal.fire("¡Éxito!", response, "success");
         this.bookingForm.reset();

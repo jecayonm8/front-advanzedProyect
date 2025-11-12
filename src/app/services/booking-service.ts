@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { BookingDTO, CreateBookingDTO } from '../models/booking-dto';
+import { BookingDTO, CreateBookingDTO, SearchBookingDTO } from '../models/booking-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -33,46 +33,54 @@ export class BookingService {
     return new HttpHeaders(headers);
   }
 
-  public create(idAccommodation: string, booking: { checkIn: string; checkOut: string; guest_number: number }): Observable<string> {
+  public create(booking: CreateBookingDTO): Observable<string> {
     const headers = this.getAuthHeaders();
     console.log('Booking request headers:', headers);
     console.log('Booking request body:', booking);
-    console.log('Booking URL:', `${this.apiUrl}/${idAccommodation}`);
+    console.log('Booking URL:', `${this.apiUrl}/${booking.accommodationCode}`);
 
-    return this.http.post<string>(`${this.apiUrl}/${idAccommodation}`, booking, {
+    return this.http.post<string>(`${this.apiUrl}/${booking.accommodationCode}`, {
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      guest_number: booking.guest_number
+    }, {
       headers: headers
     });
   }
 
   public getUserBookings(userId: string): Observable<BookingDTO[]> {
-    // Por ahora devolver datos locales, después activar HTTP:
-    // return this.http.get<BookingDTO[]>(`${this.apiUrl}/user/${userId}`, {
-    //   headers: this.getAuthHeaders()
-    // });
-    return of(this.bookings.filter(b => b.userId === userId));
+    return this.getUserBookingsWithFilters(0, {});
+  }
+
+  public getUserBookingsWithFilters(page: number, filters: SearchBookingDTO): Observable<BookingDTO[]> {
+    const headers = this.getAuthHeaders();
+    const body = {
+      state: filters.state || null,
+      checkIn: filters.checkIn || null,
+      checkOut: filters.checkOut || null,
+      guest_number: filters.guest_number || null
+    };
+
+    return this.http.post<BookingDTO[]>(`http://localhost:8080/api/users/me/bookings/${page}`, body, {
+      headers: headers
+    });
   }
 
   private createTestBookings(): BookingDTO[] {
     return [
       {
-        id: '1',
+        bookingState: 'PENDING',
         checkIn: '2025-12-01',
         checkOut: '2025-12-05',
         guest_number: 2,
-        accommodationCode: 'ACC001',
-        status: 'CONFIRMED',
-        userId: '1',
-        accommodationTitle: 'Casa de Campo El Roble'
+        user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
       },
       {
-        id: '2',
+        bookingState: 'COMPLETED',
         checkIn: '2025-11-15',
         checkOut: '2025-11-18',
         guest_number: 1,
-        accommodationCode: 'ACC002',
-        status: 'PENDING',
-        userId: '1',
-        accommodationTitle: 'Apartamento Moderno en el Centro'
+        user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
       }
     ];
   }

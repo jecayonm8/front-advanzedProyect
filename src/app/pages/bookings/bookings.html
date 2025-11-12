@@ -15,19 +15,57 @@
     <hr />
 
     <div class="card-body">
-      <div class="mb-3">
-        <button type="button" routerLink="/create-booking"
-          class="btn btn-success d-flex align-items-center justify-content-center gap-1">
-          <span class="material-symbols-rounded me-1" aria-hidden="true">add</span>
-          Crear nueva reserva
-        </button>
+      
+
+      <!-- Filtros -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">Filtros</h6>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="row g-3">
+            <div class="col-md-3">
+              <label for="filter-state" class="form-label">Estado</label>
+              <select id="filter-state" class="form-select" formControlName="state">
+                <option value="">Todos</option>
+                <option *ngFor="let state of bookingStates" [value]="state">{{ state }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="filter-checkin" class="form-label">Check-in desde</label>
+              <input id="filter-checkin" type="date" class="form-control" formControlName="checkIn" />
+            </div>
+            <div class="col-md-3">
+              <label for="filter-checkout" class="form-label">Check-out hasta</label>
+              <input id="filter-checkout" type="date" class="form-control" formControlName="checkOut" />
+            </div>
+            <div class="col-md-3">
+              <label for="filter-guests" class="form-label">Número de huéspedes</label>
+              <input id="filter-guests" type="number" class="form-control" formControlName="guest_number" min="1" />
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary me-2" [disabled]="filterForm.invalid">Aplicar filtros</button>
+              <button type="button" class="btn btn-secondary" (click)="clearFilters()">Limpiar filtros</button>
+            </div>
+            @if (filterForm.errors?.['dateRangeIncomplete']) {
+              <div class="col-12">
+                <small class="text-danger">Si especificas una fecha, debes especificar ambas.</small>
+              </div>
+            }
+            @if (filterForm.errors?.['invalidDateRange']) {
+              <div class="col-12">
+                <small class="text-danger">La fecha de check-in debe ser anterior a la de check-out.</small>
+              </div>
+            }
+          </form>
+        </div>
       </div>
 
       <div class="table-responsive">
         <table class="table align-middle table-striped table-hover mb-0">
           <thead class="text-center">
             <tr>
-              <th scope="col">Alojamiento</th>
+              <th scope="col">Usuario</th>
               <th scope="col">Check-in</th>
               <th scope="col">Check-out</th>
               <th scope="col">Huéspedes</th>
@@ -36,17 +74,30 @@
           </thead>
 
           <tbody class="table-group-divider">
-            @for (booking of bookings; track booking.id) {
+            @for (booking of bookings; track $index) {
             <tr>
-              <td class="fw-semibold">{{ booking.accommodationTitle || booking.accommodationCode }}</td>
-              <td>{{ booking.checkIn }}</td>
-              <td>{{ booking.checkOut }}</td>
+              <td class="fw-semibold">{{ booking.user.name }}</td>
+              <td>{{ booking.checkIn | date:'short' }}</td>
+              <td>{{ booking.checkOut | date:'short' }}</td>
               <td>{{ booking.guest_number }}</td>
-              <td>{{ booking.status }}</td>
+              <td>{{ booking.bookingState }}</td>
             </tr>
             }
           </tbody>
         </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <button type="button" class="btn btn-outline-primary" (click)="prevPage()" [disabled]="currentPage === 0">
+          <span class="material-symbols-rounded me-1">chevron_left</span>
+          Anterior
+        </button>
+        <span class="fw-semibold">Página {{ currentPage + 1 }}</span>
+        <button type="button" class="btn btn-outline-primary" (click)="nextPage()">
+          Siguiente
+          <span class="material-symbols-rounded ms-1">chevron_right</span>
+        </button>
       </div>
     </div>
   </div>

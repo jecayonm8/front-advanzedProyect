@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingService } from '../../services/booking-service';
+import { CreateBookingDTO } from '../../models/booking-dto';
 
 @Component({
   selector: 'app-booking-form',
@@ -67,10 +68,11 @@ export class BookingForm implements OnInit {
     const checkOutDateTime = new Date(checkOutDate);
     checkOutDateTime.setHours(12, 0, 0, 0);
 
-    const bookingData = {
+    const bookingData: CreateBookingDTO = {
       checkIn: this.formatDate(checkInDateTime),
       checkOut: this.formatDate(checkOutDateTime),
-      guest_number: formValue.guestNumber
+      guest_number: formValue.guestNumber,
+      accommodationCode: this.accommodationId
     };
 
     console.log('Original checkIn date from form:', formValue.checkIn);
@@ -80,7 +82,7 @@ export class BookingForm implements OnInit {
     console.log('Sending booking data:', bookingData);
     console.log('Accommodation ID:', this.accommodationId);
 
-    this.bookingService.create(this.accommodationId, bookingData).subscribe({
+    this.bookingService.create(bookingData).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.successMessage = 'Reserva finalizada exitosamente';
