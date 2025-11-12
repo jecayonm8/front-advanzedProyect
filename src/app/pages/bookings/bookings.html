@@ -70,6 +70,7 @@
               <th scope="col">Check-out</th>
               <th scope="col">Huéspedes</th>
               <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
 
@@ -80,6 +81,15 @@
               <td>{{ booking.checkOut | date:'short' }}</td>
               <td>{{ booking.guest_number }}</td>
               <td>{{ booking.bookingState }}</td>
+              <td>
+                <button
+                  *ngIf="booking.bookingState === 'PENDING'"
+                  class="btn btn-danger btn-sm"
+                  (click)="cancelBooking(booking)"
+                  title="Cancelar reserva">
+                  Cancelar
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>

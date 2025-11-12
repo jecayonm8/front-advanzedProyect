@@ -6,6 +6,7 @@ export interface CreateBookingDTO {
 }
 
 export interface BookingDTO {
+  id: string;
   bookingState: string;
   user: UserDTO;
   checkIn: string;

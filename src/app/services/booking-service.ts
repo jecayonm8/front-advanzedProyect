@@ -85,9 +85,15 @@ export class BookingService {
     );
   }
 
+  public deleteBooking(bookingId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(`${this.apiUrl}/${bookingId}`, { headers });
+  }
+
   private createTestBookings(): BookingDTO[] {
     return [
       {
+        id: '1',
         bookingState: 'PENDING',
         checkIn: '2025-12-01',
         checkOut: '2025-12-05',
@@ -95,6 +101,7 @@ export class BookingService {
         user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
       },
       {
+        id: '2',
         bookingState: 'COMPLETED',
         checkIn: '2025-11-15',
         checkOut: '2025-11-18',

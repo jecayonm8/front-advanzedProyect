@@ -132,4 +132,19 @@ export class Bookings {
     return index;
   }
 
+  public cancelBooking(booking: BookingDTO) {
+    if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
+      this.bookingService.deleteBooking(booking.id).subscribe({
+        next: () => {
+          alert('Reserva cancelada exitosamente.');
+          this.loadBookings(); // Reload the list
+        },
+        error: (err) => {
+          console.error('Error canceling booking:', err);
+          alert('Error al cancelar la reserva. Inténtalo de nuevo.');
+        }
+      });
+    }
+  }
+
 }
