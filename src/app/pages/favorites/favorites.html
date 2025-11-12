@@ -1,0 +1,97 @@
+<main class="page">
+  <header class="page__heading text-center mx-auto">
+    <h1 class="page__title">Mis Favoritos</h1>
+    <p class="page__subtitle">
+      Tus alojamientos favoritos guardados.
+    </p>
+  </header>
+
+  <!-- Sección de Favoritos -->
+  <div class="container pt-2 pb-5">
+    <h5 class="mb-0 d-flex align-items-center">
+      <span class="material-symbols-rounded fs-2 me-3" aria-hidden="true">favorite</span>
+      Alojamientos favoritos
+    </h5>
+    <hr />
+
+    <div class="card-body">
+      <div class="places-grid">
+        @for (item of places; track item.id) {
+        <article class="place-card">
+          <div class="place-card__media">
+            <img
+              [src]="item.photo_url"
+              [alt]="item.title"
+              loading="lazy"
+            />
+            <div class="place-card__actions">
+              <!-- Botón Ver -->
+              <a routerLink="/place/{{item.id}}" class="btn btn-outline-primary btn-sm"
+                  title="Ver detalle">
+                  <span class="material-symbols-rounded">visibility</span>
+              </a>
+            </div>
+          </div>
+          <div class="place-card__body">
+            <h3>{{ item.title }}</h3>
+            <p class="place-card__location">{{ item.city }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="place-card__price mb-0">{{ item.price | currency:'COP':'symbol':'1.0-0' }}</p>
+              <p class="place-card__rating mb-0">
+                <span class="material-symbols-rounded" style="font-size: 1rem;">star</span>
+                {{ item.average_rating | number:'1.0-1' }}
+              </p>
+            </div>
+          </div>
+        </article>
+        }
+      </div>
+
+      <!-- Paginación -->
+      <nav aria-label="Navegación de páginas" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <!-- Botón Anterior -->
+          <li class="page-item" [class.disabled]="currentPage === 0">
+            <button class="page-link" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 0">
+              <span aria-hidden="true">&laquo;</span>
+            </button>
+          </li>
+
+          <!-- Números de página -->
+          <li
+            *ngFor="let page of getVisiblePages(); let i = index; trackBy: trackByPage"
+            class="page-item"
+            [class.active]="page === currentPage"
+          >
+            <button class="page-link" (click)="changePage(page)">
+              {{ page + 1 }}
+            </button>
+          </li>
+
+          <!-- Botón Siguiente -->
+          <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+            <button class="page-link" (click)="changePage(currentPage + 1)" [disabled]="currentPage >= totalPages - 1">
+              <span aria-hidden="true">&raquo;</span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- Información de página -->
+        <p class="text-center text-muted mt-2 mb-0">
+          Página {{ currentPage + 1 }} de {{ totalPages }}
+        </p>
+      </nav>
+    </div>
+
+    <!-- Mensaje si no hay favoritos -->
+    @if (places.length === 0) {
+      <div class="text-center mt-5">
+        <div class="mb-3">
+          <span class="material-symbols-rounded fs-1 text-muted" aria-hidden="true">favorite_border</span>
+        </div>
+        <h4 class="text-muted">No tienes alojamientos favoritos</h4>
+        <p class="text-muted">¡Agrega alojamientos a tus favoritos para verlos aquí!</p>
+      </div>
+    }
+  </div>
+</main>

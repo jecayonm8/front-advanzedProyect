@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlacesService } from '../../services/places-service';
+import { FavoriteService } from '../../services/favorite-service';
 import { CommentService } from '../../services/comment-service';
 import { AccommodationDetailDTO, CommentDTO, CreateCommentDTO } from '../../models/place-dto';
 import { CommonModule } from '@angular/common';
@@ -28,6 +29,7 @@ export class DetailPlace implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private placesService: PlacesService,
+    private favoriteService: FavoriteService,
     private commentService: CommentService,
     private formBuilder: FormBuilder,
     private router: Router
@@ -233,5 +235,30 @@ export class DetailPlace implements OnInit {
       'ENTERTAINMENT': 'TV'
     };
     return amenityLabels[amenity] || amenity;
+  }
+
+  public addToFavorites(): void {
+    if (!this.placeId) return;
+
+    Swal.fire({
+      title: "¿Agregar a favoritos?",
+      text: "Este alojamiento se añadirá a tu lista de favoritos.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí, agregar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.favoriteService.addToFavorites(this.placeId).subscribe({
+          next: () => {
+            Swal.fire("¡Agregado!", "El alojamiento ha sido añadido a tus favoritos.", "success");
+          },
+          error: (err: any) => {
+            console.error('Error adding to favorites:', err);
+            Swal.fire("Error", "No se pudo agregar a favoritos.", "error");
+          }
+        });
+      }
+    });
   }
 }

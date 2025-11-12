@@ -7,6 +7,7 @@ import { CreateBooking } from './pages/create-booking/create-booking';
 import { CreateReview } from './pages/create-review/create-review';
 import { CreateComplaint } from './pages/create-complaint/create-complaint';
 import { MyPlaces } from './pages/my-places/my-places';
+import { Favorites } from './pages/favorites/favorites';
 import { Bookings } from './pages/bookings/bookings';
 import { UpdateProfile } from './pages/update-profile/update-profile';
 import { UpdatePlace } from './pages/update-place/update-place';
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'create-review', component: CreateReview },
   { path: 'create-complaint', component: CreateComplaint },
   { path: 'my-places', component: MyPlaces },
+  { path: 'favorites', component: Favorites },
   { path: 'bookings', component: Bookings },
   { path: 'update-profile', component: UpdateProfile },
   { path: 'update-place', component: UpdatePlace},
