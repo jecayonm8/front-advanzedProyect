@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { BookingDTO, SearchBookingDTO } from '../../models/booking-dto';
 import { BookingService } from '../../services/booking-service';
 import { TokenService } from '../../services/token-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bookings',
@@ -133,18 +134,33 @@ export class Bookings {
   }
 
   public cancelBooking(booking: BookingDTO) {
-    if (confirm('¿Estás seguro de que quieres cancelar esta reserva?')) {
-      this.bookingService.deleteBooking(booking.id).subscribe({
-        next: () => {
-          alert('Reserva cancelada exitosamente.');
-          this.loadBookings(); // Reload the list
-        },
-        error: (err) => {
-          console.error('Error canceling booking:', err);
-          alert('Error al cancelar la reserva. Inténtalo de nuevo.');
-        }
-      });
+    if (!booking.id) {
+      Swal.fire("Error", "No se puede cancelar esta reserva: ID no disponible.", "error");
+      return;
     }
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción cancelará la reserva y no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, cancelar reserva",
+      cancelButtonText: "No, mantener reserva"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bookingService.deleteBooking(booking.id).subscribe({
+          next: () => {
+            Swal.fire("Cancelada!", "La reserva ha sido cancelada correctamente.", "success");
+            this.loadBookings(); // Reload the list
+          },
+          error: (err) => {
+            console.error('Error canceling booking:', err);
+            Swal.fire("Error", "No se pudo cancelar la reserva. Inténtalo de nuevo.", "error");
+          }
+        });
+      }
+    });
   }
 
 }
