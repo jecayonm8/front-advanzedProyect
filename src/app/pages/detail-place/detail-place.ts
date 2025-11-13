@@ -223,10 +223,6 @@ export class DetailPlace implements OnInit {
     this.router.navigate(['/create-booking', this.placeId]);
   }
 
-  // Método para navegar a las reservas del alojamiento
-  navigateToAccommodationBookings(): void {
-    this.router.navigate(['/place', this.placeId, 'bookings']);
-  }
 
   // Método para obtener el label de las comodidades
   getAmenityLabel(amenity: string): string {
