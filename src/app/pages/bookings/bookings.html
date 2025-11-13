@@ -83,7 +83,7 @@
               <td>{{ booking.bookingState }}</td>
               <td>
                 <button
-                  *ngIf="booking.bookingState === 'PENDING'"
+                  *ngIf="booking.id && booking.bookingState === 'PENDING'"
                   class="btn btn-danger btn-sm"
                   (click)="cancelBooking(booking)"
                   title="Cancelar reserva">
