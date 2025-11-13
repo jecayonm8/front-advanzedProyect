@@ -9,16 +9,52 @@
       <div class="form-group form-group--full">
         <label for="place-title">Título</label>
         <input id="place-title" type="text" formControlName="title" placeholder="Apartamento moderno en el centro" />
+        @if (createPlaceForm.get('title')?.invalid && createPlaceForm.get('title')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('title')?.errors?.['required']) {
+              El título es requerido.
+            } @else if (createPlaceForm.get('title')?.errors?.['minlength']) {
+              El título debe tener al menos 5 caracteres.
+            } @else if (createPlaceForm.get('title')?.errors?.['maxlength']) {
+              El título no puede exceder 100 caracteres.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group form-group--full">
         <label for="place-description">Descripción</label>
         <textarea id="place-description" formControlName="description" placeholder="Describe las comodidades, ubicación y servicios destacados"></textarea>
+        <small class="form-helper">{{ createPlaceForm.get('description')?.value?.length || 0 }}/500 caracteres</small>
+        @if (createPlaceForm.get('description')?.invalid && createPlaceForm.get('description')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('description')?.errors?.['required']) {
+              La descripción es requerida.
+            } @else if (createPlaceForm.get('description')?.errors?.['minlength']) {
+              La descripción debe tener al menos 20 caracteres.
+            } @else if (createPlaceForm.get('description')?.errors?.['maxlength']) {
+              La descripción no puede exceder 500 caracteres.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
         <label for="place-price">Precio por noche</label>
-        <input id="place-price" type="number" formControlName="price" min="0" placeholder="0" />
+        <input id="place-price" type="number" formControlName="price" min="1" max="10000000" placeholder="50000" />
+        @if (createPlaceForm.get('price')?.invalid && createPlaceForm.get('price')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('price')?.errors?.['required']) {
+              El precio es requerido.
+            } @else if (createPlaceForm.get('price')?.errors?.['min']) {
+              El precio debe ser mayor a 0.
+            } @else if (createPlaceForm.get('price')?.errors?.['max']) {
+              El precio no puede exceder 10,000,000.
+            } @else if (createPlaceForm.get('price')?.errors?.['pattern']) {
+              El precio debe ser un número entero.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
@@ -33,18 +69,39 @@
         
       <div class="form-group">
         <label for="place-capacity">Capacidad de huéspedes</label>
-        <input id="place-capacity" type="number" formControlName="capacity" min="1" placeholder="2" />
+        <input id="place-capacity" type="number" formControlName="capacity" min="1" max="50" placeholder="2" />
+        @if (createPlaceForm.get('capacity')?.invalid && createPlaceForm.get('capacity')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('capacity')?.errors?.['required']) {
+              La capacidad es requerida.
+            } @else if (createPlaceForm.get('capacity')?.errors?.['min']) {
+              La capacidad debe ser al menos 1.
+            } @else if (createPlaceForm.get('capacity')?.errors?.['max']) {
+              La capacidad no puede exceder 50.
+            } @else if (createPlaceForm.get('capacity')?.errors?.['pattern']) {
+              La capacidad debe ser un número entero.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
         <label for="place-country">País</label>
-        <input id="place-country" type="text" formControlName="country" placeholder="Colombia" readonly />
-        <small class="form-helper">Solo se permite Colombia</small>
+        <input id="place-country" type="text" formControlName="country" readonly />
       </div>
 
       <div class="form-group">
         <label for="place-department">Departamento</label>
         <input id="place-department" type="text" formControlName="department" placeholder="Quindío" />
+        @if (createPlaceForm.get('department')?.invalid && createPlaceForm.get('department')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('department')?.errors?.['required']) {
+              El departamento es requerido.
+            } @else if (createPlaceForm.get('department')?.errors?.['maxlength']) {
+              El departamento no puede exceder 30 caracteres.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
@@ -55,11 +112,30 @@
             <option value="{{item}}">{{item}}</option>
           }
         </select>
+        @if (createPlaceForm.get('city')?.invalid && createPlaceForm.get('city')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('city')?.errors?.['required']) {
+              La ciudad es requerida.
+            } @else if (createPlaceForm.get('city')?.errors?.['maxlength']) {
+              El nombre de la ciudad no puede exceder 30 caracteres.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
         <label for="place-neighborhood">Barrio</label>
         <input id="place-neighborhood" type="text" formControlName="neighborhood" placeholder="La Castellana" />
+        @if (createPlaceForm.get('neighborhood')?.invalid && createPlaceForm.get('neighborhood')?.touched) {
+          <small class="error-message">
+            El barrio no puede exceder 20 caracteres.
+          </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="place-street">Calle</label>
+        <input id="place-street" type="text" formControlName="street" placeholder="Carrera 15 #45-67" />
       </div>
 
       <div class="form-group">
@@ -70,6 +146,15 @@
       <div class="form-group">
         <label for="place-postal-code">Código postal</label>
         <input id="place-postal-code" type="text" formControlName="postalCode" placeholder="630004" />
+        @if (createPlaceForm.get('postalCode')?.invalid && createPlaceForm.get('postalCode')?.touched) {
+          <small class="error-message">
+            @if (createPlaceForm.get('postalCode')?.errors?.['required']) {
+              El código postal es requerido.
+            } @else if (createPlaceForm.get('postalCode')?.errors?.['pattern']) {
+              El código postal debe tener entre 4 y 10 caracteres alfanuméricos.
+            }
+          </small>
+        }
       </div>
 
       <div class="form-group">
@@ -106,8 +191,23 @@
 
       <div class="form-group form-group--full">
         <label for="place-images">Imágenes del alojamiento</label>
-        <input id="place-images" type="file" multiple (change)="onFileChange($event)" />
-        <small class="form-helper">Sube entre 3 y 8 fotografías en formato JPG o PNG.</small>
+        <input id="place-images" type="file" multiple accept="image/*" (change)="onFileChange($event)" />
+        <small class="form-helper">Selecciona entre 1 y 10 imágenes en formato JPG, PNG o WebP (máximo 5MB cada una).</small>
+
+        <!-- Preview de imágenes seleccionadas -->
+        <div class="image-previews" *ngIf="selectedFiles.length > 0">
+          <div class="preview-grid">
+            <div class="image-preview" *ngFor="let preview of imagePreviews; let i = index; trackBy: trackByIndex">
+              <img [src]="preview" [alt]="'Preview ' + (i + 1)" class="preview-image" />
+              <button type="button" class="remove-image-btn" (click)="removeImage(i)" title="Remover imagen">
+                <span class="material-symbols-rounded">close</span>
+              </button>
+            </div>
+          </div>
+          <div class="preview-info">
+            <small class="text-muted">{{ selectedFiles.length }} imagen(es) seleccionada(s)</small>
+          </div>
+        </div>
       </div>
     </div>
 
