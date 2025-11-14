@@ -170,13 +170,37 @@ export class EditProfile implements OnInit {
 
     const profileData = this.editProfileForm.value;
 
+    // ⭐ LOGS PARA DEBUG: Verificar qué datos se están enviando
+    console.log('==========================================');
+    console.log('📤 DATOS DEL FORMULARIO A ENVIAR:');
+    console.log('Nombre:', profileData.name);
+    console.log('Teléfono:', profileData.phone);
+    console.log('Photo URL:', profileData.photoUrl);
+    console.log('Fecha nacimiento:', profileData.birthDate);
+    console.log('Datos completos:', profileData);
+    console.log('==========================================');
+
     this.http.put(`http://localhost:8080/api/users/me`, profileData, { headers })
       .subscribe({
         next: (response) => {
+          // ⭐ LOGS PARA DEBUG: Verificar respuesta del backend
+          console.log('==========================================');
+          console.log('✅ PERFIL ACTUALIZADO EXITOSAMENTE');
+          console.log('Respuesta del backend:', response);
+          console.log('==========================================');
+
           alert('Perfil actualizado exitosamente');
           this.updateUserState(profileData);
         },
         error: (error) => {
+          // ⭐ LOGS PARA DEBUG: Verificar error en actualización
+          console.log('==========================================');
+          console.log('❌ ERROR AL ACTUALIZAR PERFIL');
+          console.log('Status:', error.status);
+          console.log('Error completo:', error);
+          console.log('Error body:', error.error);
+          console.log('==========================================');
+
           console.error('Error updating profile:', error);
           alert('Error al actualizar el perfil: ' + (error.error?.message || 'Error desconocido'));
         }

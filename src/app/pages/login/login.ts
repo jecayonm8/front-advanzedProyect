@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth-service';
 import { TokenService } from '../../services/token-service';
 import { Router } from '@angular/router';
@@ -12,7 +11,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -72,8 +71,14 @@ export class Login {
     this.forgotErrorMessage = '';
 
     const email = this.forgotEmailForm.value.email;
+    console.log('Sending forgot-password request for email:', email);
+    // Forgot-password is a public endpoint, no auth required
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
 
-    this.http.post(`http://localhost:8080/api/auth/forgot-password`, { email })
+    console.log('Request headers:', headers);
+    this.http.post(`http://localhost:8080/api/auth/forgot-password`, { email }, { headers })
       .subscribe({
         next: (response: any) => {
           console.log('Forgot password response:', response);
@@ -90,6 +95,17 @@ export class Login {
         error: (error) => {
           this.forgotLoading = false;
           console.warn('Error response from forgot-password API:', error);
+          console.log('Error status:', error.status);
+          console.log('Error statusText:', error.statusText);
+          console.log('Error url:', error.url);
+          console.log('Error body:', error.error);
+          console.log('Full error object:', error);
+          console.log('Error message:', error.message);
+          if (typeof error.error === 'string') {
+            console.log('Error.error as string:', error.error);
+          } else {
+            console.log('Error.error as JSON:', JSON.stringify(error.error));
+          }
           // Even with error, proceed to next step as code might have been sent
           this.forgotStep = 2;
           this.forgotErrorMessage = ''; // Clear any previous error
@@ -117,7 +133,12 @@ export class Login {
     const payload = { code, email, newPassword };
     console.log('Sending reset password request:', payload);
 
-    this.http.post(`http://localhost:8080/api/auth/password-recovery`, payload)
+    // Password recovery is public, no auth required
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    this.http.post(`http://localhost:8080/api/auth/password-recovery`, payload, { headers })
       .subscribe({
         next: (response: any) => {
           console.log('Reset password success:', response);
