@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BookingDTO, SearchBookingDTO } from '../../models/booking-dto';
 import { BookingService } from '../../services/booking-service';
@@ -9,7 +8,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bookings',
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './bookings.html',
   styleUrl: './bookings.css',
 })

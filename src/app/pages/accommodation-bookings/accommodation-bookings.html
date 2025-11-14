@@ -75,7 +75,7 @@
 
           <tbody class="table-group-divider">
             <tr *ngFor="let booking of bookings; let i = index; trackBy: trackByFn">
-              <td class="fw-semibold">{{ booking.user?.name }}</td>
+              <td class="fw-semibold">{{ booking.user.name }}</td>
               <td>{{ booking.checkIn | date:'short' }}</td>
               <td>{{ booking.checkOut | date:'short' }}</td>
               <td>{{ booking.guest_number }}</td>

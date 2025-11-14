@@ -7,15 +7,15 @@ const TOKEN_KEY = "AuthToken";
 })
 export class TokenService {
   
-  // se encarga de guardar el token en el sessionStorage
+  // se encarga de guardar el token en el localStorage
   private setToken(token: string) {
-  sessionStorage.setItem(TOKEN_KEY, token);
-  }
+   localStorage.setItem(TOKEN_KEY, token);
+   }
 
-  // obtiene el token del sessionStorage
-  public getToken(): string | null {
-  return sessionStorage.getItem(TOKEN_KEY);
-  }
+   // obtiene el token del localStorage
+   public getToken(): string | null {
+   return localStorage.getItem(TOKEN_KEY);
+   }
 
   // verifica si el usuario sigue con token, supongo que se programa para que se esté llamando
   public isLogged(): boolean {
@@ -55,6 +55,16 @@ public getUserId(): string {
 // obtenemos el rol del usuario del token
 public getRole(): string {
   return this.getPayload()?.role || "";
+}
+
+// obtenemos el nombre del usuario del token
+public getName(): string {
+  return this.getPayload()?.name || "";
+}
+
+// obtenemos el email del usuario del token
+public getEmail(): string {
+  return this.getPayload()?.email || "";
 }
 
 }

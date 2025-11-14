@@ -72,6 +72,9 @@ export class Register {
       console.log(`${key}: válido=${control?.valid}, errores=${JSON.stringify(control?.errors)}`);
     });
 
+    // Marcar todos los campos como touched para mostrar errores
+    this.registerForm.markAllAsTouched();
+
     if (this.registerForm.valid) {
       const formValue = this.registerForm.value;
 
@@ -133,13 +136,6 @@ export class Register {
             confirmButtonText: 'Intentar de nuevo'
           });
         }
-      });
-    } else {
-      Swal.fire({
-        title: 'Datos incompletos',
-        text: 'Por favor completa todos los campos requeridos.',
-        icon: 'warning',
-        confirmButtonText: 'Entendido'
       });
     }
   }

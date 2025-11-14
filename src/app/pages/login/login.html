@@ -41,4 +41,79 @@
         </button>
     </div>
   </form>
+
+  <div class="text-center mt-3">
+    <a href="#" (click)="showForgotPasswordModal(); $event.preventDefault()" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
+  </div>
 </main>
+
+<!-- Modal de Recuperación de Contraseña -->
+<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgotPasswordModalLabel">Recuperar Contraseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Paso 1: Ingresar Email -->
+        <div *ngIf="forgotStep === 1">
+          <h6 class="mb-3">Paso 1: Ingresa tu Email</h6>
+          <form [formGroup]="forgotEmailForm" (ngSubmit)="sendResetCode()">
+            <div class="mb-3">
+              <label for="forgot-email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="forgot-email" formControlName="email" required>
+              <div *ngIf="forgotEmailForm.get('email')?.invalid && forgotEmailForm.get('email')?.touched" class="text-danger">
+                Ingresa un email válido.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100" [disabled]="forgotEmailForm.invalid || forgotLoading">
+              <span *ngIf="forgotLoading" class="spinner-border spinner-border-sm" role="status"></span>
+              Enviar Código
+            </button>
+          </form>
+        </div>
+
+        <!-- Paso 2: Código y Nueva Contraseña -->
+        <div *ngIf="forgotStep === 2">
+          <h6 class="mb-3">Paso 2: Código y Nueva Contraseña</h6>
+          <p class="text-muted">Se envió un código a tu email: {{ forgotEmailForm.value.email }}</p>
+          <form [formGroup]="forgotResetForm" (ngSubmit)="resetPassword()">
+            <div class="mb-3">
+              <label for="forgot-code" class="form-label">Código de verificación</label>
+              <input type="text" class="form-control" id="forgot-code" formControlName="code" maxlength="10" required>
+              <div *ngIf="forgotResetForm.get('code')?.invalid && forgotResetForm.get('code')?.touched" class="text-danger">
+                El código es requerido.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="forgot-newPassword" class="form-label">Nueva Contraseña</label>
+              <input type="password" class="form-control" id="forgot-newPassword" formControlName="newPassword" required>
+              <div *ngIf="forgotResetForm.get('newPassword')?.invalid && forgotResetForm.get('newPassword')?.touched" class="text-danger">
+                La contraseña debe tener al menos 6 caracteres.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success w-100" [disabled]="forgotResetForm.invalid || forgotLoading">
+              <span *ngIf="forgotLoading" class="spinner-border spinner-border-sm" role="status"></span>
+              Cambiar Contraseña
+            </button>
+            <button type="button" class="btn btn-link w-100" (click)="resendCode()" [disabled]="forgotLoading">
+              Reenviar Código
+            </button>
+          </form>
+        </div>
+
+        <!-- Mensajes de Error -->
+        <div *ngIf="forgotErrorMessage" class="alert alert-danger mt-3">
+          {{ forgotErrorMessage }}
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button *ngIf="forgotStep > 1" type="button" class="btn btn-secondary" (click)="forgotGoBack()">Volver</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

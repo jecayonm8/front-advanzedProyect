@@ -6,6 +6,11 @@
     <hr />
     <div class="card-body">
         <form class="row g-3" [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()" novalidate="">
+            <div class="col-12">
+                <label class="form-label">Email:</label>
+                <input class="form-control" type="email" [value]="userEmail" readonly />
+            </div>
+
             <div class="col-12 col-sm-6">
                 <label class="form-label">Nombre: *</label>
                 <input class="form-control" type="text" formControlName="name" />
