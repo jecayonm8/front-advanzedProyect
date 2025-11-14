@@ -19,7 +19,7 @@ export class TokenService {
 
   // verifica si el usuario sigue con token, supongo que se programa para que se esté llamando
   public isLogged(): boolean {
-    return !!this.getToken();
+    return !!this.getToken() && !this.isTokenExpired();
   }
 
   // llama a la funcion de guardar el token
@@ -65,6 +65,16 @@ public getName(): string {
 // obtenemos el email del usuario del token
 public getEmail(): string {
   return this.getPayload()?.email || "";
+}
+
+// verifica si el token ha expirado
+public isTokenExpired(): boolean {
+  const payload = this.getPayload();
+  if (!payload || !payload.exp) {
+    return true;
+  }
+  const now = Math.floor(Date.now() / 1000);
+  return payload.exp < now;
 }
 
 }

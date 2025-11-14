@@ -17,28 +17,32 @@ import { DetailPlace } from './pages/detail-place/detail-place';
 import { AccommodationBookings } from './pages/accommodation-bookings/accommodation-bookings';
 import { EditProfile } from './pages/edit-profile/edit-profile';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { Forbidden } from './pages/forbidden/forbidden';
+import { LoginGuard } from './guards/login.guard';
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'create-place', component: CreatePlace },
-  { path: 'create-booking', component: CreateBooking },
-  { path: 'create-booking/:id', component: CreateBooking },
-  { path: 'create-review', component: CreateReview },
-  { path: 'create-complaint', component: CreateComplaint },
-  { path: 'my-places', component: MyPlaces },
-  { path: 'favorites', component: Favorites },
-  { path: 'bookings', component: Bookings },
-  { path: 'update-profile', component: UpdateProfile },
-  { path: 'update-place', component: UpdatePlace},
-  { path: 'edit-place/:id', component: UpdatePlace },
-  { path: 'place-stats/:id', component: PlaceStats },
-  { path: 'change-password', component: ChangePassword},
-  { path: 'edit-profile', component: EditProfile },
+  { path: 'forbidden', component: Forbidden },
+  { path: 'create-place', component: CreatePlace, canActivate: [LoginGuard] },
+  { path: 'create-booking', component: CreateBooking, canActivate: [LoginGuard] },
+  { path: 'create-booking/:id', component: CreateBooking, canActivate: [LoginGuard] },
+  { path: 'create-review', component: CreateReview, canActivate: [LoginGuard] },
+  { path: 'create-complaint', component: CreateComplaint, canActivate: [LoginGuard] },
+  { path: 'my-places', component: MyPlaces, canActivate: [LoginGuard] },
+  { path: 'favorites', component: Favorites, canActivate: [LoginGuard] },
+  { path: 'bookings', component: Bookings, canActivate: [LoginGuard] },
+  { path: 'update-profile', component: UpdateProfile, canActivate: [LoginGuard] },
+  { path: 'update-place', component: UpdatePlace, canActivate: [LoginGuard] },
+  { path: 'edit-place/:id', component: UpdatePlace, canActivate: [LoginGuard] },
+  { path: 'place-stats/:id', component: PlaceStats, canActivate: [LoginGuard] },
+  { path: 'change-password', component: ChangePassword, canActivate: [LoginGuard] },
+  { path: 'edit-profile', component: EditProfile, canActivate: [LoginGuard] },
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'place/:id', component: DetailPlace },
-  { path: 'place/:id/bookings', component: AccommodationBookings },
+  { path: 'place/:id/bookings', component: AccommodationBookings, canActivate: [LoginGuard] },
   { path: "**", pathMatch: "full", redirectTo: "" }
 
 

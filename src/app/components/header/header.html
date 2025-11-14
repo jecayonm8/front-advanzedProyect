@@ -1,7 +1,7 @@
 <header class="p-3 bg-primary text-white">
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-between">
-      
+
       <!-- Logo y título -->
       <a routerLink="" class="d-flex align-items-center text-white text-decoration-none">
         <span class="material-symbols-rounded">globe_location_pin</span>
@@ -9,18 +9,24 @@
       </a>
 
       <!-- Navegación -->
-      <ul class="nav mb-2 mb-md-0">
-        <li><a routerLink="/home" class="nav-link px-2 text-white">Inicio</a></li>
+      <ul class="nav mb-2 mb-md-0" *ngIf="isLoggedIn()">
+        <li><a routerLink="" class="nav-link px-2 text-white">Inicio</a></li>
         <li><a routerLink="/my-places" class="nav-link px-2 text-white">Gestión Alojamientos</a></li>
         <li><a routerLink="/favorites" class="nav-link px-2 text-white">Mis Favoritos</a></li>
         <li><a routerLink="/bookings" class="nav-link px-2 text-white">Mis reservas</a></li>
         <li><a routerLink="/edit-profile" class="nav-link px-2 text-white">Editar Perfil</a></li>
       </ul>
 
-      <!-- Botones -->
-      <div>
+      <!-- Botones de autenticación -->
+      <div *ngIf="!isLoggedIn()">
         <button routerLink="/login" class="btn btn-outline-light me-2">Iniciar Sesión</button>
         <button routerLink="/register" class="btn btn-light text-primary">Crear cuenta</button>
+      </div>
+
+      <!-- Usuario logueado -->
+      <div *ngIf="isLoggedIn()" class="d-flex align-items-center">
+        <span class="me-3">Hola, {{ userName() }}</span>
+        <button (click)="logout()" class="btn btn-outline-light">Cerrar Sesión</button>
       </div>
 
     </div>
