@@ -12,7 +12,7 @@ export class FavoriteService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('AuthToken');
+    const token = sessionStorage.getItem('AuthToken');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''

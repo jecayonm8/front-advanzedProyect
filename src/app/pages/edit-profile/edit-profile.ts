@@ -20,7 +20,8 @@ export class EditProfile implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchUserData();
+    // Cargar datos desde el token y localStorage, sin llamar al backend por ahora
+    this.loadUserDataFromToken();
   }
 
   private createForm() {
@@ -39,94 +40,26 @@ export class EditProfile implements OnInit {
     return birthDate < today ? null : { pastDate: true };
   }
 
-  private fetchUserData() {
-  const token = this.tokenService.getToken();
-  if (!token) {
-    alert('No se encontró token de autenticación');
-    return;
+  private loadUserDataFromToken() {
+    const token = this.tokenService.getToken();
+    if (!token) {
+      alert('No se encontró token de autenticación');
+      this.loadFromLocalStorage();
+      return;
+    }
+
+    console.log('Token found:', token);
+    console.log('User ID from token:', this.tokenService.getUserId());
+    console.log('User role from token:', this.tokenService.getRole());
+    console.log('User name from token:', this.tokenService.getName());
+    console.log('User email from token:', this.tokenService.getEmail());
+
+    // Usar datos del token para email
+    this.userEmail = this.tokenService.getEmail() || 'usuario@example.com';
+
+    // Cargar datos adicionales desde localStorage o usar valores por defecto
+    this.loadFromLocalStorage();
   }
-
-  console.log('Token found:', token);
-  console.log('User ID from token:', this.tokenService.getUserId());
-  console.log('User role from token:', this.tokenService.getRole());
-
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-
-  this.http.get<any>(`http://localhost:8080/api/users/me`, { headers })
-    .subscribe({
-      next: (response: any) => {
-        // ⭐ ESTOS LOGS SON CRÍTICOS - MÍRALOS EN LA CONSOLA
-        console.log('==========================================');
-        console.log('✅ RESPUESTA COMPLETA:', response);
-        console.log('📦 Tipo:', typeof response);
-        console.log('📦 Es null?:', response === null);
-        console.log('📦 Es undefined?:', response === undefined);
-        console.log('📦 Keys:', response ? Object.keys(response) : 'No hay keys');
-        console.log('📦 response.data existe?:', response?.data !== undefined);
-        console.log('📦 response.data:', response?.data);
-        console.log('==========================================');
-        
-        // ⭐ DETENER AQUÍ SI NO HAY DATOS
-        if (!response) {
-          console.error('❌ Response es null o undefined');
-          this.loadFromLocalStorage();
-          return;
-        }
-        
-        if (!response.message) {
-          console.error('❌ response.data no existe');
-          console.error('💡 Probablemente el backend no tiene el endpoint GET /me');
-          console.error('💡 O el endpoint retorna algo diferente');
-          this.loadFromLocalStorage();
-          return;
-        }
-        
-        const userData = response.message;
-        console.log('👤 userData:', userData);
-        
-        this.userEmail = userData.email;
-        
-        this.editProfileForm.patchValue({
-          name: userData.name,
-          phone: userData.phone || '',
-          photoUrl: userData.photoUrl || '',
-          birthDate: userData.birthDate ? userData.birthDate.split('T')[0] : ''
-        });
-        
-        localStorage.setItem('userProfile', JSON.stringify({
-          name: userData.name,
-          phone: userData.phone,
-          photoUrl: userData.photoUrl,
-          birthDate: userData.birthDate ? userData.birthDate.split('T')[0] : ''
-        }));
-        
-        console.log('✅ Perfil cargado correctamente');
-      },
-      error: (error) => {
-        console.error('==========================================');
-        console.error('❌ ERROR EN LA PETICIÓN');
-        console.error('Status:', error.status);
-        console.error('StatusText:', error.statusText);
-        console.error('Error completo:', error);
-        console.error('Error body:', error.error);
-        console.error('==========================================');
-
-        if (error.status === 0) {
-          alert('⚠️ El servidor backend no está respondiendo. Verifica que esté corriendo en localhost:8080');
-        } else if (error.status === 401) {
-          alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
-        } else if (error.status === 404) {
-          alert('❌ El endpoint GET /api/users/me NO EXISTE en el backend.\n\nPor favor, agrega este método al UserController:\n\n@GetMapping("/me")\npublic ResponseEntity<ResponseDTO<UserDTO>> getCurrentUser() throws Exception {\n    String id = currentUserService.getCurrentUser();\n    UserDTO userDTO = userService.get(id);\n    return ResponseEntity.ok(new ResponseDTO<>(false, userDTO));\n}');
-        } else {
-          alert('Error: ' + (error.error?.message || error.message));
-        }
-        
-        this.loadFromLocalStorage();
-      }
-    });
-}
   private loadFromLocalStorage() {
     // Always try to load from localStorage first
     const storedProfile = localStorage.getItem('userProfile');

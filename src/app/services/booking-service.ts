@@ -17,8 +17,8 @@ export class BookingService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('AuthToken');
-    console.log('Token from localStorage:', token);
+    const token = sessionStorage.getItem('AuthToken');
+    console.log('Token from sessionStorage:', token);
 
     const headers = {
       'Content-Type': 'application/json'
