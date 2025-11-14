@@ -27,9 +27,9 @@ export class TokenService {
   this.setToken(token);
 }
 
-// borra el token del sessionStorage
+// borra el token del localStorage
 public logout() {
-  sessionStorage.clear();
+  localStorage.removeItem(TOKEN_KEY);
 }
 
 // para descifrar la informacion del token

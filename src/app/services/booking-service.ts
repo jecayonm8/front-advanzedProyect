@@ -17,8 +17,8 @@ export class BookingService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = sessionStorage.getItem('AuthToken');
-    console.log('Token from sessionStorage:', token);
+    const token = localStorage.getItem('AuthToken');
+    console.log('Token from localStorage:', token);
 
     const headers = {
       'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ export class BookingService {
       headers['Authorization'] = `Bearer ${token}`;
       console.log('Authorization header:', `Bearer ${token}`);
     } else {
-      console.log('No token found in sessionStorage');
+      console.log('No token found in localStorage');
     }
 
     return new HttpHeaders(headers);

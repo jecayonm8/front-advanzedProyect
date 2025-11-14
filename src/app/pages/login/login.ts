@@ -76,6 +76,7 @@ export class Login {
     this.http.post(`http://localhost:8080/api/auth/forgot-password`, { email })
       .subscribe({
         next: (response: any) => {
+          console.log('Forgot password response:', response);
           this.forgotLoading = false;
           Swal.fire({
             title: 'Código enviado',
@@ -88,13 +89,10 @@ export class Login {
         },
         error: (error) => {
           this.forgotLoading = false;
-          this.forgotErrorMessage = error.error?.message || 'Error al enviar el código';
-          Swal.fire({
-            title: 'Error',
-            text: this.forgotErrorMessage,
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-          });
+          console.warn('Error response from forgot-password API:', error);
+          // Even with error, proceed to next step as code might have been sent
+          this.forgotStep = 2;
+          this.forgotErrorMessage = ''; // Clear any previous error
         }
       });
   }
@@ -116,9 +114,13 @@ export class Login {
     const code = this.forgotResetForm.value.code;
     const newPassword = this.forgotResetForm.value.newPassword;
 
-    this.http.post(`http://localhost:8080/api/auth/reset-password`, { email, code, newPassword })
+    const payload = { code, email, newPassword };
+    console.log('Sending reset password request:', payload);
+
+    this.http.post(`http://localhost:8080/api/auth/password-recovery`, payload)
       .subscribe({
         next: (response: any) => {
+          console.log('Reset password success:', response);
           this.forgotLoading = false;
           Swal.fire({
             title: 'Contraseña cambiada',
@@ -135,6 +137,7 @@ export class Login {
           }
         },
         error: (error) => {
+          console.error('Reset password error:', error);
           this.forgotLoading = false;
           this.forgotErrorMessage = error.error?.message || 'Error al cambiar la contraseña';
           Swal.fire({

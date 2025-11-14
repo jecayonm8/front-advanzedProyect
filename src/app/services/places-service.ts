@@ -16,11 +16,21 @@ export class PlacesService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = sessionStorage.getItem('AuthToken');
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : ''
-    });
+    const token = localStorage.getItem('AuthToken');
+    console.log('Token from localStorage in PlacesService:', token);
+
+    const headers = {
+      'Content-Type': 'application/json'
+    } as any;
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('Authorization header in PlacesService:', `Bearer ${token}`);
+    } else {
+      console.log('No token found in localStorage in PlacesService');
+    }
+
+    return new HttpHeaders(headers);
   }
 
 
@@ -140,11 +150,17 @@ export class PlacesService {
 
   public searchWithBody(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
     // Endpoint público - no requiere autenticación
-    return this.http.post<AccommodationDTO[]>(`${this.apiUrl}/${page}`, filters, {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    }).pipe(
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('city', filters.city || '')
+      .set('checkIn', filters.checkIn || '')
+      .set('checkOut', filters.checkOut || '')
+      .set('guest_number', filters.guest_number?.toString() || '')
+      .set('minimum', filters.minimum?.toString() || '')
+      .set('maximum', filters.maximum?.toString() || '')
+      .set('list', filters.list ? filters.list.join(',') : '');
+
+    return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/search`, { params }).pipe(
       map((response: any) => {
         // El backend devuelve {error: false, message: [...]}
         return response?.message || [];

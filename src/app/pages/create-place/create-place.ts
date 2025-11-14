@@ -99,8 +99,8 @@ export class CreatePlace implements OnInit, AfterViewInit, OnDestroy {
       neighborhood: ['', [Validators.maxLength(20)]],
       street: ['', []],
       postalCode: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z]{4,10}$/)]],
-      latitude: ['', [Validators.required]],
-      longitude: ['', [Validators.required]],
+      latitude: ['4.6486', [Validators.required]], // Bogotá por defecto
+      longitude: ['-74.0635', [Validators.required]], // Bogotá por defecto
       amenities: [[], []],
       picsUrl: [[], []]
 
@@ -200,8 +200,8 @@ export class CreatePlace implements OnInit, AfterViewInit, OnDestroy {
             country: formValue.country,
             department: formValue.department,
             city: formValue.city,
-            neighborhood: formValue.neighborhood || undefined,
-            street: formValue.street || undefined,
+            neighborhood: formValue.neighborhood || null,
+            street: formValue.street || null,
             postalCode: formValue.postalCode,
             amenities: formValue.amenities || [],
             latitude: parseFloat(formValue.latitude),
@@ -209,6 +209,7 @@ export class CreatePlace implements OnInit, AfterViewInit, OnDestroy {
           };
 
           console.log('Datos del alojamiento a enviar:', accommodationData);
+          console.log('JSON a enviar:', JSON.stringify(accommodationData, null, 2));
           console.log('picsUrl array:', picsUrls);
           console.log('amenities array:', formValue.amenities);
           console.log('accommodationType:', formValue.accommodationType);
