@@ -1,14 +1,17 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core'
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from '../../services/places-service';
 import { MapService } from '../../services/map-service';
+import { ImageService } from '../../services/image-service';
 import { AccommodationDTO, UpdateAccommodationDTO, Amenities, GetForUpdateDTO } from '../../models/place-dto';
+import { forkJoin } from 'rxjs';
+import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 
 @Component ({
     selector: 'app-update-place',
-    imports: [ReactiveFormsModule],
+    imports: [ReactiveFormsModule, CommonModule],
     templateUrl: './update-place.html',
     styleUrl: './update-place.css'
 })
@@ -18,13 +21,25 @@ export class UpdatePlace implements OnInit, AfterViewInit {
     cities: string[];
     accommodationTypes: string[];
     amenitiesOptions: { label: string; value: string }[] = [];
+    existingImages: string[] = [];
+    selectedFiles: File[] = [];
+    imagePreviews: string[] = [];
+
     updatePlaceForm!: FormGroup;
     placeId: string | null = null;
+    private originalPicsUrl: string[] = [];
+
+    get allImages(): {src: string, type: 'existing' | 'new', originalIndex: number}[] {
+        const existing = this.existingImages.map((src, i) => ({src, type: 'existing' as const, originalIndex: i}));
+        const newOnes = this.imagePreviews.map((src, i) => ({src, type: 'new' as const, originalIndex: i}));
+        return [...existing, ...newOnes];
+    }
 
     constructor(
         private formBuilder: FormBuilder,
         private placesService: PlacesService,
         private mapService: MapService,
+        private imageService: ImageService,
         private route: ActivatedRoute,
         private router: Router
     ){
@@ -94,6 +109,8 @@ export class UpdatePlace implements OnInit, AfterViewInit {
     private loadPlaceData(id: string): void {
         this.placesService.getForUpdate(id).subscribe({
             next: (data: GetForUpdateDTO) => {
+                this.originalPicsUrl = data.pics_url || [];
+                this.existingImages = [...this.originalPicsUrl];
                 this.updatePlaceForm.patchValue({
                     title: data.title,
                     description: data.description,
@@ -152,57 +169,189 @@ export class UpdatePlace implements OnInit, AfterViewInit {
     public updatePlace(){
         if (this.updatePlaceForm.valid && this.placeId) {
             const formValue = this.updatePlaceForm.value;
-            const updateData: UpdateAccommodationDTO = {
-                title: formValue.title,
-                description: formValue.description,
-                capacity: formValue.capacity,
-                price: formValue.price,
-                country: formValue.country,
-                department: formValue.department,
-                city: formValue.city,
-                neighborhood: formValue.neighborhood,
-                street: formValue.street,
-                postalCode: formValue.postalCode,
-                amenities: formValue.amenities,
-                accommodationType: formValue.accommodationType,
-                latitude: parseFloat(formValue.latitude),
-                longitude: parseFloat(formValue.longitude)
-            };
 
-            // Solo incluir picsUrl si son strings (URLs existentes), no Files
-            if (formValue.picsUrl && Array.isArray(formValue.picsUrl) && formValue.picsUrl.length > 0 && typeof formValue.picsUrl[0] === 'string') {
-                updateData.picsUrl = formValue.picsUrl as string[];
+            // Validar que haya al menos 1 imagen en total (existentes + nuevas)
+            const totalImages = (formValue.picsUrl?.length || 0) + this.selectedFiles.length;
+            if (totalImages < 1) {
+                Swal.fire("Error", "Debes mantener al menos 1 imagen del alojamiento.", "error");
+                return;
             }
 
-            this.placesService.update(this.placeId, updateData).subscribe({
-                next: () => {
-                    Swal.fire({
-                        title: "¡Éxito!",
-                        text: "Se ha actualizado el alojamiento.",
-                        icon: "success",
-                        timer: 2000,
-                        showConfirmButton: false
-                    }).then(() => {
-                        this.router.navigate(['/my-places']);
-                    });
-                },
-                error: (error) => {
-                    console.error('Error al actualizar alojamiento:', error);
-                    Swal.fire("Error", "Ocurrió un error al actualizar el alojamiento. Inténtalo de nuevo.", "error");
+            if (totalImages > 10) {
+                Swal.fire("Error", "No puedes tener más de 10 imágenes.", "error");
+                return;
+            }
+
+            // Mostrar loading
+            Swal.fire({
+                title: "Actualizando alojamiento...",
+                text: "Por favor espera.",
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
                 }
             });
+
+            // Si hay nuevas imágenes, subirlas primero
+            if (this.selectedFiles.length > 0) {
+                const uploadObservables = this.selectedFiles.map(file => this.imageService.uploadImage(file));
+
+                forkJoin(uploadObservables).subscribe({
+                    next: (uploadResponses: any[]) => {
+                        console.log('Respuestas de subida de imágenes:', uploadResponses);
+
+                        // Extraer URLs de las respuestas
+                        const newPicsUrls = uploadResponses.map((response, index) => {
+                            let imageUrl = null;
+
+                            if (response.data?.url) {
+                                imageUrl = response.data.url;
+                            } else if (response.url) {
+                                imageUrl = response.url;
+                            } else if (response.secure_url) {
+                                imageUrl = response.secure_url;
+                            } else if (response.data?.secure_url) {
+                                imageUrl = response.data.secure_url;
+                            } else if (typeof response === 'string') {
+                                imageUrl = response;
+                            } else if (response.message?.url) {
+                                imageUrl = response.message.url;
+                            } else if (response.message?.secure_url) {
+                                imageUrl = response.message.secure_url;
+                            }
+
+                            return imageUrl;
+                        }).filter(url => url !== null);
+
+                        console.log('URLs nuevas extraídas:', newPicsUrls);
+
+                        if (newPicsUrls.length !== this.selectedFiles.length) {
+                            Swal.close();
+                            Swal.fire("Error", "No se pudieron obtener todas las URLs de las imágenes subidas.", "error");
+                            return;
+                        }
+
+                        // Combinar URLs existentes y nuevas
+                        const allPicsUrls = [...(formValue.picsUrl || []), ...newPicsUrls];
+
+                        this.performUpdate(formValue, allPicsUrls);
+                    },
+                    error: (error) => {
+                        Swal.close();
+                        console.error('Error al subir imágenes:', error);
+                        Swal.fire("Error", "Ocurrió un error al subir las imágenes. Inténtalo de nuevo.", "error");
+                    }
+                });
+            } else {
+                // Enviar las imágenes actuales (pueden haber sido modificadas por eliminación)
+                const picsUrls = formValue.picsUrl && Array.isArray(formValue.picsUrl) && formValue.picsUrl.length > 0 && typeof formValue.picsUrl[0] === 'string' ? formValue.picsUrl as string[] : [];
+                this.performUpdate(formValue, picsUrls);
+            }
         } else {
             Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
         }
+    }
+
+    private performUpdate(formValue: any, picsUrls: string[]) {
+        const updateData: UpdateAccommodationDTO = {
+            title: formValue.title,
+            description: formValue.description,
+            capacity: parseInt(formValue.capacity),
+            price: parseFloat(formValue.price),
+            country: formValue.country,
+            department: formValue.department,
+            city: formValue.city,
+            neighborhood: formValue.neighborhood || null,
+            street: formValue.street || null,
+            postalCode: formValue.postalCode,
+            amenities: formValue.amenities || [],
+            accommodationType: formValue.accommodationType,
+            latitude: parseFloat(formValue.latitude),
+            longitude: parseFloat(formValue.longitude),
+            pics_url: picsUrls
+        };
+
+        console.log('Datos del alojamiento a actualizar:', updateData);
+
+        this.placesService.update(this.placeId!, updateData).subscribe({
+            next: () => {
+                Swal.close();
+                Swal.fire({
+                    title: "¡Éxito!",
+                    text: "Se ha actualizado el alojamiento.",
+                    icon: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Resetear arrays de imágenes nuevas
+                    this.selectedFiles = [];
+                    this.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+                    this.imagePreviews = [];
+                    this.router.navigate(['/my-places']);
+                });
+            },
+            error: (error) => {
+                Swal.close();
+                console.error('Error al actualizar alojamiento:', error);
+                console.error('Detalles del error.error:', error.error);
+                let errorMessage = "Ocurrió un error al actualizar el alojamiento. Inténtalo de nuevo.";
+
+                if (error.error?.message) {
+                    if (Array.isArray(error.error.message)) {
+                        errorMessage = error.error.message.map((item: any) =>
+                            typeof item === 'string' ? item : JSON.stringify(item)
+                        ).join(', ');
+                    } else if (typeof error.error.message === 'string') {
+                        errorMessage = error.error.message;
+                    } else {
+                        errorMessage = JSON.stringify(error.error.message);
+                    }
+                }
+
+                Swal.fire("Error", errorMessage, "error");
+            }
+        });
     }
 
     public onFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
 
         if (input.files && input.files.length > 0) {
-            const files = Array.from(input.files);
-            this.updatePlaceForm.patchValue({ picsUrl: files });
-            this.updatePlaceForm.get('picsUrl')?.updateValueAndValidity();
+            const newFiles = Array.from(input.files);
+
+            // Validar número de imágenes
+            const totalFiles = this.selectedFiles.length + newFiles.length;
+            if (totalFiles > 10) {
+                Swal.fire("Error", "No puedes seleccionar más de 10 imágenes.", "error");
+                return;
+            }
+
+            // Validar cada archivo
+            for (const file of newFiles) {
+                // Validar tamaño (5MB máximo)
+                if (file.size > 5 * 1024 * 1024) {
+                    Swal.fire("Error", `La imagen "${file.name}" es demasiado grande. Máximo 5MB por imagen.`, "error");
+                    return;
+                }
+
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    Swal.fire("Error", `El archivo "${file.name}" no es una imagen válida. Solo se permiten JPG, PNG y WebP.`, "error");
+                    return;
+                }
+            }
+
+            // Agregar archivos válidos
+            this.selectedFiles = [...this.selectedFiles, ...newFiles];
+            // Generar previews para los nuevos archivos
+            const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+            this.imagePreviews = [...this.imagePreviews, ...newPreviews];
+
+            // No se actualiza picsUrl en el form ya que es para URLs existentes
+
+            // Limpiar el input para permitir seleccionar los mismos archivos nuevamente si es necesario
+            input.value = '';
         }
     }
 
@@ -223,5 +372,31 @@ export class UpdatePlace implements OnInit, AfterViewInit {
             amenitiesControl.setValue(currentAmenities.filter(item => item !== amenity));
         }
         amenitiesControl.updateValueAndValidity();
+    }
+
+    public removeImage(img: {type: 'existing' | 'new', originalIndex: number}) {
+        if (img.type === 'existing') {
+            this.existingImages.splice(img.originalIndex, 1);
+            this.updatePlaceForm.patchValue({ picsUrl: this.existingImages });
+            this.updatePlaceForm.get('picsUrl')?.updateValueAndValidity();
+        } else {
+            // Liberar el object URL para evitar memory leaks
+            URL.revokeObjectURL(this.imagePreviews[img.originalIndex]);
+
+            this.selectedFiles.splice(img.originalIndex, 1);
+            this.imagePreviews.splice(img.originalIndex, 1);
+
+            this.updatePlaceForm.patchValue({ picsUrl: this.selectedFiles });
+            this.updatePlaceForm.get('picsUrl')?.updateValueAndValidity();
+        }
+    }
+
+    public trackByIndex(index: number): number {
+        return index;
+    }
+
+    ngOnDestroy(): void {
+        // Limpiar todos los object URLs para evitar memory leaks
+        this.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
     }
 }

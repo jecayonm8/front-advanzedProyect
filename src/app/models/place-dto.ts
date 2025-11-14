@@ -58,21 +58,21 @@ export interface AccommodationDetailDTO {
 }
 
 export interface UpdateAccommodationDTO {
-   title: string;
-   description: string;
-   capacity: number;
-   price: number;
-   country: string;
-   department: string;
-   city: string;
-   neighborhood?: string;
-   street?: string;
-   postalCode: string;
-   picsUrl?: string[];
-   amenities: Amenities[];
-   accommodationType: AccommodationType;
-   latitude: number;
-   longitude: number;
+    title: string;
+    description: string;
+    capacity: number;
+    price: number;
+    country: string;
+    department: string;
+    city: string;
+    neighborhood?: string;
+    street?: string;
+    postalCode: string;
+    pics_url: string[];
+    amenities: Amenities[];
+    accommodationType: AccommodationType;
+    latitude: number;
+    longitude: number;
 }
 
 export interface GetForUpdateDTO {

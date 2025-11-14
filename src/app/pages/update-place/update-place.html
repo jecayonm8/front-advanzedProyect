@@ -106,8 +106,23 @@
 
       <div class="form-group form-group--full">
         <label for="place-images">Imágenes del alojamiento</label>
-        <input id="place-images" type="file" multiple (change)="onFileChange($event)" />
-        <small class="form-helper">Sube entre 3 y 8 fotografías en formato JPG o PNG.</small>
+        <input id="place-images" type="file" multiple accept="image/*" (change)="onFileChange($event)" />
+        <small class="form-helper">Selecciona imágenes en formato JPG, PNG o WebP (máximo 5MB cada una). Total máximo: 10 imágenes.</small>
+
+        <!-- Preview de imágenes seleccionadas -->
+        <div class="image-previews" *ngIf="allImages.length > 0">
+          <div class="preview-grid">
+            <div class="image-preview" *ngFor="let img of allImages; let i = index; trackBy: trackByIndex">
+              <img [src]="img.src" [alt]="'Preview ' + (i + 1)" class="preview-image" />
+              <button type="button" class="remove-image-btn" (click)="removeImage(img)" title="Remover imagen">
+                <span class="material-symbols-rounded">close</span>
+              </button>
+            </div>
+          </div>
+          <div class="preview-info">
+            <small class="text-muted">{{ allImages.length }} imagen(es) seleccionada(s)</small>
+          </div>
+        </div>
       </div>
     </div>
 
