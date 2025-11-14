@@ -1,3 +1,7 @@
+:host {
+  background-color: #fdf2f2;
+}
+
 /* Galería de imágenes */
 .image-gallery {
   width: 100%;
@@ -192,14 +196,15 @@
 
 /* Cards */
 .card {
+  background: white;
   border: none;
-  border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.3s ease;
 }
 
 .card:hover {
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .card-title {
@@ -238,19 +243,20 @@
 
 /* Comentarios */
 .comment-form {
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
+  border: none;
+  border-radius: 24px;
   padding: 24px;
-  background: #f8f9fa;
+  background: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   margin-bottom: 24px;
 }
 
 .comment-card {
-  background: #fff;
-  border: 1px solid #e9ecef;
-  border-radius: 12px;
+  background: white;
+  border: none;
+  border-radius: 24px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.3s ease;
   min-height: 180px;
   display: flex;
@@ -258,7 +264,7 @@
 }
 
 .comment-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .comment-header {

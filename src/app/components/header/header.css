@@ -3,9 +3,9 @@
   top: 0;
   z-index: 20;
   backdrop-filter: blur(24px);
-  background: linear-gradient(135deg, rgba(81, 70, 255, 0.95), rgba(62, 56, 201, 0.92));
+  background: linear-gradient(135deg, rgba(252, 93, 114, 0.95), rgba(252, 93, 114, 0.95));
   color: #fff;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 20px 45px rgba(252, 93, 114, 0.95);
 }
 
 .site-header__inner {
@@ -26,13 +26,13 @@
 }
 
 .site-header__logo {
-  width: 3.15rem;
-  height: 3.15rem;
+  width: 5.15rem;
+  height: 5.15rem;
 }
 
 .site-header__logo svg {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2.8rem;
+  height: 2.8rem;
   fill: currentColor;
 }
 
@@ -43,7 +43,7 @@
 
 .site-header__brand-title {
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 3.4rem;
 }
 
 .site-header__brand-subtitle {
