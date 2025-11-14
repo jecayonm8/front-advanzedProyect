@@ -62,13 +62,12 @@ export class CommentService {
    * @returns Observable con el comentario creado
    */
   createComment(commentData: CreateCommentDTO): Observable<CommentDTO> {
-    // Usar el endpoint correcto: POST /api/accommodations/{idAccommodation}/comments
+    // Usar endpoint: POST /api/accommodations/{bookingId}/comments
     const accommodationsUrl = 'http://localhost:8080/api/accommodations';
-    const url = `${accommodationsUrl}/${commentData.accommodationId}/comments`;
+    const url = `${accommodationsUrl}/${commentData.bookingId}/comments`;
     const body = {
       comment: commentData.comment,
-      rating: commentData.rating,
-      bookingId: commentData.bookingId
+      rating: commentData.rating
     };
 
     console.log('Creating comment with URL:', url);

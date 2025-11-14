@@ -145,7 +145,6 @@ export interface CreateCommentDTO {
   comment: string;
   rating: number;
   bookingId: string;
-  accommodationId: string;
 }
 
 export interface StatsDTO {

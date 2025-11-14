@@ -12,6 +12,7 @@ export interface BookingDTO {
   checkIn: string;
   checkOut: string;
   guest_number: number;
+  accommodationId?: string;
 }
 
 export interface UserDTO {

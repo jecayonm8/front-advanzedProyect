@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PlacesService } from '../../services/places-service';
 import { FavoriteService } from '../../services/favorite-service';
-import { CommentService } from '../../services/comment-service';
-import { AccommodationDetailDTO, CommentDTO, CreateCommentDTO } from '../../models/place-dto';
+import { AccommodationDetailDTO, CommentDTO } from '../../models/place-dto';
 import { CommonModule } from '@angular/common';
 import { BookingForm } from '../../components/booking-form/booking-form';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-detail-place',
-  imports: [CommonModule, ReactiveFormsModule, BookingForm],
+  imports: [CommonModule, BookingForm],
   templateUrl: './detail-place.html',
   styleUrl: './detail-place.css'
 })
@@ -20,38 +18,22 @@ export class DetailPlace implements OnInit {
   placeId: string = "";
   place: AccommodationDetailDTO | undefined;
   comments: CommentDTO[] = [];
-  commentForm!: FormGroup;
   currentPage: number = 0;
   totalPages: number = 0;
   currentImageIndex = 0;
-  canComment: boolean = false; // Para determinar si el usuario puede comentar
 
   constructor(
     private route: ActivatedRoute,
     private placesService: PlacesService,
     private favoriteService: FavoriteService,
-    private commentService: CommentService,
-    private formBuilder: FormBuilder,
     private router: Router
-  ) {
-    this.createCommentForm();
-  }
+  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.placeId = params["id"];
       this.loadPlaceDetail(this.placeId);
       this.loadComments(this.placeId, this.currentPage);
-    });
-
-    // Para desarrollo: asumir que el usuario puede comentar
-    this.canComment = true;
-  }
-
-  private createCommentForm() {
-    this.commentForm = this.formBuilder.group({
-      comment: ['', [Validators.required, Validators.maxLength(1000)]],
-      rating: [5, [Validators.required, Validators.min(1), Validators.max(5)]]
     });
   }
 
@@ -146,38 +128,6 @@ export class DetailPlace implements OnInit {
     return stars;
   }
 
-  public createComment(): void {
-    if (this.commentForm.valid && this.placeId) {
-      const formValue = this.commentForm.value;
-      const commentData: CreateCommentDTO = {
-        comment: formValue.comment,
-        rating: formValue.rating,
-        bookingId: 'mock-booking-id', // En desarrollo usar ID mock
-        accommodationId: this.placeId
-      };
-
-      this.commentService.createComment(commentData).subscribe({
-        next: (newComment) => {
-          this.comments.unshift(newComment); // Agregar al inicio
-          this.commentForm.reset({ rating: 5 });
-
-          Swal.fire({
-            title: "¡Éxito!",
-            text: "Comentario agregado exitosamente.",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false
-          });
-        },
-        error: (error) => {
-          console.error('Error al crear comentario:', error);
-          Swal.fire("Error", "No se pudo agregar el comentario. Inténtalo de nuevo.", "error");
-        }
-      });
-    } else {
-      Swal.fire("Error", "Por favor complete todos los campos requeridos.", "error");
-    }
-  }
 
   public changePage(page: number): void {
     if (page >= 0 && page < this.totalPages) {

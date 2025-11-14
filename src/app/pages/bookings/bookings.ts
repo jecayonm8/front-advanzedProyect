@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BookingDTO, SearchBookingDTO } from '../../models/booking-dto';
 import { BookingService } from '../../services/booking-service';
 import { TokenService } from '../../services/token-service';
@@ -23,7 +24,8 @@ export class Bookings {
   constructor(
     private bookingService: BookingService,
     private tokenService: TokenService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.createFilterForm();
     this.loadBookings();
@@ -160,6 +162,15 @@ export class Bookings {
         });
       }
     });
+  }
+
+  public commentBooking(booking: BookingDTO) {
+    if (!booking.id) {
+      Swal.fire("Error", "No se puede comentar esta reserva: ID no disponible.", "error");
+      return;
+    }
+    // Navegar a create-review con el bookingId
+    this.router.navigate(['/create-review'], { queryParams: { bookingId: booking.id } });
   }
 
 }

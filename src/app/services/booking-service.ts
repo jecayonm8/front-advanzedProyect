@@ -85,6 +85,13 @@ export class BookingService {
     );
   }
 
+  public getBookingById(bookingId: string): Observable<BookingDTO> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<{error: boolean, message: BookingDTO}>(`${this.apiUrl}/${bookingId}`, { headers }).pipe(
+      map(response => response.message)
+    );
+  }
+
   public deleteBooking(bookingId: string): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.delete(`${this.apiUrl}/${bookingId}`, { headers });
