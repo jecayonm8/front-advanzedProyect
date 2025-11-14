@@ -16,8 +16,8 @@ export class PlacesService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('AuthToken');
-    console.log('Token from localStorage in PlacesService:', token);
+    const token = sessionStorage.getItem('AuthToken');
+    console.log('Token from sessionStorage in PlacesService:', token);
 
     const headers = {
       'Content-Type': 'application/json'
@@ -150,17 +150,17 @@ export class PlacesService {
 
   public searchWithBody(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
     // Endpoint público - no requiere autenticación
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('city', filters.city || '')
-      .set('checkIn', filters.checkIn || '')
-      .set('checkOut', filters.checkOut || '')
-      .set('guest_number', filters.guest_number?.toString() || '')
-      .set('minimum', filters.minimum?.toString() || '')
-      .set('maximum', filters.maximum?.toString() || '')
-      .set('list', filters.list ? filters.list.join(',') : '');
+    const body = {
+      city: filters.city || null,
+      checkIn: filters.checkIn || null,
+      checkOut: filters.checkOut || null,
+      guest_number: filters.guest_number || null,
+      minimum: filters.minimum || null,
+      maximum: filters.maximum || null,
+      list: filters.list || null
+    };
 
-    return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/search`, { params }).pipe(
+    return this.http.post<AccommodationDTO[]>(`${this.apiUrl}/${page}`, body).pipe(
       map((response: any) => {
         // El backend devuelve {error: false, message: [...]}
         return response?.message || [];
