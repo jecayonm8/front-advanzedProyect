@@ -8,7 +8,7 @@ import { CommentDTO, CreateCommentDTO } from '../models/place-dto';
   providedIn: 'root',
 })
 export class CommentService {
-  private readonly API_URL = 'http://localhost:8080/api/comments';
+  private readonly API_URL = 'https://advanzedproyect-production.up.railway.app/api/comments';
 
   constructor(private http: HttpClient) {}
 
@@ -63,7 +63,7 @@ export class CommentService {
    */
   createComment(commentData: CreateCommentDTO): Observable<CommentDTO> {
     // Usar el endpoint correcto: POST /api/accommodations/{idAccommodation}/comments
-    const accommodationsUrl = 'http://localhost:8080/api/accommodations';
+    const accommodationsUrl = 'https://advanzedproyect-production.up.railway.app/api/accommodations';
     const url = `${accommodationsUrl}/${commentData.accommodationId}/comments`;
     const body = {
       comment: commentData.comment,

@@ -7,7 +7,7 @@ import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetail
   providedIn: 'root'
 })
 export class PlacesService {
-  private apiUrl = 'http://localhost:8080/api/accommodations';
+  private apiUrl = 'https://advanzedproyect-production.up.railway.app/api/accommodations';
   private places: AccommodationDTO[] = [];
 
   constructor(private http: HttpClient) {
@@ -196,7 +196,7 @@ export class PlacesService {
     * @returns Observable con lista de alojamientos del host y total de páginas
     */
   public getHostAccommodations(page: number = 0): Observable<{places: AccommodationDTO[], totalPages: number}> {
-    return this.http.get<any>(`http://localhost:8080/api/users/me/accommodations/host/${page}`, {
+    return this.http.get<any>(`https://advanzedproyect-production.up.railway.app/api/users/me/accommodations/host/${page}`, {
       headers: this.getAuthHeaders()
     }).pipe(
       map((response: any) => {

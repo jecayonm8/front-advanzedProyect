@@ -11,7 +11,7 @@ import { ResponseDTO } from '../models/response-dto';
 export class AuthService {
   
 
-  private authURL = "http://localhost:8080/api/auth";
+  private authURL = "https://advanzedproyect-production.up.railway.app/api/auth";
 
   constructor(private http: HttpClient) { }
 

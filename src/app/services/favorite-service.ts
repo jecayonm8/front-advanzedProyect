@@ -7,7 +7,7 @@ import { AccommodationDTO } from '../models/place-dto';
   providedIn: 'root'
 })
 export class FavoriteService {
-  private apiUrl = 'http://localhost:8080/api/favorites';
+  private apiUrl = 'https://advanzedproyect-production.up.railway.app/api/favorites';
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import { BookingDTO, CreateBookingDTO, SearchBookingDTO } from '../models/bookin
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'http://localhost:8080/api/bookings';
+  private apiUrl = 'https://advanzedproyect-production.up.railway.app/api/bookings';
   private bookings: BookingDTO[] = [];
 
   constructor(private http: HttpClient) {
