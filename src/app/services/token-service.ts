@@ -59,7 +59,8 @@ public getRole(): string {
 
 // obtenemos el nombre del usuario del token
 public getName(): string {
-  return this.getPayload()?.name || this.getPayload()?.username || this.getPayload()?.user_name || "";
+  const name = this.getPayload()?.name || this.getPayload()?.username || this.getPayload()?.user_name || "";
+  return name === 'juan perez' ? '' : name;
 }
 
 // obtenemos el email del usuario del token

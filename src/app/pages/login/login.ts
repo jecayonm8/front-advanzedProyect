@@ -78,7 +78,7 @@ export class Login {
     });
 
     console.log('Request headers:', headers);
-    this.http.post(`http://localhost:8080/api/auth/forgot-password`, { email }, { headers })
+    this.http.post(`https://advanzedproyect-production.up.railway.app/api/auth/forgot-password`, { email }, { headers })
       .subscribe({
         next: (response: any) => {
           console.log('Forgot password response:', response);
@@ -138,7 +138,7 @@ export class Login {
       'Content-Type': 'application/json'
     });
 
-    this.http.post(`http://localhost:8080/api/auth/password-recovery`, payload, { headers })
+    this.http.post(`https://advanzedproyect-production.up.railway.app/api/auth/password-recovery`, payload, { headers })
       .subscribe({
         next: (response: any) => {
           console.log('Reset password success:', response);
