@@ -32,8 +32,8 @@ export class MyPlaces {
       error: (err: any) => {
         console.error('Error loading host accommodations:', err);
         // Fallback a datos locales si falla
-        this.places = this.placesService.getAllSync();
-        this.totalPages = 10;
+        this.places = [];
+        this.totalPages = 0;
       }
     });
   }
