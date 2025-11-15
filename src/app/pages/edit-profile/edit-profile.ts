@@ -20,8 +20,11 @@ export class EditProfile implements OnInit {
   }
 
   ngOnInit() {
-    // Cargar datos desde el token y localStorage, sin llamar al backend por ahora
-    this.loadUserDataFromToken();
+    console.log('EditProfile ngOnInit called');
+    // Set email from token immediately
+    this.userEmail = this.tokenService.getEmail() || '';
+    console.log('Initial userEmail from token:', this.userEmail);
+    this.loadUserData();
   }
 
   private createForm() {
@@ -40,48 +43,75 @@ export class EditProfile implements OnInit {
     return birthDate < today ? null : { pastDate: true };
   }
 
-  private loadUserDataFromToken() {
+  private loadUserData() {
     const token = this.tokenService.getToken();
     if (!token) {
       alert('No se encontró token de autenticación');
-      this.loadFromLocalStorage();
       return;
     }
 
     console.log('Token found:', token);
-    console.log('User ID from token:', this.tokenService.getUserId());
-    console.log('User role from token:', this.tokenService.getRole());
-    console.log('User name from token:', this.tokenService.getName());
-    console.log('User email from token:', this.tokenService.getEmail());
+    const userId = this.tokenService.getUserId();
+    console.log('User ID from token:', userId);
 
-    // Usar datos del token para email
-    this.userEmail = this.tokenService.getEmail() || 'usuario@example.com';
-
-    // Cargar datos adicionales desde localStorage o usar valores por defecto
-    this.loadFromLocalStorage();
-  }
-  private loadFromLocalStorage() {
-    // Always try to load from localStorage first
-    const storedProfile = localStorage.getItem('userProfile');
-    let userData;
-
-    if (storedProfile) {
-      userData = JSON.parse(storedProfile);
-    } else {
-      // If no stored data, create mock data
-      userData = {
-        name: 'Juan Pérez',
-        phone: '1234567890',
-        photoUrl: 'https://example.com/photo.jpg',
-        birthDate: '1990-01-01'
-      };
-      // Store mock data for future use
-      localStorage.setItem('userProfile', JSON.stringify(userData));
+    if (!userId) {
+      console.error('No user ID found in token');
+      alert('No se pudo obtener el ID del usuario');
+      return;
     }
 
-    // Populate form with data
-    this.editProfileForm.patchValue(userData);
-    this.userEmail = 'usuario@example.com'; // Mock email for display
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    console.log('Making GET request to:', `http://localhost:8080/api/users/${userId}`);
+    console.log('Headers:', headers);
+
+    this.http.get(`http://localhost:8080/api/users/${userId}`, { headers })
+      .subscribe({
+        next: (response: any) => {
+          console.log('Response received from API:', response);
+          // Extract user data from response
+          const userData = response.message;
+          console.log('User data extracted:', userData);
+
+          this.userEmail = userData.email;
+          console.log('Updated userEmail:', this.userEmail);
+          // Populate form with editable fields
+          const formData = {
+            name: userData.name,
+            phone: userData.phone || '',
+            photoUrl: userData.photoUrl || '',
+            birthDate: userData.birthDate ? userData.birthDate.split('T')[0] : '' // Format date for input
+          };
+          console.log('Form data to patch:', formData);
+          this.editProfileForm.patchValue(formData);
+          console.log('Form value after patch:', this.editProfileForm.value);
+          // Store in localStorage for future use
+          localStorage.setItem('userProfile', JSON.stringify({
+            name: userData.name,
+            phone: userData.phone,
+            photoUrl: userData.photoUrl,
+            birthDate: userData.birthDate ? userData.birthDate.split('T')[0] : ''
+          }));
+          console.log('User data stored in localStorage');
+        },
+        error: (error) => {
+          console.error('Error fetching user data:', error);
+          console.error('Status:', error.status);
+          console.error('StatusText:', error.statusText);
+          console.error('Error body:', error.error);
+
+          if (error.status === 401) {
+            alert('Sesión expirada. Por favor, inicia sesión nuevamente.');
+            return;
+          }
+
+          // No hay datos de respaldo - mostrar error
+          console.error('Error al cargar datos del usuario');
+          alert('Error al cargar datos del perfil. Inténtalo de nuevo.');
+        }
+      });
   }
 
   public editProfile() {
@@ -96,6 +126,12 @@ export class EditProfile implements OnInit {
       return;
     }
 
+    const userId = this.tokenService.getUserId();
+    if (!userId) {
+      alert('No se pudo obtener el ID del usuario');
+      return;
+    }
+
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -103,37 +139,16 @@ export class EditProfile implements OnInit {
 
     const profileData = this.editProfileForm.value;
 
-    // ⭐ LOGS PARA DEBUG: Verificar qué datos se están enviando
-    console.log('==========================================');
-    console.log('📤 DATOS DEL FORMULARIO A ENVIAR:');
-    console.log('Nombre:', profileData.name);
-    console.log('Teléfono:', profileData.phone);
-    console.log('Photo URL:', profileData.photoUrl);
-    console.log('Fecha nacimiento:', profileData.birthDate);
-    console.log('Datos completos:', profileData);
-    console.log('==========================================');
+    console.log('Datos del formulario a enviar:', profileData);
 
     this.http.put(`http://localhost:8080/api/users/me`, profileData, { headers })
       .subscribe({
         next: (response) => {
-          // ⭐ LOGS PARA DEBUG: Verificar respuesta del backend
-          console.log('==========================================');
-          console.log('✅ PERFIL ACTUALIZADO EXITOSAMENTE');
-          console.log('Respuesta del backend:', response);
-          console.log('==========================================');
-
+          console.log('Perfil actualizado exitosamente:', response);
           alert('Perfil actualizado exitosamente');
           this.updateUserState(profileData);
         },
         error: (error) => {
-          // ⭐ LOGS PARA DEBUG: Verificar error en actualización
-          console.log('==========================================');
-          console.log('❌ ERROR AL ACTUALIZAR PERFIL');
-          console.log('Status:', error.status);
-          console.log('Error completo:', error);
-          console.log('Error body:', error.error);
-          console.log('==========================================');
-
           console.error('Error updating profile:', error);
           alert('Error al actualizar el perfil: ' + (error.error?.message || 'Error desconocido'));
         }

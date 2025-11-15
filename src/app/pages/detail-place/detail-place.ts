@@ -59,38 +59,12 @@ export class DetailPlace implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar comentarios:', error);
-        // Sin datos mock - mostrar array vacío
         this.comments = [];
         this.totalPages = 1;
       }
     });
   }
 
-  private getMockPlaceDetail(id: number): AccommodationDetailDTO {
-    return {
-      id: id,
-      title: 'Casa de Campo El Roble',
-      description: 'Hermosa casa de campo rodeada de naturaleza, perfecta para descansar y disfrutar de la tranquilidad. Cuenta con todas las comodidades necesarias para una estadía inolvidable.',
-      price: 250000,
-      capacity: 6,
-      averageRating: 4.8,
-      latitude: 5.0703,
-      longitude: -75.5138,
-      picsUrl: [
-        'https://example.com/images/campo1.jpg',
-        'https://example.com/images/campo2.jpg',
-        'https://example.com/images/campo3.jpg',
-        'https://example.com/images/campo4.jpg'
-      ],
-      amenities: ['wifi', 'estacionamiento_gratuito', 'cocina', 'aire_acondicionado'],
-      userDetailDTO: {
-        id: '1',
-        name: 'María González',
-        photoUrl: 'https://example.com/profiles/maria.jpg',
-        createdAt: '2024-01-15T10:30:00'
-      }
-    };
-  }
 
   // Métodos para el carrusel de imágenes
   nextImage(): void {

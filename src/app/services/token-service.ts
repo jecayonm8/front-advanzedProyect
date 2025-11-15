@@ -49,7 +49,7 @@ private getPayload(): any {
 }
 // obtenemos el id del usuario del token
 public getUserId(): string {
-  return this.getPayload()?.sub || "";
+  return this.getPayload()?.userId || this.getPayload()?.id || this.getPayload()?.sub || "";
 }
 
 // obtenemos el rol del usuario del token
@@ -59,7 +59,7 @@ public getRole(): string {
 
 // obtenemos el nombre del usuario del token
 public getName(): string {
-  return this.getPayload()?.name || "";
+  return this.getPayload()?.name || this.getPayload()?.username || this.getPayload()?.user_name || "";
 }
 
 // obtenemos el email del usuario del token

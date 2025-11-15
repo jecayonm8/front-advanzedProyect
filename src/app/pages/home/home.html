@@ -5,7 +5,7 @@
       <span class="hero__eyebrow">Encuentra tu lugar perfecto</span>
       <h1 class="hero__title">Alojamientos en Colombia</h1>
       <p class="hero__subtitle">
-        Miles de opciones para tu próxima aventura
+        Hay que viajar para aprender. Descubre alojamientos únicos y experiencias inolvidables.
       </p>
     </div>
   </section>
@@ -134,7 +134,7 @@
           {{ places.length > 0 ? places.length + ' alojamientos encontrados' : 'No se encontraron resultados' }}
         </h2>
         <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetSearch()">
-          Limpiar filtros
+          <span class="material-symbols-rounded me-2">clear</span>Limpiar filtros
         </button>
       </div>
 
@@ -169,7 +169,7 @@
               <span class="text-muted">/noche</span>
             </p>
             <a routerLink="/place/{{place.id}}" class="btn btn-primary btn-sm w-100">
-              Ver detalles
+              <span class="material-symbols-rounded me-2">visibility</span>Ver detalles
             </a>
           </div>
         </article>
@@ -182,13 +182,13 @@
           <h3>No encontramos alojamientos</h3>
           <p>Intenta ajustar tus filtros de búsqueda para encontrar más opciones.</p>
           <button type="button" class="btn btn-primary" (click)="resetSearch()">
-            Limpiar filtros
+            <span class="material-symbols-rounded me-2">clear</span>Limpiar filtros
           </button>
         </div>
       </div>
 
       <!-- Paginación -->
-      <nav aria-label="Navegación de páginas" *ngIf="totalPages > 1" class="mt-4">
+      <nav aria-label="Navegación de páginas" *ngIf="totalPages > 0" class="mt-4">
         <ul class="pagination justify-content-center">
           <!-- Botón Anterior -->
           <li class="page-item" [class.disabled]="currentPage === 0">
@@ -233,5 +233,5 @@
   </section>
 
   <!-- Mapa -->
-  <div id="map" class="map-container" [class.map-hidden]="places.length === 0"></div>
+  <div id="map" class="map-container"></div>
 </main>

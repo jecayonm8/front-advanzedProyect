@@ -106,6 +106,18 @@ export class Home implements OnInit {
         console.error('Error en búsqueda:', error);
         this.isLoading = false;
         this.noResults = true;
+        this.places = []; // Limpiar alojamientos
+        // Mostrar mensaje del backend si existe
+        if (error.error?.message) {
+          Swal.fire({
+            title: 'Sin resultados',
+            text: error.error.message,
+            icon: 'info',
+            confirmButtonText: 'Aceptar'
+          });
+        }
+        // Mostrar mapa vacío
+        this.updateMap();
       }
     });
   }
@@ -119,8 +131,8 @@ export class Home implements OnInit {
     let checkOut: string | null = null;
     if (formValue.checkIn || formValue.checkOut) {
       if (formValue.checkIn && formValue.checkOut) {
-        checkIn = formValue.checkIn;
-        checkOut = formValue.checkOut;
+        checkIn = formValue.checkIn + 'T00:00:00';
+        checkOut = formValue.checkOut + 'T00:00:00';
       } else {
         // Reset fechas si no están completas
         this.searchForm.patchValue({ checkIn: '', checkOut: '' });
@@ -210,8 +222,8 @@ export class Home implements OnInit {
   }
 
   private updateMap(): void {
+    this.mapService.create('map');
     if (this.places.length > 0) {
-      this.mapService.create('map');
       const markers = this.mapItemToMarker(this.places);
       this.mapService.drawMarkers(markers);
     }

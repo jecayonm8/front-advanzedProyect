@@ -39,11 +39,12 @@
 
           <div class="filter-actions">
             <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+              <span class="material-symbols-rounded me-2" *ngIf="!isLoading">filter_list</span>
               <span *ngIf="!isLoading">Aplicar filtros</span>
               <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
             </button>
             <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">
-              Limpiar filtros
+              <span class="material-symbols-rounded me-2">clear</span>Limpiar filtros
             </button>
           </div>
         </div>

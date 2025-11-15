@@ -56,19 +56,36 @@ export class UpdateProfile implements OnInit {
     }
 
     console.log('Token found:', token);
-    console.log('User ID from token:', this.tokenService.getUserId());
-    console.log('User role from token:', this.tokenService.getRole());
+
+    const userId = this.tokenService.getUserId();
+    console.log('User ID from token:', userId);
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
 
-    this.http.get(`http://localhost:8080/api/users/me`, { headers })
+    console.log('Making GET request to:', `http://localhost:8080/api/users/${userId}`);
+    console.log('Headers:', headers);
+
+    this.http.get(`http://localhost:8080/api/users/${userId}`, { headers })
       .subscribe({
         next: (response: any) => {
           console.log('Response received from API:', response);
-          const userData = response; // Assuming backend returns user data directly
+          // Handle both direct response and wrapped response {error: false, message: {...}}
+          const userData = response.message || response;
           console.log('User data extracted:', userData);
+
+          if (!userData || !userData.name) {
+            console.error('Invalid user data received');
+            Swal.fire({
+              title: "Error",
+              text: "Datos de usuario inválidos.",
+              icon: "error",
+              confirmButtonText: "Aceptar"
+            });
+            return;
+          }
+
           this.userEmail = userData.email || this.userEmail;
           console.log('Updated userEmail:', this.userEmail);
           // Populate form with editable fields
@@ -96,9 +113,7 @@ export class UpdateProfile implements OnInit {
           console.error('StatusText:', error.statusText);
           console.error('Error body:', error.error);
 
-          if (error.status === 0) {
-            console.warn('Backend server may not be running. Using local data.');
-          } else if (error.status === 401) {
+          if (error.status === 401) {
             Swal.fire({
               title: "Sesión expirada",
               text: "Por favor, inicia sesión nuevamente.",
@@ -106,18 +121,16 @@ export class UpdateProfile implements OnInit {
               confirmButtonText: "Aceptar"
             });
             return;
-          } else if (error.status === 404) {
-            console.warn('Endpoint not found. Using local data.');
-          } else {
-            Swal.fire({
-              title: "Error",
-              text: "Error al cargar los datos del usuario: " + (error.error?.message || error.message),
-              icon: "error",
-              confirmButtonText: "Aceptar"
-            });
           }
-          // Fallback to localStorage or token data
-          this.loadFromLocalStorage();
+
+          // No hay datos de respaldo - mostrar error
+          console.error('Error al cargar datos del usuario');
+          Swal.fire({
+            title: "Error",
+            text: "No se pudieron cargar los datos del perfil.",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+          });
         }
       });
   }
@@ -132,7 +145,6 @@ export class UpdateProfile implements OnInit {
       userData = JSON.parse(storedProfile);
       console.log('Data loaded from localStorage:', userData);
     } else {
-      // If no stored data, use data from token or mock data
       const tokenName = this.tokenService.getName();
       const tokenEmail = this.tokenService.getEmail();
       console.log('Token name:', tokenName, 'Token email:', tokenEmail);
@@ -151,7 +163,7 @@ export class UpdateProfile implements OnInit {
     console.log('Patching form with data:', userData);
     this.updateProfileForm.patchValue(userData);
     console.log('Form value after localStorage patch:', this.updateProfileForm.value);
-    this.userEmail = this.tokenService.getEmail() || 'usuario@example.com';
+    this.userEmail = this.tokenService.getEmail() || '';
     console.log('Updated userEmail from token:', this.userEmail);
   }
 
@@ -172,6 +184,17 @@ export class UpdateProfile implements OnInit {
       return;
     }
 
+    const userId = this.tokenService.getUserId();
+    if (!userId) {
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo obtener el ID del usuario",
+        icon: "error",
+        confirmButtonText: "Aceptar"
+      });
+      return;
+    }
+
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -179,7 +202,7 @@ export class UpdateProfile implements OnInit {
 
     const profileData = this.updateProfileForm.value;
 
-    this.http.put(`http://localhost:8080/api/users/me`, profileData, { headers })
+    this.http.put(`http://localhost:8080/api/users/${userId}`, profileData, { headers })
       .subscribe({
         next: (response) => {
           Swal.fire({

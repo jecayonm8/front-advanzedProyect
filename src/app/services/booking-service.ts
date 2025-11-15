@@ -4,17 +4,18 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BookingDTO, CreateBookingDTO, SearchBookingDTO } from '../models/booking-dto';
 
+/**
+ * Servicio que maneja todas las operaciones relacionadas con reservas de alojamientos.
+ * Se encarga de crear reservas, consultar reservas de usuarios y alojamientos,
+ * y gestionar el ciclo de vida de las reservas.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService {
   private apiUrl = 'http://localhost:8080/api/bookings';
-  private bookings: BookingDTO[] = [];
 
-  constructor(private http: HttpClient) {
-    // Inicializar con datos de prueba para desarrollo
-    this.bookings = this.createTestBookings();
-  }
+  constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('AuthToken');
@@ -34,6 +35,11 @@ export class BookingService {
     return new HttpHeaders(headers);
   }
 
+  /**
+   * Crea una nueva reserva para un alojamiento específico.
+   * @param booking Datos de la reserva a crear
+   * @returns Observable con mensaje de confirmación
+   */
   public create(booking: CreateBookingDTO): Observable<string> {
     const headers = this.getAuthHeaders();
     console.log('Booking request headers:', headers);
@@ -49,10 +55,21 @@ export class BookingService {
     });
   }
 
+  /**
+   * Obtiene todas las reservas del usuario autenticado.
+   * @param userId ID del usuario (no usado directamente, se obtiene del token)
+   * @returns Observable con lista de reservas
+   */
   public getUserBookings(userId: string): Observable<BookingDTO[]> {
     return this.getUserBookingsWithFilters(0, {});
   }
 
+  /**
+   * Obtiene las reservas del usuario autenticado con filtros y paginación.
+   * @param page Número de página
+   * @param filters Filtros de búsqueda
+   * @returns Observable con lista de reservas filtradas
+   */
   public getUserBookingsWithFilters(page: number, filters: SearchBookingDTO): Observable<BookingDTO[]> {
     const headers = this.getAuthHeaders();
     const body = {
@@ -97,24 +114,4 @@ export class BookingService {
     return this.http.delete(`${this.apiUrl}/${bookingId}`, { headers });
   }
 
-  private createTestBookings(): BookingDTO[] {
-    return [
-      {
-        id: '1',
-        bookingState: 'PENDING',
-        checkIn: '2025-12-01',
-        checkOut: '2025-12-05',
-        guest_number: 2,
-        user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
-      },
-      {
-        id: '2',
-        bookingState: 'COMPLETED',
-        checkIn: '2025-11-15',
-        checkOut: '2025-11-18',
-        guest_number: 1,
-        user: { id: '1', name: 'Juan Pérez', email: 'juan@example.com' }
-      }
-    ];
-  }
 }

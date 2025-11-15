@@ -16,7 +16,7 @@ export class Header {
   private router = inject(Router);
 
   protected isLoggedIn = computed(() => this.tokenService.isLogged());
-  protected userName = computed(() => this.tokenService.getName());
+  protected userName = computed(() => this.tokenService.getEmail() || 'Usuario');
 
   protected logout() {
     this.tokenService.logout();

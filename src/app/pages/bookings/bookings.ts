@@ -23,7 +23,7 @@ export class Bookings {
 
   constructor(
     private bookingService: BookingService,
-    private tokenService: TokenService,
+    public tokenService: TokenService,
     private formBuilder: FormBuilder,
     private router: Router
   ) {

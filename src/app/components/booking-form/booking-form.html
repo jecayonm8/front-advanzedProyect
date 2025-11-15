@@ -65,6 +65,7 @@
         [disabled]="isLoading || bookingForm.invalid"
       >
         <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        <span class="material-symbols-rounded me-2" *ngIf="!isLoading">event_available</span>
         {{ isLoading ? 'Reservando...' : 'Confirmar reserva' }}
       </button>
 

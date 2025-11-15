@@ -1,15 +1,7 @@
-/* Form Container */
-.form-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  padding: 2rem;
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
+:host {
+  background-color: #fdf2f2;
 }
-
-.form-card__grid {
+form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -166,7 +158,7 @@ small {
 .page {
   min-height: 100vh;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
   display: flex;
   flex-direction: column;
   align-items: center;

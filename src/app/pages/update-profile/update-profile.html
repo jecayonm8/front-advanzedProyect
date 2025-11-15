@@ -28,8 +28,12 @@
             </div>
 
             <div class="col-12 col-sm-6">
-                <label class="form-label">Foto de perfil:</label>
-                <input class="form-control" type="file" formControlName="photoUrl" (change)="onFileChange($event)" />
+                <label class="form-label">Foto de perfil (URL actual):</label>
+                <input class="form-control" type="text" formControlName="photoUrl" readonly />
+            </div>
+            <div class="col-12 col-sm-6">
+                <label class="form-label">Cambiar foto de perfil:</label>
+                <input class="form-control" type="file" (change)="onFileChange($event)" />
             </div>
 
             <div class="col-12 col-sm-6">
@@ -42,7 +46,7 @@
 
             <div class="col-12">
                 <button type="submit" class="btn btn-primary" [disabled]="updateProfileForm.invalid">
-                    Guardar cambios
+                    <span class="material-symbols-rounded me-2">save</span>Guardar cambios
                 </button>
             </div>
         </form>

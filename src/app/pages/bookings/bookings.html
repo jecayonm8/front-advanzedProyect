@@ -44,8 +44,8 @@
               <input id="filter-guests" type="number" class="form-control" formControlName="guest_number" min="1" />
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-primary me-2" [disabled]="filterForm.invalid">Aplicar filtros</button>
-              <button type="button" class="btn btn-secondary" (click)="clearFilters()">Limpiar filtros</button>
+              <button type="submit" class="btn btn-primary me-2" [disabled]="filterForm.invalid"><span class="material-symbols-rounded me-2">filter_list</span>Aplicar filtros</button>
+              <button type="button" class="btn btn-secondary" (click)="clearFilters()"><span class="material-symbols-rounded me-2">clear</span>Limpiar filtros</button>
             </div>
             @if (filterForm.errors?.['dateRangeIncomplete']) {
               <div class="col-12">
@@ -76,7 +76,7 @@
 
           <tbody class="table-group-divider">
             <tr *ngFor="let booking of bookings; let i = index; trackBy: trackByFn">
-              <td class="fw-semibold">{{ booking.user.name }}</td>
+              <td class="fw-semibold">{{ tokenService.getEmail() || 'Usuario' }}</td>
               <td>{{ booking.checkIn | date:'short' }}</td>
               <td>{{ booking.checkOut | date:'short' }}</td>
               <td>{{ booking.guest_number }}</td>
@@ -87,14 +87,14 @@
                   class="btn btn-danger btn-sm me-2"
                   (click)="cancelBooking(booking)"
                   title="Cancelar reserva">
-                  Cancelar
+                  <span class="material-symbols-rounded me-2">cancel</span>Cancelar
                 </button>
                 <button
                   *ngIf="booking.id && booking.bookingState === 'COMPLETED'"
                   class="btn btn-primary btn-sm"
                   (click)="commentBooking(booking)"
                   title="Comentar reserva">
-                  Comentar
+                  <span class="material-symbols-rounded me-2">comment</span>Comentar
                 </button>
               </td>
             </tr>

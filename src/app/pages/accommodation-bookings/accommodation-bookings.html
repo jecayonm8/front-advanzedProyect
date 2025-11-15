@@ -44,8 +44,8 @@
               <input id="filter-guests" type="number" class="form-control" formControlName="guest_number" min="1" />
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-primary me-2" [disabled]="filterForm.invalid">Aplicar filtros</button>
-              <button type="button" class="btn btn-secondary" (click)="clearFilters()">Limpiar filtros</button>
+              <button type="submit" class="btn btn-primary me-2" [disabled]="filterForm.invalid"><span class="material-symbols-rounded me-2">filter_list</span>Aplicar filtros</button>
+              <button type="button" class="btn btn-secondary" (click)="clearFilters()"><span class="material-symbols-rounded me-2">clear</span>Limpiar filtros</button>
             </div>
             @if (filterForm.errors?.['dateRangeIncomplete']) {
               <div class="col-12">

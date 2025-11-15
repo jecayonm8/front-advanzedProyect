@@ -3,17 +3,18 @@ import { HttpClient, HttpHeaders, HttpRequest, HttpResponse, HttpParams } from '
 import { Observable, of, map, filter } from 'rxjs';
 import { AccommodationDTO, CreateAccommodationDTO, PlaceDTO, AccommodationDetailDTO, GetForUpdateDTO, UpdateAccommodationDTO, SearchFiltersDTO, CommentDTO, StatsDTO, StatsDateDTO } from '../models/place-dto';
 
+/**
+ * Servicio que maneja todas las operaciones relacionadas con alojamientos.
+ * Se encarga de crear, actualizar, eliminar y buscar alojamientos, además de gestionar
+ * comentarios, estadísticas y datos detallados de cada propiedad.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class PlacesService {
   private apiUrl = 'http://localhost:8080/api/accommodations';
-  private places: AccommodationDTO[] = [];
 
-  constructor(private http: HttpClient) {
-    // Inicializar con datos de prueba para desarrollo
-    this.places = this.createTestPlaces();
-  }
+  constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('AuthToken');
@@ -33,37 +34,44 @@ export class PlacesService {
     return new HttpHeaders(headers);
   }
 
-
-  public getAllSync(): AccommodationDTO[] {
-    return this.places;
-  }
-
+  /**
+   * Crea un nuevo alojamiento en el sistema.
+   * @param newPlace Datos del alojamiento a crear
+   * @returns Observable con el ID del alojamiento creado
+   */
   public save(newPlace: CreateAccommodationDTO): Observable<string> {
     return this.http.post<string>(this.apiUrl, newPlace, {
       headers: this.getAuthHeaders()
     });
   }
 
+  /**
+   * Actualiza los datos de un alojamiento existente.
+   * @param id ID del alojamiento a actualizar
+   * @param updatedPlace Nuevos datos del alojamiento
+   * @returns Observable con mensaje de confirmación
+   */
   public update(id: string, updatedPlace: UpdateAccommodationDTO): Observable<string> {
     return this.http.put<string>(`${this.apiUrl}/${id}`, updatedPlace, {
       headers: this.getAuthHeaders()
     });
   }
 
+  /**
+   * Elimina un alojamiento del sistema.
+   * @param id ID del alojamiento a eliminar
+   * @returns Observable con mensaje de confirmación
+   */
   public deleteAccommodation(id: string): Observable<string> {
     return this.http.delete<string>(`${this.apiUrl}/${id}`, {
       headers: this.getAuthHeaders()
     });
   }
 
-  public get(id: number): AccommodationDTO | undefined {
-    // Por ahora buscar en datos locales, después activar HTTP:
-    // return this.http.get<AccommodationDTO>(`${this.apiUrl}/${id}`, {
-    //   headers: this.getAuthHeaders()
-    // });
-
-    // Búsqueda local para desarrollo
-    return this.places.find(place => parseInt(place.id) === id);
+  public get(id: number): Observable<AccommodationDTO> {
+    return this.http.get<AccommodationDTO>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   public getAmenities(): Observable<string[]> {
@@ -76,6 +84,11 @@ export class PlacesService {
     );
   }
 
+  /**
+   * Obtiene los detalles completos de un alojamiento específico.
+   * @param id ID del alojamiento
+   * @returns Observable con datos detallados del alojamiento
+   */
   public getDetail(id: string): Observable<AccommodationDetailDTO> {
     return this.http.get<AccommodationDetailDTO>(`${this.apiUrl}/${id}/detail`).pipe(
       map((response: any) => {
@@ -100,6 +113,12 @@ export class PlacesService {
     );
   }
 
+  /**
+   * Obtiene los comentarios de un alojamiento con paginación.
+   * @param accommodationId ID del alojamiento
+   * @param page Número de página (0-based)
+   * @returns Observable con lista de comentarios y total de páginas
+   */
   public getComments(accommodationId: string, page: number = 0): Observable<{comments: CommentDTO[], totalPages: number}> {
     return this.http.get<any>(`${this.apiUrl}/${accommodationId}/comments/${page}`).pipe(
       map((response: any) => {
@@ -137,9 +156,10 @@ export class PlacesService {
   }
 
   public search(filters: SearchFiltersDTO, page: number = 0): Observable<AccommodationDTO[]> {
-    return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/${page}`, {
+    const params = { ...filters, page: page.toString() } as any;
+    return this.http.get<AccommodationDTO[]>(`${this.apiUrl}/search`, {
       headers: this.getAuthHeaders(),
-      params: filters as any // Convertir nulls a undefined para query params, pero como es body, usar body
+      params
     }).pipe(
       map((response: any) => {
         // El backend devuelve {error: false, message: [...]}
@@ -226,38 +246,4 @@ export class PlacesService {
     );
   }
 
-  private createTestPlaces(): AccommodationDTO[] {
-    return [
-      {
-        id: '1',
-        title: 'Casa de Campo El Roble',
-        price: 250000,
-        photo_url: 'https://example.com/images/campo1.jpg',
-        average_rating: 4.8,
-        city: 'Manizales',
-        latitude: 5.0703,
-        longitude: -75.5138
-      },
-      {
-        id: '2',
-        title: 'Apartamento Moderno en el Centro',
-        price: 180000,
-        photo_url: 'https://example.com/images/apto1.jpg',
-        average_rating: 4.5,
-        city: 'Bogotá',
-        latitude: 4.6486,
-        longitude: -74.0635
-      },
-      {
-        id: '3',
-        title: 'Cabaña en el Lago Azul',
-        price: 300000,
-        photo_url: 'https://example.com/images/lago1.jpg',
-        average_rating: 4.9,
-        city: 'Guatapé',
-        latitude: 6.2333,
-        longitude: -75.1667
-      }
-    ];
-  }
 }

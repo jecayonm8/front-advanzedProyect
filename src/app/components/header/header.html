@@ -1,4 +1,4 @@
-<header class="p-3 bg-primary text-white">
+<header class="p-3 text-white" style="background-color: #dd766a;">
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-between">
 
@@ -19,14 +19,14 @@
 
       <!-- Botones de autenticación -->
       <div *ngIf="!isLoggedIn()">
-        <button routerLink="/login" class="btn btn-outline-light me-2">Iniciar Sesión</button>
-        <button routerLink="/register" class="btn btn-light text-primary">Crear cuenta</button>
+        <button routerLink="/login" class="btn btn-outline-light me-2"><span class="material-symbols-rounded me-2">login</span>Iniciar Sesión</button>
+        <button routerLink="/register" class="btn btn-light text-primary"><span class="material-symbols-rounded me-2">person_add</span>Crear cuenta</button>
       </div>
 
       <!-- Usuario logueado -->
       <div *ngIf="isLoggedIn()" class="d-flex align-items-center">
         <span class="me-3">Hola, {{ userName() }}</span>
-        <button (click)="logout()" class="btn btn-outline-light">Cerrar Sesión</button>
+        <button (click)="logout()" class="btn btn-outline-light"><span class="material-symbols-rounded me-2">logout</span>Cerrar Sesión</button>
       </div>
 
     </div>
